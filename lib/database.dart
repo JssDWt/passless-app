@@ -1,10 +1,35 @@
-import "package:test/test.dart";
-import 'package:passless_android/receipt.dart';
+import 'dart:async';
 import 'dart:convert';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
-void main() {
-  test('Tests deserialization of a sample receipt.', () {
-    String receiptJson = """{
+import 'receipt.dart';
+
+class Repository {
+  static Database _db;
+
+  Future<Database> get db async {
+    if (_db == null) _db = await initDb();
+
+    return _db;
+  }
+
+  //Creating a database with name test.dn in your directory
+  initDb() async {
+    String databasesPath = await getDatabasesPath();
+    String path = join(databasesPath, "passless.db");
+    var theDb = await openDatabase(path, version: 1, onCreate: _onCreate);
+    return theDb;
+  }
+
+  // Creating a table name Employee with fields
+  void _onCreate(Database db, int version) async {
+    // When creating the db, create the table
+    await db
+        .execute("CREATE TABLE Receipts(id INTEGER PRIMARY KEY, receipt TEXT)");
+    await db.rawInsert(
+      "INSERT INTO Receipts (receipt) VALUES (?)",
+      ["""{
       "time": "2018-10-28T10:27:00+01:00",
       "currency": "EUR",
       "total": 22.58,
@@ -73,13 +98,26 @@ void main() {
             "operator": "Henny van de Hoek"
           }
       }
-    }""";
+    }"""]);
+    print("Created tables");
+  }
 
-    Map receiptMap =  json.decode(receiptJson);
-    Receipt receipt = Receipt.fromJson(receiptMap);
-    String reserialized = json.encode(receipt);
+  // Retrieving employees from Employee Tables
+  Future<List<Receipt>> getReceipts() async {
+    var dbClient = await db;
+    List<Map> list = await dbClient.rawQuery('SELECT receipt FROM receipts');
+    List<Receipt> receipts = new List<Receipt>();
+    for (int i = 0; i < list.length; i++) {
+      var receiptJson = json.decode(list[i]["receipt"]);
+      receipts.add(Receipt.fromJson(receiptJson));
+    }
+    return receipts;
+  }
 
-    // TODO: This does not assert anything.
-    print(reserialized);
-  });
+  void saveReceipt(Receipt receipt) async {
+    var dbClient = await db;
+    await dbClient.transaction((txn) async {
+      return await txn.insert('receipts', receipt.toJson());
+    });
+  }
 }
