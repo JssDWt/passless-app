@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 part 'receipt.g.dart';
 
+/// Represents a receipt from a vendor.
 @JsonSerializable()
 class Receipt {
   Receipt();

@@ -3,30 +3,37 @@ import 'dart:convert';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'receipt.dart';
+import 'package:passless_android/models/receipt.dart';
 
+/// A helper for accessing receipt data.
 class Repository {
-  static Database _db;
 
+  /// Singleton database instance.
+  static Database _db;
+  
+  /// Returns the initialized singleton database instance.
   Future<Database> get db async {
     if (_db == null) _db = await initDb();
 
     return _db;
   }
 
-  //Creating a database with name test.dn in your directory
-  initDb() async {
+  /// Initializes a new database instance.
+  /// 
+  /// The database is created on the file system (passless.db) 
+  /// if it does not yet exist.
+  Future<Database> initDb() async {
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, "passless.db");
     var theDb = await openDatabase(path, version: 1, onCreate: _onCreate);
     return theDb;
   }
 
-  // Creating a table name Employee with fields
+  /// Creates the initial setup of the database.
   void _onCreate(Database db, int version) async {
-    // When creating the db, create the table
-    await db
-        .execute("CREATE TABLE Receipts(id INTEGER PRIMARY KEY, receipt TEXT)");
+    // When creating the db, create the receipts table
+    await db.execute(
+      "CREATE TABLE Receipts(id INTEGER PRIMARY KEY, receipt TEXT)");
     await db.rawInsert(
       "INSERT INTO Receipts (receipt) VALUES (?)",
       ["""{
@@ -102,7 +109,7 @@ class Repository {
     print("Created tables");
   }
 
-  // Retrieving employees from Employee Tables
+  /// Retrieves all receipts.
   Future<List<Receipt>> getReceipts() async {
     var dbClient = await db;
     List<Map> list = await dbClient.rawQuery('SELECT receipt FROM receipts');
@@ -111,9 +118,11 @@ class Repository {
       var receiptJson = json.decode(list[i]["receipt"]);
       receipts.add(Receipt.fromJson(receiptJson));
     }
+
     return receipts;
   }
 
+  /// Stores the specified receipt.
   void saveReceipt(Receipt receipt) async {
     var dbClient = await db;
     await dbClient.transaction((txn) async {

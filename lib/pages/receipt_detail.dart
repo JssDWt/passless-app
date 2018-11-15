@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:passless_android/receipt.dart';
+import 'package:passless_android/models/receipt.dart';
 
+/// A page that shows receipt details.
 class ReceiptDetail extends StatefulWidget {
   final Receipt _receipt;
-  final List<Receipt> receipts;
 
-  ReceiptDetail(this.receipts, this._receipt);
+  ReceiptDetail(this._receipt);
 
   @override
   _ReceiptDetailState createState() => new _ReceiptDetailState();
 }
 
+/// 
 class _ReceiptDetailState extends State<ReceiptDetail> {
   Receipt receipt;
 

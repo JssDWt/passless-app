@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'database.dart';
-import 'receipt.dart';
+import 'data/database.dart';
+import 'models/receipt.dart';
 import 'widgets/receipt_inherited.dart';
 import 'pages/root_page.dart';
 
+/// Root application part.
 class ReceiptApp extends StatefulWidget {
   @override
   _ReceiptAppState createState() => new _ReceiptAppState();
 }
 
+/// Root application state. Initializes the receipt data.
 class _ReceiptAppState extends State<ReceiptApp> {
   List<Receipt> receipts;
   bool _isLoading = true;

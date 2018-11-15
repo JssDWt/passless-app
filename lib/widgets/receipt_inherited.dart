@@ -1,4 +1,4 @@
-import 'package:passless_android/receipt.dart';
+import 'package:passless_android/models/receipt.dart';
 import 'package:flutter/material.dart';
 
 class ReceiptInheritedWidget extends InheritedWidget {
@@ -14,6 +14,5 @@ class ReceiptInheritedWidget extends InheritedWidget {
 
   @override
   bool updateShouldNotify(ReceiptInheritedWidget oldWidget) =>
-      // TODO: implement updateShouldNotify
       receipts != oldWidget.receipts || isLoading != oldWidget.isLoading;
 }
