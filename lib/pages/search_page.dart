@@ -14,6 +14,7 @@ class SearchPageState extends State<SearchPage> {
     return new Scaffold(
       appBar: new AppBar(
         title: new TextField(
+          autofocus: true,
           controller: _filter,
           decoration: new InputDecoration(
             prefixIcon: new Icon(Icons.search),
