@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:passless_android/widgets/receipt_inherited.dart';
 import 'package:passless_android/widgets/receipt_listview.dart';
+import 'package:passless_android/pages/search_page.dart';
 
 /// The root page of the app.
 class RootPage extends StatelessWidget {
@@ -24,7 +25,12 @@ class RootPage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.search),
             tooltip: 'Search',
-            onPressed: null,
+            onPressed: () {
+              Navigator.push(
+                context, 
+                MaterialPageRoute(builder: (context) => SearchPage())
+              );
+            },
           ),
         ],
       ),
