@@ -15,10 +15,7 @@ class RootPage extends StatelessWidget {
     return new Scaffold(
       appBar: new AppBar(
         leading: IconButton(
-          icon: AnimatedIcon(
-            icon: AnimatedIcons.menu_arrow,
-            progress: _delegate.transitionAnimation,
-),,
+          icon: new Icon(Icons.menu),
           tooltip: 'Navigation menu',
           onPressed: null,
         ),
