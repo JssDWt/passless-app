@@ -11,7 +11,7 @@ class ReceiptDetail extends StatefulWidget {
   _ReceiptDetailState createState() => new _ReceiptDetailState();
 }
 
-/// 
+/// The state of a single receipt page.
 class _ReceiptDetailState extends State<ReceiptDetail> {
   Receipt receipt;
 
@@ -26,6 +26,7 @@ class _ReceiptDetailState extends State<ReceiptDetail> {
     super.dispose();
   }
 
+  /// Set the receipt state when it is initialized.
   initReceipt() async {
     setState(() {
           receipt = widget._receipt;
@@ -33,6 +34,7 @@ class _ReceiptDetailState extends State<ReceiptDetail> {
 
   }
 
+  /// Build the receipt view.
   @override
   Widget build(BuildContext context) {
     return new Scaffold(

@@ -112,7 +112,7 @@ class Repository {
   /// Retrieves all receipts.
   Future<List<Receipt>> getReceipts() async {
     var dbClient = await db;
-    List<Map> list = await dbClient.rawQuery('SELECT receipt FROM receipts');
+    List<Map> list = await dbClient.rawQuery("SELECT receipt FROM receipts");
     List<Receipt> receipts = new List<Receipt>();
     for (int i = 0; i < list.length; i++) {
       var receiptJson = json.decode(list[i]["receipt"]);
@@ -128,5 +128,21 @@ class Repository {
     await dbClient.transaction((txn) async {
       return await txn.insert('receipts', receipt.toJson());
     });
+  }
+
+  Future<List<Receipt>> search(String search) async {
+    Database dbClient = await db;
+    List<Map> list = await dbClient.rawQuery(
+      """SELECT receipt FROM receipts
+         WHERE json_extract(receipt, \$.vendor.name) LIKE ? || '%'""",
+      [search]);
+
+    List<Receipt> receipts = new List<Receipt>();
+    for (int i = 0; i < list.length; i++) {
+      var receiptJson = json.decode(list[i]["receipt"]);
+      receipts.add(Receipt.fromJson(receiptJson));
+    }
+
+    return receipts;
   }
 }

@@ -14,14 +14,14 @@ class ReceiptApp extends StatefulWidget {
 class _ReceiptAppState extends State<ReceiptApp> {
   List<Receipt> receipts;
   bool _isLoading = true;
-
+  
   @override
   void initState() {
     super.initState();
     initPlatformState();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
+  /// Initializes the receipts.
   initPlatformState() async {
     _isLoading = true;
 
@@ -32,18 +32,19 @@ class _ReceiptAppState extends State<ReceiptApp> {
       print("Failed to get receipts: '${e.message}'.");
     }
 
-    print(lreceipts);
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
     if (!mounted) return;
 
+    /// Sets the receipts as state and stops the loading process.
     setState(() {
       receipts = lreceipts;
       _isLoading = false;
     });
   }
 
+  /// Builds the root page.
   @override
   Widget build(BuildContext context) {
     return new ReceiptInheritedWidget(receipts, _isLoading, new RootPage());
