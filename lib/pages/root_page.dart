@@ -28,7 +28,12 @@ class RootPage extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context, 
-                MaterialPageRoute(builder: (context) => SearchPage())
+                MaterialPageRoute(builder: (context) => 
+                  new SearchProvider(
+                    child: new SearchPage(),
+                    searchBloc: new SearchBloc()
+                  )
+                )
               );
             },
           ),
@@ -37,7 +42,7 @@ class RootPage extends StatelessWidget {
       // Either load or show the list of receipts.
       body: rootIW.isLoading
           ? new Center(child: new CircularProgressIndicator())
-          : new Scrollbar(child: new ReceiptListView()),
+          : new Scrollbar(child: new ReceiptListView(rootIW.receipts)),
     );
   }
 }

@@ -5,9 +5,11 @@ import 'package:sqflite/sqflite.dart';
 
 import 'package:passless_android/models/receipt.dart';
 
+// TODO: Either use a document database, import json1 extension or normalize the
+// data structure
+
 /// A helper for accessing receipt data.
 class Repository {
-
   /// Singleton database instance.
   static Database _db;
   
@@ -18,11 +20,16 @@ class Repository {
     return _db;
   }
 
+  Future<dynamic> close() {
+    return _db.close();
+  }
+
   /// Initializes a new database instance.
   /// 
   /// The database is created on the file system (passless.db) 
   /// if it does not yet exist.
   Future<Database> initDb() async {
+    
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, "passless.db");
     var theDb = await openDatabase(path, version: 1, onCreate: _onCreate);
@@ -31,9 +38,11 @@ class Repository {
 
   /// Creates the initial setup of the database.
   void _onCreate(Database db, int version) async {
+    
     // When creating the db, create the receipts table
     await db.execute(
       "CREATE TABLE Receipts(id INTEGER PRIMARY KEY, receipt TEXT)");
+
     await db.rawInsert(
       "INSERT INTO Receipts (receipt) VALUES (?)",
       ["""{
@@ -132,15 +141,18 @@ class Repository {
 
   Future<List<Receipt>> search(String search) async {
     Database dbClient = await db;
-    List<Map> list = await dbClient.rawQuery(
-      """SELECT receipt FROM receipts
-         WHERE json_extract(receipt, \$.vendor.name) LIKE ? || '%'""",
-      [search]);
-
+    List<Map> list = await dbClient.rawQuery("SELECT receipt FROM receipts");
+    
+    // TODO: Do this search inside the database instead of in memory.
     List<Receipt> receipts = new List<Receipt>();
     for (int i = 0; i < list.length; i++) {
       var receiptJson = json.decode(list[i]["receipt"]);
-      receipts.add(Receipt.fromJson(receiptJson));
+      Receipt receipt = Receipt.fromJson(receiptJson);
+      if (receipt.vendor.name.contains(search)
+        || receipt.items.any((item) => item.name.contains(search)))
+        {
+          receipts.add(receipt);
+        }
     }
 
     return receipts;

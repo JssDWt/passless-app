@@ -22,6 +22,7 @@ dependencies:
   path_provider: 
   sqflite:
   json_annotation: ^2.0.0
+  rxdart:
 
 dev_dependencies:
   flutter_test:
