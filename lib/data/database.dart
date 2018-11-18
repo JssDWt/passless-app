@@ -115,6 +115,113 @@ class Repository {
           }
       }
     }"""]);
+    await db.rawInsert(
+      "INSERT INTO Receipts (receipt) VALUES (?)",
+      ["""{
+      "time": "2017-10-28T10:27:00+01:00",
+      "currency": "EUR",
+      "total": 10,
+      "tax": 1,
+      "items": [
+          {
+              "name": "Kaars",
+              "brand": "Honeybush",
+              "quantity": 2.00,
+              "unit": "pc",
+              "unitPrice": 2.50,
+              "currency": "EUR",
+              "subTotal": 5,
+              "tax": 0.5
+          },
+          {
+              "name": "Aansteker",
+              "brand": "Jumbo",
+              "quantity": 10,
+              "unit": "pc",
+              "unitPrice": 1,
+              "currency": "EUR",
+              "discounts": [{
+                  "name": "2e gratis",
+                  "original": 10,
+                  "deduct": 5 
+              }],
+              "subTotal": 5,
+              "tax": 1
+          }
+      ],
+      "payments": [
+          {
+              "method": "card",
+              "currency": "EUR",
+              "amount": 10,
+              "meta": {
+                  "type": "Maestro",
+                  "cardNumber": "1234 5678 1234 5678",
+                  "expiration": "2023-10-28T00:00:00Z"
+              }
+          }
+      ],
+      "loyalties": [
+          {
+            "points": 5
+          }
+      ],
+      "vendor": {
+          "name": "Jumbo Utrecht Merelstraat",
+          "address": "Merelstraat 46, 3514 CN Utrecht",
+          "telNumber": "030-6630160",
+          "vatNumber": "NL00123012303",
+          "kvkNumber": "87234821",
+          "web": "https://www.jumbo.com/winkels/jumbo-utrecht-merelstraat/",
+          "meta": {
+            "operator": "Pietje Dirk"
+          }
+      }
+    }"""]);
+    await db.rawInsert(
+      "INSERT INTO Receipts (receipt) VALUES (?)",
+      ["""{
+      "time": "2018-09-11T11:27:00+01:00",
+      "currency": "EUR",
+      "total": 4.59,
+      "tax": 0.77,
+      "items": [
+          {
+              "name": "Prrrikweg",
+              "brand": "A. Vogel",
+              "quantity": 1.00,
+              "unit": "pc",
+              "unitPrice": 4.59,
+              "currency": "EUR",
+              "subTotal": 4.59,
+              "tax": 0.77
+          }
+      ],
+      "payments": [
+          {
+              "method": "card",
+              "currency": "EUR",
+              "amount": 4.59,
+              "meta": {
+                  "type": "Maestro",
+                  "cardNumber": "1234 5678 1234 5678",
+                  "expiration": "2023-10-28T00:00:00Z"
+              }
+          }
+      ],
+      "loyalties": [],
+      "vendor": {
+          "name": "Kruidvat",
+          "address": "Amsterdamsestraatweg 391, 3551 CL Utrecht",
+          "telNumber": "0318-798000",
+          "vatNumber": "NL001229847123",
+          "kvkNumber": "98375892",
+          "web": "https://www.kruidvat.nl/winkel/DROGISTERIJ%20KRUIDVAT%20850",
+          "meta": {
+            "operator": "Suraya Vos"
+          }
+      }
+    }"""]);
     print("Created tables");
   }
 
@@ -140,6 +247,7 @@ class Repository {
   }
 
   Future<List<Receipt>> search(String search) async {
+    search = search.toLowerCase();
     Database dbClient = await db;
     List<Map> list = await dbClient.rawQuery("SELECT receipt FROM receipts");
     
@@ -148,8 +256,8 @@ class Repository {
     for (int i = 0; i < list.length; i++) {
       var receiptJson = json.decode(list[i]["receipt"]);
       Receipt receipt = Receipt.fromJson(receiptJson);
-      if (receipt.vendor.name.contains(search)
-        || receipt.items.any((item) => item.name.contains(search)))
+      if (receipt.vendor.name.toLowerCase().contains(search)
+        || receipt.items.any((item) => item.name.toLowerCase().contains(search)))
         {
           receipts.add(receipt);
         }
