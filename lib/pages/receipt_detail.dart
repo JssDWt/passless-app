@@ -41,15 +41,46 @@ class _ReceiptDetailState extends State<ReceiptDetail> {
         title: new Text(receipt.vendor.name),
         centerTitle: true,
       ),
-      body: new Container(
-        color: Theme.of(context).backgroundColor,
-        child: new Stack(
-          fit: StackFit.expand,
+      body: new Card(
+        child: new Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            new Text("Price: ${receipt.total}")
+            new VendorContainer(receipt.vendor),
+            new Divider(),
+            new Container(
+
+              child: new Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  new Text(receipt.time.toLocal().toString()),
+                  new Text("${receipt.currency} ${receipt.total}"),
+                ]
+              )
+            ),
           ],
-        ),
+        )
       ),
-);
+    );
   }
+}
+
+class VendorContainer extends StatelessWidget {
+  final Vendor vendor;
+  VendorContainer(this.vendor);
+  @override
+  Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+    return new Column(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        new Text("Vendor", style: theme.textTheme.headline,),
+        new Text(vendor.name),
+        new Text(vendor.address)
+      ]
+    );
+  }
+
 }
