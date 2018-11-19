@@ -28,16 +28,11 @@ class RootPage extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context, 
-                MaterialPageRoute(builder: (context) => 
-                  new SearchProvider(
-                    child: new SearchPage(),
-                    searchBloc: new SearchBloc()
-                  )
-                )
+                MaterialPageRoute(builder: (context) => new SearchPage())
               );
-            },
-          ),
-        ],
+            }
+          )
+        ]
       ),
       // Either load or show the list of receipts.
       body: rootIW.isLoading
