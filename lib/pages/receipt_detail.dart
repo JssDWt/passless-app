@@ -36,6 +36,7 @@ class _ReceiptDetailState extends State<ReceiptDetail> {
   /// Build the receipt view.
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(receipt.vendor.name),
@@ -46,7 +47,18 @@ class _ReceiptDetailState extends State<ReceiptDetail> {
           children: <Widget>[
             new VendorContainer(receipt.vendor),
             new Divider(),
-            new ItemsContainer(receipt.items, receipt.total),
+            new ItemsContainer(receipt.items),
+            new Row(
+              children: <Widget>[
+                new Expanded(
+                  child: new Text("Total", style: theme.textTheme.headline,)
+                ),
+                new Text(
+                  receipt.total.toString(), 
+                  style: theme.textTheme.headline,
+                ),
+              ],
+            )
           ],
         )
       ),
@@ -62,7 +74,8 @@ class VendorContainer extends StatelessWidget {
     return new LeftAlignedColumn(
       children: <Widget>[
         new Text(vendor.name), 
-        new Text(vendor.address)
+        new Text(vendor.address),
+        new Text(vendor.telNumber),
       ]
     );
   }
@@ -70,8 +83,7 @@ class VendorContainer extends StatelessWidget {
 
 class ItemsContainer extends StatelessWidget {
   final List<Item> items;
-  final double total;
-  ItemsContainer(this.items, this.total);
+  ItemsContainer(this.items);
 
   @override
   Widget build(BuildContext context) {
@@ -108,16 +120,10 @@ class ItemsContainer extends StatelessWidget {
         new Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: _getSubtotals(context),
+          children: items.map((i) => new Text("${i.subTotal}")).toList(),
         ),
       ]
     );
-  }
-
-  List<Widget> _getSubtotals(context) {
-    var result = items.map((i) => new Text("${i.subTotal}")).toList();
-    result.add(new Text(total.toString(), style: Theme.of(context).textTheme.subhead,));
-    return result;
   }
 }
 
