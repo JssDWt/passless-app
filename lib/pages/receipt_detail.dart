@@ -42,23 +42,11 @@ class _ReceiptDetailState extends State<ReceiptDetail> {
         centerTitle: true,
       ),
       body: new Card(
-        child: new Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: new LeftAlignedColumn(
           children: <Widget>[
             new VendorContainer(receipt.vendor),
             new Divider(),
-            new Container(
-
-              child: new Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  new Text(receipt.time.toLocal().toString()),
-                  new Text("${receipt.currency} ${receipt.total}"),
-                ]
-              )
-            ),
+            new ItemsContainer(receipt.items),
           ],
         )
       ),
@@ -71,16 +59,64 @@ class VendorContainer extends StatelessWidget {
   VendorContainer(this.vendor);
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
-    return new Column(
-      mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return new LeftAlignedColumn(
       children: <Widget>[
-        new Text("Vendor", style: theme.textTheme.headline,),
-        new Text(vendor.name),
+        new Text(vendor.name), 
         new Text(vendor.address)
       ]
     );
   }
+}
 
+class ItemsContainer extends StatelessWidget {
+  final List<Item> items;
+  ItemsContainer(this.items);
+
+  @override
+  Widget build(BuildContext context) {
+    return new Row(
+      children: <Widget>[
+        new LeftAlignedColumn(
+          children: items.map((i) => new Text("${i.quantity}")).toList(),
+        ),
+        new Container(
+          padding: EdgeInsets.only(left: 1),
+          child: new LeftAlignedColumn(
+            children: items.map((i) {
+              String text;
+              if (i.unit.toLowerCase() == "pc") {
+                text = "";
+              }
+              else {
+                text = i.unit;
+              }
+
+              return new Text(text);
+            }).toList(),
+          )
+        ),
+        new Expanded(
+          child: new Container(
+            padding: EdgeInsets.only(left: 8),
+            child:  new LeftAlignedColumn(
+              children: items.map((i) => new Text(i.name)).toList(),
+            )
+          )
+        ),
+        new Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: items.map((i) => new Text("${i.subTotal}")).toList(),
+        ),
+      ]
+    );
+  }
+}
+
+class LeftAlignedColumn extends Column {
+  LeftAlignedColumn({List<Widget> children})
+      : super(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: children);
 }
