@@ -29,9 +29,8 @@ class _ReceiptDetailState extends State<ReceiptDetail> {
   /// Set the receipt state when it is initialized.
   initReceipt() async {
     setState(() {
-          receipt = widget._receipt;
-        });
-
+      receipt = widget._receipt;
+    });
   }
 
   /// Build the receipt view.
