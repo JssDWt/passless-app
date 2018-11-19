@@ -46,7 +46,7 @@ class _ReceiptDetailState extends State<ReceiptDetail> {
           children: <Widget>[
             new VendorContainer(receipt.vendor),
             new Divider(),
-            new ItemsContainer(receipt.items),
+            new ItemsContainer(receipt.items, receipt.total),
           ],
         )
       ),
@@ -70,11 +70,13 @@ class VendorContainer extends StatelessWidget {
 
 class ItemsContainer extends StatelessWidget {
   final List<Item> items;
-  ItemsContainer(this.items);
+  final double total;
+  ItemsContainer(this.items, this.total);
 
   @override
   Widget build(BuildContext context) {
     return new Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         new LeftAlignedColumn(
           children: items.map((i) => new Text("${i.quantity}")).toList(),
@@ -106,10 +108,16 @@ class ItemsContainer extends StatelessWidget {
         new Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: items.map((i) => new Text("${i.subTotal}")).toList(),
+          children: _getSubtotals(context),
         ),
       ]
     );
+  }
+
+  List<Widget> _getSubtotals(context) {
+    var result = items.map((i) => new Text("${i.subTotal}")).toList();
+    result.add(new Text(total.toString(), style: Theme.of(context).textTheme.subhead,));
+    return result;
   }
 }
 
