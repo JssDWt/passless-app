@@ -1,13 +1,21 @@
 # passless_android
 
-A new Flutter project.
+App to store receipts via NFC.
 
-## Getting Started
+## Notes
+Currently only the Android version implements NFC.
+iOS is a work in progress.
 
-For help getting started with Flutter, view our online
-[documentation](https://flutter.io/).
+## Notes to self
+In order to test NFC functionality, write a test that does something like this:
+```java
+Intent techIntent = new Intent(NfcAdapter.ACTION_NDEF_DISCOVERED);
+techIntent.putExtra(NfcAdapter.EXTRA_ID, tagId);
+techIntent.putExtra(NfcAdapter.EXTRA_TAG, mockTag);
+techIntent.putExtra(NfcAdapter.EXTRA_NDEF_MESSAGES, new NdefMessage[]{ myNdefMessage });  
 
-To regenerate the *.g.dart files, run
-flutter packages pub run build_runner build
-or:
-flutter packages pub run build_runner build watch
+// or
+NdefRecord mimeRecord = NdefRecord.createMime(
+    "application/passless+json",
+    "{ \"message\": \"NDEF message received\" }".getBytes(Charset.forName("UTF-8")));
+```
