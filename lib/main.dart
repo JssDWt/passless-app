@@ -24,9 +24,12 @@ class ReceiptMaterialAppState extends State<ReceiptMaterialApp> {
   ReceiptMaterialAppState() {
     stream.receiveBroadcastStream().listen((j) => 
       Navigator.push(
-              context,
-              new MaterialPageRoute(
-                  builder: (context) => new ReceiptReceivedPage(j))));
+        context,
+        new MaterialPageRoute(
+          builder: (context) => new ReceiptReceivedPage(j)
+        )
+      )
+    );
   }
 
   @override
