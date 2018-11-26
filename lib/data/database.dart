@@ -266,3 +266,4 @@ class Repository {
     return receipts;
   }
 }
+
