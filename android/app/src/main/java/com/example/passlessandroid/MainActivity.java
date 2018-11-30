@@ -15,7 +15,7 @@ import java.nio.charset.Charset;
 
 public class MainActivity extends FlutterActivity {
   public static final String STATE_INTENT_HANDLED = 
-    "com.example.passlessandroid.state.intent_processed";
+    "com.example.passlessandroid.state.intent_handled";
 
   NfcAdapter nfcAdapter;
   PendingIntent nfcPendingIntent;
@@ -34,8 +34,6 @@ public class MainActivity extends FlutterActivity {
     }
 
     this.setNfcSettings();
-    
-    
 
     Log.i("passless", "onCreate: end");
   }
