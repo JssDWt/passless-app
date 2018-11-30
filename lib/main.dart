@@ -21,28 +21,28 @@ class ReceiptMaterialApp extends StatefulWidget {
 
 /// Defines material app state like the theme.
 class ReceiptMaterialAppState extends State<ReceiptMaterialApp> {
-  static const stream = const EventChannel('flutter.passless.com/nfc-stream');
+  //static const stream = const EventChannel('flutter.passless.com/nfc-stream');
 
   ReceiptMaterialAppState() {
-    stream.receiveBroadcastStream().listen(
-      (j) {
-        try {
-          var receiptJson = json.decode(j);
-          Receipt receipt = Receipt.fromJson(receiptJson);
-          Navigator.push(
-            context,
-            new MaterialPageRoute(
-              builder: (context) => new ReceiptReceivedPage(receipt)
-            )
-          );
-        }
-        catch(e) {
-          print('Failed receiving receipt via NFC after notification from ' +
-          'broadcaststream: \n${e.toString()}');
-        }
+    // stream.receiveBroadcastStream().listen(
+    //   (j) {
+    //     try {
+    //       var receiptJson = json.decode(j);
+    //       Receipt receipt = Receipt.fromJson(receiptJson);
+    //       Navigator.push(
+    //         context,
+    //         new MaterialPageRoute(
+    //           builder: (context) => new ReceiptReceivedPage(receipt)
+    //         )
+    //       );
+    //     }
+    //     catch(e) {
+    //       print('Failed receiving receipt via NFC after notification from ' +
+    //       'broadcaststream: \n${e.toString()}');
+    //     }
         
-      }
-    );
+    //   }
+    // );
   }
 
   @override
