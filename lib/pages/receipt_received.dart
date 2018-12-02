@@ -18,6 +18,7 @@ class _ReceiptReceivedState extends State<ReceiptReceivedPage> {
 
   @override
   initState() {
+    print("Receiptreceivedstate initialized.");
     super.initState();
     initReceipt();
   }

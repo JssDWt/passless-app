@@ -1,8 +1,14 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'data/database.dart';
 import 'models/receipt.dart';
 import 'widgets/receipt_inherited.dart';
 import 'pages/root_page.dart';
+import 'package:nfc/nfc.dart';
+import 'package:passless_android/models/receipt.dart';
+import 'package:passless_android/pages/receipt_received.dart';
 
 /// Root application part.
 class ReceiptApp extends StatefulWidget {
@@ -12,6 +18,7 @@ class ReceiptApp extends StatefulWidget {
 
 /// Root application state. Initializes the receipt data.
 class _ReceiptAppState extends State<ReceiptApp> {
+  final Nfc _nfc = Nfc();
   List<Receipt> receipts;
   bool _isLoading = true;
   
@@ -24,6 +31,12 @@ class _ReceiptAppState extends State<ReceiptApp> {
   /// Initializes the receipts.
   initPlatformState() async {
     _isLoading = true;
+
+    _nfc.configure(
+      onMessage: (String message) async {
+        await _showMessage(message);
+      }
+    );
 
     var lreceipts;
     try {
@@ -48,5 +61,17 @@ class _ReceiptAppState extends State<ReceiptApp> {
   @override
   Widget build(BuildContext context) {
     return new ReceiptInheritedWidget(receipts, _isLoading, new RootPage());
+  }
+
+  Future<void> _showMessage(String message) async {
+    var receiptJson = json.decode(message);
+    Receipt receipt = Receipt.fromJson(receiptJson);
+
+    await Navigator.push(
+      context,
+      new MaterialPageRoute(
+        builder: (context) => new ReceiptReceivedPage(receipt)
+      )
+    );
   }
 }

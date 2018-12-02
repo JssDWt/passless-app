@@ -23,6 +23,8 @@ dependencies:
   sqflite:
   json_annotation: ^2.0.0
   rxdart:
+  nfc:
+    path: ../flutter-nfc
 
 dev_dependencies:
   flutter_test:
