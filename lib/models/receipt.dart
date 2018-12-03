@@ -6,6 +6,8 @@ part 'receipt.g.dart';
 class Receipt {
   Receipt();
 
+  @JsonKey(ignore: true)
+  int id;
   DateTime time;
   String currency;
   double total;

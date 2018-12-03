@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passless_android/data/database.dart';
 import 'package:passless_android/models/receipt.dart';
 import 'package:passless_android/widgets/receipt_detail_view.dart';
 
@@ -14,6 +15,22 @@ class ReceiptDetailPage extends StatelessWidget {
       appBar: new AppBar(
         title: new Text(_title),
         centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.note), 
+            tooltip: "Notes",
+            onPressed: null,
+          ),
+          IconButton(
+            icon: Icon(Icons.delete), 
+            tooltip: "Delete",
+            onPressed: () async {
+              await new Repository().delete(_receipt);
+
+              // TODO: The content of the parent list is currently not refreshed
+              Navigator.of(context).pop();
+            },),
+        ],
       ),
       body: new ReceiptDetailView(_receipt),
       bottomNavigationBar: BottomAppBar(
@@ -23,8 +40,7 @@ class ReceiptDetailPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            IconButton(icon: Icon(Icons.note), onPressed: () {},),
-            IconButton(icon: Icon(Icons.delete), onPressed: () {},),
+            
           ],
         ),
     )

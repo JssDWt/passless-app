@@ -10,6 +10,8 @@ import 'package:passless_android/models/receipt.dart';
 
 /// A helper for accessing receipt data.
 class Repository {
+  static const String RECEIPT_TABLE = "receipts";
+
   /// Singleton database instance.
   static Database _db;
   
@@ -228,18 +230,14 @@ class Repository {
   /// Retrieves all receipts.
   Future<List<Receipt>> getReceipts() async {
     var dbClient = await db;
-    List<Map> list = await dbClient.rawQuery("SELECT receipt FROM receipts");
-    List<Receipt> receipts = new List<Receipt>();
-    for (int i = 0; i < list.length; i++) {
-      var receiptJson = json.decode(list[i]["receipt"]);
-      receipts.add(Receipt.fromJson(receiptJson));
-    }
-
-    return receipts;
+    List<Map> list = 
+      await dbClient.rawQuery("SELECT id, receipt FROM receipts");
+    return list.map(_fromMap).toList();
   }
 
   /// Stores the specified receipt.
   Future<void> saveReceipt(Receipt receipt) async {
+    // TODO: Check for doubles
     var dbClient = await db;
     await dbClient.transaction((txn) async {
       return await txn.insert('receipts', receipt.toJson());
@@ -248,22 +246,36 @@ class Repository {
 
   Future<List<Receipt>> search(String search) async {
     search = search.toLowerCase();
-    Database dbClient = await db;
-    List<Map> list = await dbClient.rawQuery("SELECT receipt FROM receipts");
-    
-    // TODO: Do this search inside the database instead of in memory.
-    List<Receipt> receipts = new List<Receipt>();
-    for (int i = 0; i < list.length; i++) {
-      var receiptJson = json.decode(list[i]["receipt"]);
-      Receipt receipt = Receipt.fromJson(receiptJson);
-      if (receipt.vendor.name.toLowerCase().contains(search)
-        || receipt.items.any((item) => item.name.toLowerCase().contains(search)))
-        {
-          receipts.add(receipt);
-        }
+    List<Receipt> receipts = await getReceipts();
+    receipts.retainWhere((receipt) => 
+      receipt.vendor.name.toLowerCase().contains(search)
+      || receipt.items.any((item) => item.name.toLowerCase().contains(search)));
+ 
+    return receipts;
+  }
+
+  Future<bool> delete(Receipt receipt) async {
+    var dbClient = await db;
+    int deleted = await dbClient.delete(
+      RECEIPT_TABLE, 
+      where: "id = ?", 
+      whereArgs: [receipt.id]);
+    bool result = false;
+    if (deleted > 0) {
+      result = true;
+      if (deleted > 1) {
+        print("More than one record was deleted. Ouch.");
+      }
     }
 
-    return receipts;
+    return result;
+  }
+
+  Receipt _fromMap(Map map) {
+    var receiptJson = json.decode(map["receipt"]);
+    Receipt receipt = Receipt.fromJson(receiptJson);
+    receipt.id = map["id"] as int;
+    return receipt;
   }
 }
 
