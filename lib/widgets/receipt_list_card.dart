@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:passless_android/models/receipt.dart';
-import 'package:passless_android/pages/receipt_detail.dart';
+import 'package:passless_android/pages/receipt_detail_page.dart';
 
 class ReceiptListCard extends StatelessWidget {
   final Receipt receipt;
@@ -17,12 +17,12 @@ class ReceiptListCard extends StatelessWidget {
           "${receipt.currency} ${receipt.total}",
           style: Theme.of(context).textTheme.caption,
         ),
-        onTap: () {
+        onTap: () async {
           // On tap go to the receipt detail page.
-          Navigator.push(
-              context,
-              new MaterialPageRoute(
-                  builder: (context) => new ReceiptDetail(receipt)));
+          await Navigator.of(context).push(
+            new MaterialPageRoute(
+              builder: (context) => 
+                new ReceiptDetailPage(receipt, receipt.vendor.name)));
         }
       )
     );

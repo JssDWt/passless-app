@@ -239,7 +239,7 @@ class Repository {
   }
 
   /// Stores the specified receipt.
-  void saveReceipt(Receipt receipt) async {
+  Future<void> saveReceipt(Receipt receipt) async {
     var dbClient = await db;
     await dbClient.transaction((txn) async {
       return await txn.insert('receipts', receipt.toJson());

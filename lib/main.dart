@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'utils/themes.dart';
 import 'receipt_app.dart';
@@ -16,13 +15,6 @@ class ReceiptMaterialApp extends StatefulWidget {
 
 /// Defines material app state like the theme.
 class ReceiptMaterialAppState extends State<ReceiptMaterialApp> {
-  
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
