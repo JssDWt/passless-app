@@ -15,7 +15,19 @@ class ReceiptDetailPage extends StatelessWidget {
         title: new Text(_title),
         centerTitle: true,
       ),
-      body: new ReceiptDetailView(_receipt)
+      body: new ReceiptDetailView(_receipt),
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        notchMargin: 4.0,
+        child: new Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            IconButton(icon: Icon(Icons.note), onPressed: () {},),
+            IconButton(icon: Icon(Icons.delete), onPressed: () {},),
+          ],
+        ),
+    )
     );
   }
 }
