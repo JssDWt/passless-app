@@ -1,29 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:passless_android/data/database.dart';
+import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/models/receipt.dart';
 import 'package:passless_android/widgets/receipt_listview.dart';
 import 'package:rxdart/subjects.dart';
 
 class SearchBloc {
-  final _repo = Repository();
+  final Repository _repo;
   Sink<String> get search => _searchSubject.sink;
   final _searchSubject = BehaviorSubject<String>();
   Stream<List<Receipt>> get receipts => _receiptSubject.stream;
   final _receiptSubject = BehaviorSubject<List<Receipt>>();
 
-  SearchBloc() {
+  SearchBloc(this._repo) {
     _searchSubject.stream.debounce(Duration(microseconds: 400)).listen(
-      (s) {
-        if (s != null) {
-          _repo.search(s).then((result) => _receiptSubject.add(result));
-        }
-      }
+      (s) => _handleSearch(s)
     );
+
+    _repo.listen(() {
+      _handleSearch(_searchSubject.value);
+    });
   }
 
   Future close() async  {
     await _searchSubject.close();
     await _receiptSubject.close();
+  }
+
+  Future _handleSearch(String s) async {
+    if (s != null) {
+      var receipts = await _repo.search(s);
+      _receiptSubject.add(receipts);
+    }
   }
 }
 
@@ -33,8 +40,11 @@ class SearchPage extends StatefulWidget {
 }
 
 class SearchPageState extends State<SearchPage> {
+  SearchBloc searchBloc;
 
-  final SearchBloc searchBloc = new SearchBloc();
+  SearchPageState() {
+    searchBloc = SearchBloc(Repository.of(context));
+  }
 
   @override
   void dispose() {

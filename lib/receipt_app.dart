@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'data/database.dart';
-import 'models/receipt.dart';
-import 'pages/root_page.dart';
+import 'package:passless_android/data/data_provider.dart';
+import 'package:passless_android/models/receipt.dart';
+import 'package:passless_android/pages/root_page.dart';
 import 'package:nfc/nfc.dart';
 import 'package:passless_android/models/receipt.dart';
 import 'package:passless_android/pages/receipt_detail_page.dart';
@@ -44,7 +44,7 @@ class _ReceiptAppState extends State<ReceiptApp> {
   Future<void> _onMessage(String message) async {
     var receiptJson = json.decode(message);
     Receipt receipt = Receipt.fromJson(receiptJson);
-    await new Repository().saveReceipt(receipt);
+    await Repository.of(context).saveReceipt(receipt);
     await Navigator.of(context).push(
       new MaterialPageRoute(
         builder: (context) => new ReceiptDetailPage(receipt, "New Receipt")

@@ -1,9 +1,42 @@
+import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'package:passless_android/models/receipt.dart';
+
+class DataProvider extends StatefulWidget {
+  final Widget child;
+  DataProvider({this.child});
+
+  @override
+  State<StatefulWidget> createState() => _DataProviderState();
+}
+
+class _DataProviderState extends State<DataProvider> {
+  final Repository _repository = Repository();
+
+  @override
+  Widget build(BuildContext context) {
+    return _DataProvider(_repository, child: widget.child);
+  }
+
+  @override
+  void dispose() {
+    _repository.close();
+    super.dispose();
+  }
+}
+
+class _DataProvider extends InheritedWidget {
+  final Repository repository;
+  _DataProvider(this.repository, { Key key, Widget child }) 
+    : super(key: key, child: child );
+
+  @override
+  bool updateShouldNotify(_DataProvider oldWidget) => false;
+}
 
 // TODO: Either use a document database, import json1 extension or normalize the
 // data structure
@@ -12,18 +45,33 @@ import 'package:passless_android/models/receipt.dart';
 class Repository {
   static const String RECEIPT_TABLE = "receipts";
 
-  /// Singleton database instance.
-  static Database _db;
-  
+  static Repository of(BuildContext context) {
+    final _DataProvider provider = 
+      context.inheritFromWidgetOfExactType(_DataProvider);
+    return provider.repository;
+  }
+
+  Database _db;
+
   /// Returns the initialized singleton database instance.
   Future<Database> get db async {
     if (_db == null) _db = await initDb();
-
     return _db;
   }
 
-  Future<dynamic> close() {
-    return _db.close();
+  var _dataChanged = new StreamController<Null>.broadcast();
+  
+  void notifyDataChanged() {
+    _dataChanged.add(null);
+  }
+
+  void listen(void Function() callback) {
+    _dataChanged.stream.listen((l) => callback());
+  }
+
+  Future<dynamic> close() async {
+    await _db.close();
+    _db = null;
   }
 
   /// Initializes a new database instance.
@@ -31,7 +79,6 @@ class Repository {
   /// The database is created on the file system (passless.db) 
   /// if it does not yet exist.
   Future<Database> initDb() async {
-    
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, "passless.db");
     var theDb = await openDatabase(path, version: 1, onCreate: _onCreate);
@@ -236,12 +283,23 @@ class Repository {
   }
 
   /// Stores the specified receipt.
-  Future<void> saveReceipt(Receipt receipt) async {
+  Future<Receipt> saveReceipt(Receipt receipt) async {
     // TODO: Check for doubles
     var dbClient = await db;
+    Receipt result;
     await dbClient.transaction((txn) async {
-      return await txn.insert('receipts', receipt.toJson());
+      int id = await txn.insert(
+        RECEIPT_TABLE, 
+        {"receipt": json.encode(receipt.toJson())});
+      var inserted = await txn.query(
+        RECEIPT_TABLE, 
+        where: "id = ?", 
+        whereArgs: [id]);
+      result = _fromMap(inserted.first);
     });
+
+    if (result != null) notifyDataChanged();
+    return result;
   }
 
   Future<List<Receipt>> search(String search) async {
@@ -263,6 +321,7 @@ class Repository {
     bool result = false;
     if (deleted > 0) {
       result = true;
+      notifyDataChanged();
       if (deleted > 1) {
         print("More than one record was deleted. Ouch.");
       }
@@ -278,4 +337,3 @@ class Repository {
     return receipt;
   }
 }
-

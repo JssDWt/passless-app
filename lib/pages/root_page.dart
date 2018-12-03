@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:passless_android/data/database.dart';
+import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/widgets/receipt_listview.dart';
 import 'package:passless_android/pages/search_page.dart';
 import 'package:passless_android/models/receipt.dart';
@@ -14,16 +14,21 @@ class RootPageState extends State<RootPage> {
   List<Receipt> _receipts;
   bool _isLoading = true;
 
+  // Use this method as an alternative to initState, 
+  // in order to use the repository.
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() { 
     _initReceipts();
+
+    // Listen for data changes.
+    Repository.of(context).listen(() => _initReceipts());
+    super.didChangeDependencies();
   }
 
   _initReceipts() async {
     var receipts;
     try {
-      receipts = await new Repository().getReceipts();
+      receipts = await Repository.of(context).getReceipts();
     } catch (e) {
       print("Failed to get receipts: '${e.message}'.");
     }
