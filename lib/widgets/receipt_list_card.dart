@@ -10,19 +10,19 @@ class ReceiptListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Build a single receipt tile.
-    return new Card(
+    return Card(
       child: ListTile(
-        title: new Text(receipt.vendor.name),
-        subtitle: new Text(
+        title: Text(receipt.vendor.name),
+        subtitle: Text(
           "${receipt.currency} ${receipt.total}",
           style: Theme.of(context).textTheme.caption,
         ),
         onTap: () async {
           // On tap go to the receipt detail page.
           await Navigator.of(context).push(
-            new MaterialPageRoute(
+            MaterialPageRoute(
               builder: (context) => 
-                new ReceiptDetailPage(receipt, receipt.vendor.name)));
+                ReceiptDetailPage(receipt, receipt.vendor.name)));
         }
       )
     );

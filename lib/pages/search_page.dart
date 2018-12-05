@@ -38,7 +38,7 @@ class SearchBloc {
 
 class SearchPage extends StatefulWidget {
   @override
-  SearchPageState createState() => new SearchPageState();
+  SearchPageState createState() => SearchPageState();
 }
 
 class SearchPageState extends State<SearchPage> {

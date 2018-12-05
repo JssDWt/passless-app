@@ -59,7 +59,7 @@ class Repository {
     return _db;
   }
 
-  var _dataChanged = new StreamController<Null>.broadcast();
+  var _dataChanged = StreamController<Null>.broadcast();
   
   void notifyDataChanged() {
     _dataChanged.add(null);

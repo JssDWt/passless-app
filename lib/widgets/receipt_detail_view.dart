@@ -9,18 +9,18 @@ class ReceiptDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     
-    return new Card(
-        child: new LeftAlignedColumn(
+    return Card(
+        child: LeftAlignedColumn(
           children: <Widget>[
-            new VendorContainer(receipt.vendor),
-            new Divider(),
-            new ItemsContainer(receipt.items),
-            new Row(
+            VendorContainer(receipt.vendor),
+            Divider(),
+            ItemsContainer(receipt.items),
+            Row(
               children: <Widget>[
-                new Expanded(
-                  child: new Text("Total", style: theme.textTheme.headline,)
+                Expanded(
+                  child: Text("Total", style: theme.textTheme.headline,)
                 ),
-                new Text(
+                Text(
                   receipt.total.toString(), 
                   style: theme.textTheme.headline,
                 ),
@@ -37,11 +37,11 @@ class VendorContainer extends StatelessWidget {
   VendorContainer(this.vendor);
   @override
   Widget build(BuildContext context) {
-    return new LeftAlignedColumn(
+    return LeftAlignedColumn(
       children: <Widget>[
-        new Text(vendor.name), 
-        new Text(vendor.address),
-        new Text(vendor.telNumber),
+        Text(vendor.name), 
+        Text(vendor.address),
+        Text(vendor.telNumber),
       ]
     );
   }
@@ -53,15 +53,15 @@ class ItemsContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Row(
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        new LeftAlignedColumn(
-          children: items.map((i) => new Text("${i.quantity}")).toList(),
+        LeftAlignedColumn(
+          children: items.map((i) => Text("${i.quantity}")).toList(),
         ),
-        new Container(
+        Container(
           padding: EdgeInsets.only(left: 1),
-          child: new LeftAlignedColumn(
+          child: LeftAlignedColumn(
             children: items.map((i) {
               String text;
               if (i.unit.toLowerCase() == "pc") {
@@ -71,22 +71,22 @@ class ItemsContainer extends StatelessWidget {
                 text = i.unit;
               }
 
-              return new Text(text);
+              return Text(text);
             }).toList(),
           )
         ),
-        new Expanded(
-          child: new Container(
+        Expanded(
+          child: Container(
             padding: EdgeInsets.only(left: 8),
-            child:  new LeftAlignedColumn(
-              children: items.map((i) => new Text(i.name)).toList(),
+            child:  LeftAlignedColumn(
+              children: items.map((i) => Text(i.name)).toList(),
             )
           )
         ),
-        new Column(
+        Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: items.map((i) => new Text("${i.subTotal}")).toList(),
+          children: items.map((i) => Text("${i.subTotal}")).toList(),
         ),
       ]
     );

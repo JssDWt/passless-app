@@ -16,9 +16,9 @@ class ReceiptDetailPage extends StatefulWidget {
 class ReceiptDetailPageState extends State<ReceiptDetailPage> {
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(widget._title),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget._title),
         centerTitle: true,
         actions: <Widget>[
           IconButton(
@@ -32,16 +32,15 @@ class ReceiptDetailPageState extends State<ReceiptDetailPage> {
             onPressed: () async {
               await Repository.of(context).delete(widget._receipt);
               Navigator.of(context).pop();
-              // TODO: The content of the parent list is currently not refreshed
-              
-            },),
+            },
+          ),
         ],
       ),
-      body: new ReceiptDetailView(widget._receipt),
+      body: ReceiptDetailView(widget._receipt),
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),
         notchMargin: 4.0,
-        child: new Row(
+        child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[

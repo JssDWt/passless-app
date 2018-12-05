@@ -13,11 +13,11 @@ class ReceiptListView extends StatelessWidget {
   Widget build(BuildContext context) {
     // If there are no receipts, don't build the list.
     if (!receipts.isNotEmpty) {
-      return new Text("No receipts found.");
+      return Text("No receipts found.");
     }
 
     // Build the view.
-    return new ListView.builder(
+    return ListView.builder(
       itemCount: receipts.length,
       itemBuilder: (context, int index) {
         Receipt receipt = receipts[index];

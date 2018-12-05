@@ -7,7 +7,7 @@ import 'package:passless_android/models/receipt.dart';
 /// The root page of the app.
 class RootPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new RootPageState();
+  State<StatefulWidget> createState() => RootPageState();
 }
 
 class RootPageState extends State<RootPage> {
@@ -49,21 +49,21 @@ class RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
     // Build the page.
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         leading: IconButton(
-          icon: new Icon(Icons.menu),
+          icon: Icon(Icons.menu),
           tooltip: 'Navigation menu',
           onPressed: null,
         ),
-        title: new Text("Passless receipts"),
+        title: Text("Passless receipts"),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.search),
             tooltip: 'Search',
-            onPressed: () async {
-              await Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => new SearchPage())
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => SearchPage())
               );
             }
           )

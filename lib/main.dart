@@ -4,13 +4,13 @@ import 'package:passless_android/utils/themes.dart';
 import 'package:passless_android/receipt_app.dart';
 
 /// Main entry point for the app.
-void main() => runApp(new ReceiptMaterialApp());
+void main() => runApp(ReceiptMaterialApp());
 
 /// Root class for the material app.
 class ReceiptMaterialApp extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return new ReceiptMaterialAppState();
+    return ReceiptMaterialAppState();
   }
 }
 
@@ -18,7 +18,7 @@ class ReceiptMaterialApp extends StatefulWidget {
 class ReceiptMaterialAppState extends State<ReceiptMaterialApp> {
   @override
   Widget build(BuildContext context) {
-    return new DataProvider(
+    return DataProvider(
       child: MaterialApp(
         debugShowCheckedModeBanner: false, 
         theme: darkTheme, 

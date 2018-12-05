@@ -12,7 +12,7 @@ import 'package:passless_android/pages/receipt_detail_page.dart';
 /// Root application part.
 class ReceiptApp extends StatefulWidget {
   @override
-  _ReceiptAppState createState() => new _ReceiptAppState();
+  _ReceiptAppState createState() => _ReceiptAppState();
 }
 
 /// Root application state. Initializes the receipt data.
@@ -37,7 +37,7 @@ class _ReceiptAppState extends State<ReceiptApp> {
   /// Builds the root page.
   @override
   Widget build(BuildContext context) {
-    return new RootPage();
+    return RootPage();
   }
 
   /// Handles received ndef messages (receipts)
@@ -45,9 +45,9 @@ class _ReceiptAppState extends State<ReceiptApp> {
     var receiptJson = json.decode(message);
     Receipt receipt = Receipt.fromJson(receiptJson);
     await Repository.of(context).saveReceipt(receipt);
-    await Navigator.of(context).push(
-      new MaterialPageRoute(
-        builder: (context) => new ReceiptDetailPage(receipt, "New Receipt")
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ReceiptDetailPage(receipt, "New Receipt")
       )
     );
   }
