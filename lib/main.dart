@@ -9,13 +9,11 @@ void main() => runApp(ReceiptMaterialApp());
 /// Root class for the material app.
 class ReceiptMaterialApp extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() {
-    return ReceiptMaterialAppState();
-  }
+  State<StatefulWidget> createState() => _ReceiptMaterialAppState();
 }
 
 /// Defines material app state like the theme.
-class ReceiptMaterialAppState extends State<ReceiptMaterialApp> {
+class _ReceiptMaterialAppState extends State<ReceiptMaterialApp> {
   @override
   Widget build(BuildContext context) {
     return DataProvider(

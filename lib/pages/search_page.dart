@@ -38,24 +38,24 @@ class SearchBloc {
 
 class SearchPage extends StatefulWidget {
   @override
-  SearchPageState createState() => SearchPageState();
+  _SearchPageState createState() => _SearchPageState();
 }
 
-class SearchPageState extends State<SearchPage> {
-  SearchBloc searchBloc;
+class _SearchPageState extends State<SearchPage> {
+  SearchBloc _searchBloc;
   TextEditingController _controller = TextEditingController();
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (searchBloc == null) {
-      searchBloc = SearchBloc(Repository.of(context));
+    if (_searchBloc == null) {
+      _searchBloc = SearchBloc(Repository.of(context));
     }
   }
 
   @override
   void dispose() {
-    searchBloc.close();
+    _searchBloc.close();
     super.dispose();
   }
 
@@ -68,7 +68,7 @@ class SearchPageState extends State<SearchPage> {
           controller: _controller,
           autofocus: true,
           onChanged: (s) {
-            searchBloc.search.add(s);
+            _searchBloc.search.add(s);
           },
           decoration: InputDecoration(
             prefixIcon: Icon(Icons.search), 
@@ -77,14 +77,14 @@ class SearchPageState extends State<SearchPage> {
               icon: Icon(Icons.clear),
               onPressed: () {
                 _controller.clear();
-                searchBloc.search.add("");
+                _searchBloc.search.add("");
               },
             )
           )
         ),
       ),
       body: StreamBuilder<List<Receipt>>(
-        stream: searchBloc.receipts,
+        stream: _searchBloc.receipts,
         initialData: List<Receipt>(),
         builder: (context, snapshot) =>
           ReceiptListView(snapshot.data)));

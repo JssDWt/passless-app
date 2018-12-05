@@ -10,10 +10,10 @@ class ReceiptDetailPage extends StatefulWidget {
   ReceiptDetailPage(this._receipt, this._title);
 
   @override
-  State<StatefulWidget> createState() => ReceiptDetailPageState();
+  State<StatefulWidget> createState() => _ReceiptDetailPageState();
 }
 
-class ReceiptDetailPageState extends State<ReceiptDetailPage> {
+class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

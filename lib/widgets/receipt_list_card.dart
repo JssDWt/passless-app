@@ -3,26 +3,26 @@ import 'package:passless_android/models/receipt.dart';
 import 'package:passless_android/pages/receipt_detail_page.dart';
 
 class ReceiptListCard extends StatelessWidget {
-  final Receipt receipt;
+  final Receipt _receipt;
 
-  ReceiptListCard(this.receipt);
+  ReceiptListCard(this._receipt);
 
   @override
   Widget build(BuildContext context) {
     // Build a single receipt tile.
     return Card(
       child: ListTile(
-        title: Text(receipt.vendor.name),
+        title: Text(_receipt.vendor.name),
         subtitle: Text(
-          "${receipt.currency} ${receipt.total}",
+          "${_receipt.currency} ${_receipt.total}",
           style: Theme.of(context).textTheme.caption,
         ),
-        onTap: () async {
+        onTap: () {
           // On tap go to the receipt detail page.
-          await Navigator.of(context).push(
+          Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => 
-                ReceiptDetailPage(receipt, receipt.vendor.name)));
+                ReceiptDetailPage(_receipt, _receipt.vendor.name)));
         }
       )
     );

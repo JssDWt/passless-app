@@ -7,10 +7,10 @@ import 'package:passless_android/models/receipt.dart';
 /// The root page of the app.
 class RootPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => RootPageState();
+  State<StatefulWidget> createState() => _RootPageState();
 }
 
-class RootPageState extends State<RootPage> {
+class _RootPageState extends State<RootPage> {
   List<Receipt> _receipts;
   bool _isLoading = true;
 

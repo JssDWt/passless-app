@@ -2,26 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:passless_android/models/receipt.dart';
 
 class ReceiptDetailView extends StatelessWidget {
-  final Receipt receipt;
-  ReceiptDetailView(this.receipt);
+  final Receipt _receipt;
+  ReceiptDetailView(this._receipt);
 
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     
     return Card(
-        child: LeftAlignedColumn(
+        child: _LeftAlignedColumn(
           children: <Widget>[
-            VendorContainer(receipt.vendor),
+            _VendorContainer(_receipt.vendor),
             Divider(),
-            ItemsContainer(receipt.items),
+            _ItemsContainer(_receipt.items),
             Row(
               children: <Widget>[
                 Expanded(
                   child: Text("Total", style: theme.textTheme.headline,)
                 ),
                 Text(
-                  receipt.total.toString(), 
+                  _receipt.total.toString(), 
                   style: theme.textTheme.headline,
                 ),
               ],
@@ -32,37 +32,37 @@ class ReceiptDetailView extends StatelessWidget {
   }
 }
 
-class VendorContainer extends StatelessWidget {
-  final Vendor vendor;
-  VendorContainer(this.vendor);
+class _VendorContainer extends StatelessWidget {
+  final Vendor _vendor;
+  _VendorContainer(this._vendor);
   @override
   Widget build(BuildContext context) {
-    return LeftAlignedColumn(
+    return _LeftAlignedColumn(
       children: <Widget>[
-        Text(vendor.name), 
-        Text(vendor.address),
-        Text(vendor.telNumber),
+        Text(_vendor.name), 
+        Text(_vendor.address),
+        Text(_vendor.telNumber),
       ]
     );
   }
 }
 
-class ItemsContainer extends StatelessWidget {
-  final List<Item> items;
-  ItemsContainer(this.items);
+class _ItemsContainer extends StatelessWidget {
+  final List<Item> _items;
+  _ItemsContainer(this._items);
 
   @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        LeftAlignedColumn(
-          children: items.map((i) => Text("${i.quantity}")).toList(),
+        _LeftAlignedColumn(
+          children: _items.map((i) => Text("${i.quantity}")).toList(),
         ),
         Container(
           padding: EdgeInsets.only(left: 1),
-          child: LeftAlignedColumn(
-            children: items.map((i) {
+          child: _LeftAlignedColumn(
+            children: _items.map((i) {
               String text;
               if (i.unit.toLowerCase() == "pc") {
                 text = "";
@@ -78,23 +78,23 @@ class ItemsContainer extends StatelessWidget {
         Expanded(
           child: Container(
             padding: EdgeInsets.only(left: 8),
-            child:  LeftAlignedColumn(
-              children: items.map((i) => Text(i.name)).toList(),
+            child:  _LeftAlignedColumn(
+              children: _items.map((i) => Text(i.name)).toList(),
             )
           )
         ),
         Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: items.map((i) => Text("${i.subTotal}")).toList(),
+          children: _items.map((i) => Text("${i.subTotal}")).toList(),
         ),
       ]
     );
   }
 }
 
-class LeftAlignedColumn extends Column {
-  LeftAlignedColumn({List<Widget> children})
+class _LeftAlignedColumn extends Column {
+  _LeftAlignedColumn({List<Widget> children})
       : super(
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.start,
