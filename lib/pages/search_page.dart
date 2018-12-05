@@ -7,19 +7,18 @@ import 'package:passless_android/widgets/receipt_listview.dart';
 import 'package:rxdart/subjects.dart';
 
 class SearchBloc {
-  final Repository _repo;
+  final Repository _repository;
   Sink<String> get search => _searchSubject.sink;
   final _searchSubject = BehaviorSubject<String>();
   Stream<List<Receipt>> get receipts => _receiptSubject.stream;
   final _receiptSubject = BehaviorSubject<List<Receipt>>();
 
-  SearchBloc(this._repo) {
-    print("searchBloc contructor");
+  SearchBloc(this._repository) {
     _searchSubject.stream
       .debounce(Duration(milliseconds: 400))
       .listen((s) => _handleSearch(s));
 
-    _repo.listen(() {
+    _repository.listen(() {
       _handleSearch(_searchSubject.value);
     });
   }
@@ -30,9 +29,8 @@ class SearchBloc {
   }
 
   Future _handleSearch(String s) async {
-    print("SearchBloc is handling search for '$s'.");
     if (s != null) {
-      var receipts = await _repo.search(s);
+      var receipts = await _repository.search(s);
       _receiptSubject.add(receipts);
     }
   }
@@ -68,7 +66,6 @@ class SearchPageState extends State<SearchPage> {
           title: new TextField(
               autofocus: true,
               onChanged: (s) {
-                print("onChanged is adding '$s'");
                 searchBloc.search.add(s);
               },
               decoration: new InputDecoration(
