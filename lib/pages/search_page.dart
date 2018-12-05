@@ -43,6 +43,7 @@ class SearchPage extends StatefulWidget {
 
 class SearchPageState extends State<SearchPage> {
   SearchBloc searchBloc;
+  TextEditingController _controller = TextEditingController();
 
   @override
   void didChangeDependencies() {
@@ -61,20 +62,31 @@ class SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     // Build the page.
-    return new Scaffold(
-        appBar: new AppBar(
-          title: new TextField(
-              autofocus: true,
-              onChanged: (s) {
-                searchBloc.search.add(s);
+    return Scaffold(
+      appBar: AppBar(
+        title: TextField(
+          controller: _controller,
+          autofocus: true,
+          onChanged: (s) {
+            searchBloc.search.add(s);
+          },
+          decoration: InputDecoration(
+            prefixIcon: Icon(Icons.search), 
+            hintText: 'Search...',
+            suffixIcon: IconButton(
+              icon: Icon(Icons.clear),
+              onPressed: () {
+                _controller.clear();
+                searchBloc.search.add("");
               },
-              decoration: new InputDecoration(
-                  prefixIcon: new Icon(Icons.search), hintText: 'Search...')),
+            )
+          )
         ),
-        body: StreamBuilder<List<Receipt>>(
-            stream: searchBloc.receipts,
-            initialData: new List<Receipt>(),
-            builder: (context, snapshot) =>
-                new ReceiptListView(snapshot.data)));
+      ),
+      body: StreamBuilder<List<Receipt>>(
+        stream: searchBloc.receipts,
+        initialData: List<Receipt>(),
+        builder: (context, snapshot) =>
+          ReceiptListView(snapshot.data)));
   }
 }
