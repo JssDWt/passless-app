@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/models/receipt.dart';
@@ -12,9 +14,10 @@ class SearchBloc {
   final _receiptSubject = BehaviorSubject<List<Receipt>>();
 
   SearchBloc(this._repo) {
-    _searchSubject.stream.debounce(Duration(microseconds: 400)).listen(
-      (s) => _handleSearch(s)
-    );
+    print("searchBloc contructor");
+    _searchSubject.stream
+      .debounce(Duration(milliseconds: 400))
+      .listen((s) => _handleSearch(s));
 
     _repo.listen(() {
       _handleSearch(_searchSubject.value);
@@ -27,6 +30,7 @@ class SearchBloc {
   }
 
   Future _handleSearch(String s) async {
+    print("SearchBloc is handling search for '$s'.");
     if (s != null) {
       var receipts = await _repo.search(s);
       _receiptSubject.add(receipts);
@@ -42,8 +46,12 @@ class SearchPage extends StatefulWidget {
 class SearchPageState extends State<SearchPage> {
   SearchBloc searchBloc;
 
-  SearchPageState() {
-    searchBloc = SearchBloc(Repository.of(context));
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (searchBloc == null) {
+      searchBloc = SearchBloc(Repository.of(context));
+    }
   }
 
   @override
@@ -59,7 +67,10 @@ class SearchPageState extends State<SearchPage> {
         appBar: new AppBar(
           title: new TextField(
               autofocus: true,
-              onChanged: (s) => searchBloc.search.add(s),
+              onChanged: (s) {
+                print("onChanged is adding '$s'");
+                searchBloc.search.add(s);
+              },
               decoration: new InputDecoration(
                   prefixIcon: new Icon(Icons.search), hintText: 'Search...')),
         ),
