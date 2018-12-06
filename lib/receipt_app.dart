@@ -6,7 +6,6 @@ import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/models/receipt.dart';
 import 'package:passless_android/pages/root_page.dart';
 import 'package:nfc/nfc.dart';
-import 'package:passless_android/models/receipt.dart';
 import 'package:passless_android/pages/receipt_detail_page.dart';
 
 /// Root application part.

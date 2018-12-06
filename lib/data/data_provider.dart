@@ -330,6 +330,40 @@ class Repository {
     return result;
   }
 
+  Future<bool> deleteBatch(Iterable<Receipt> receipts) async {
+    int count = receipts.length;
+    if (count == 0) {
+      return false;
+    }
+
+    if (count == 1) {
+      return delete(receipts.first);
+    }
+
+    String questionMarks = receipts.map((r) => "?").join(",");
+    var dbClient = await db;
+    
+    int deleted = await dbClient.rawDelete(
+      "DELETE FROM $RECEIPT_TABLE WHERE id in ($questionMarks)", 
+      receipts.map((r) => r.id).toList());
+
+    bool result = false;
+    if (deleted == count) {
+      result = true;
+      notifyDataChanged();
+    }
+    else if (deleted == 0) {
+      // Do nothing
+    }
+    else {
+      print("Expected to delete $count, but deleted $deleted");
+      result = false;
+      notifyDataChanged();
+    }
+
+    return result;
+  }
+
   Receipt _fromMap(Map map) {
     var receiptJson = json.decode(map["receipt"]);
     Receipt receipt = Receipt.fromJson(receiptJson);

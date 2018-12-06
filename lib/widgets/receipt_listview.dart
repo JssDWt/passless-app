@@ -1,28 +1,185 @@
+import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/models/receipt.dart';
 import 'package:flutter/material.dart';
-import 'package:passless_android/widgets/receipt_list_card.dart';
+import 'package:passless_android/pages/receipt_detail_page.dart';
 
 /// Shows a list of receipts.
 class ReceiptListView extends StatelessWidget {
-  final List<Receipt> _receipts;
-  ReceiptListView(this._receipts);
+  final List<Receipt> receipts;
+  ReceiptListView(this.receipts);
 
   /// Builds the receipt list.
   @override
+  Widget build(BuildContext context) => _ReceiptListView(receipts);
+}
+
+class _SelectingReceiptListView extends StatefulWidget {
+  final List<Receipt> receipts;
+  final int primarySelection;
+  _SelectingReceiptListView(this.receipts, this.primarySelection);
+
+  @override
+  _SelectingReceiptListViewState createState() 
+    => _SelectingReceiptListViewState();
+}
+
+class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
+  List<int> _selection;
+
+  @override
+  void initState() {
+    super.initState();
+    this._selection = [widget.primarySelection];
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // If there are no receipts, don't build the list.
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.clear),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: Text(_selection.length.toString()),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () async {
+              var toDelete = _selection.map((s) => widget.receipts[s]);
+              await Repository.of(context).deleteBatch(toDelete);
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      ),
+      body: _ReceiptListView(
+        widget.receipts, 
+        selected: _selection,
+        selectionChangedCallback: _selectionChangedCallback),
+    );
+  }
+
+  void _selectionChangedCallback() {
+    setState(() {});
+  }
+}
+
+class _ReceiptListView extends StatefulWidget {
+  final List<Receipt> receipts;
+  List<int> selected = List<int>();
+  void Function() selectionChangedCallback;
+
+  _ReceiptListView(
+    this.receipts, 
+    {
+      List<int> selected,
+      this.selectionChangedCallback,
+    }) {
+    if (selected != null) this.selected = selected;
+  }
+
+  @override
+  _ReceiptListViewState createState() => _ReceiptListViewState();
+}
+
+class _ReceiptListViewState extends State<_ReceiptListView> {
+  bool _isSelecting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isSelecting = widget.selected.isNotEmpty;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     Widget result;
-    if (_receipts.isNotEmpty) {
-      // Build the view.
-      result = ListView.builder(
-        itemCount: _receipts.length,
-        itemBuilder: (context, int index) => ReceiptListCard(_receipts[index]),
-      );
+    if (widget.receipts.isEmpty) {
+      result = Text("No receipts found.");
     }
     else {
-      result = Text("No receipts found.");
+      result = ListView.builder(
+        itemCount: widget.receipts.length,
+        itemBuilder: (BuildContext context, int index) { 
+          Receipt receipt = widget.receipts[index];
+          bool isSelected = widget.selected.contains(index);
+          return Card(
+            child: ListTile(
+              selected: isSelected,
+              leading: isSelected ? Icon(Icons.check) : Text(""),
+              title: Text(receipt.vendor.name),
+              subtitle: Text(
+                "${receipt.currency} ${receipt.total}",
+                style: Theme.of(context).textTheme.caption,
+              ),
+              onTap: () {
+                if (_isSelecting) {
+                  _onReceiptSelected(index);
+                }
+                else {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => 
+                        ReceiptDetailPage(receipt, receipt.vendor.name)));
+                }
+              },
+              onLongPress: () {
+                _onReceiptSelected(index);
+              },
+            )
+          );
+        }
+      );
     }
 
     return result;
   }
+
+  void _onReceiptSelected(int index) {
+    // If the selected list is currently empty, this will be a new selection.
+    // In that case push a new selection page with the same receipts.
+    if (widget.selected.isEmpty) {
+      Navigator.of(context).push(
+        SelectionPageRoute(
+          builder: (context) 
+            => _SelectingReceiptListView(widget.receipts, index)
+        )
+      );
+      return;
+    }
+
+    // If the receipt was already selected, remove it
+    // otherwise add it to selection
+    if (!widget.selected.remove(index)) {
+      widget.selected.add(index);
+    }
+
+    // The last receipt may have been deselected. Then pop to the previous list.
+    // NOTE: The only way this function is called, is through selection, so
+    // the selection page will be preceded by the non-selected page.
+    if (widget.selected.isEmpty) {
+      Navigator.of(context).pop();
+    }
+    else {
+      // Make sure to update the changes in the list, and a listening parent.
+      setState(() {});
+      widget.selectionChangedCallback();
+    }
+  }
+}
+
+class SelectionPageRoute<T> extends MaterialPageRoute<T> {
+  SelectionPageRoute({WidgetBuilder builder, RouteSettings settings})
+    : super(builder: builder, settings: settings);
+  
+  @override
+  Widget buildTransitions(
+    BuildContext context, 
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child) {
+      return child;
+    }
 }
