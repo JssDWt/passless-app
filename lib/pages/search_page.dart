@@ -71,7 +71,10 @@ class _SearchPageState extends State<SearchPage> {
             _searchBloc.search.add(s);
           },
           decoration: InputDecoration(
-            prefixIcon: Icon(Icons.search), 
+            prefixIcon: Hero(
+              tag: "appBarLeading",
+              child: Icon(Icons.search)
+            ),
             hintText: 'Search...',
             suffixIcon: IconButton(
               icon: Icon(Icons.clear),

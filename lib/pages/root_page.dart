@@ -51,10 +51,13 @@ class _RootPageState extends State<RootPage> {
     // Build the page.
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.menu),
-          tooltip: 'Navigation menu',
-          onPressed: null,
+        leading: Hero(
+          tag: "appBarLeading",
+          child: IconButton(
+            icon: Icon(Icons.menu),
+            tooltip: 'Navigation menu',
+            onPressed: null,
+          )
         ),
         title: Text("Passless receipts"),
         actions: <Widget>[

@@ -36,10 +36,25 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.clear),
-          onPressed: () {
-            Navigator.of(context).pop();
+        leading: Hero(
+          tag: "appBarLeading",
+          child: IconButton(
+            icon: Icon(Icons.clear),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          flightShuttleBuilder: (
+            BuildContext flightContext,
+            Animation<double> animation,
+            HeroFlightDirection flightDirection,
+            BuildContext fromHeroContext,
+            BuildContext toHeroContext,
+          ) {
+            return RotationTransition(
+              turns: animation,
+              child: Material(child: toHeroContext.widget),
+            );
           },
         ),
         title: Text(_selection.length.toString()),
