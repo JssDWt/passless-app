@@ -52,8 +52,13 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
             BuildContext toHeroContext,
           ) {
             return RotationTransition(
-              turns: animation,
-              child: Material(child: toHeroContext.widget),
+              turns: Tween<double>(begin: 0, end: 0.5).animate(animation),
+              child: Material(
+                color: Theme.of(context).primaryColor,
+                shadowColor: Theme.of(context).accentColor,
+                shape: CircleBorder(),
+                child: toHeroContext.widget
+              ),
             );
           },
         ),
@@ -157,8 +162,9 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
     // In that case push a new selection page with the same receipts.
     if (widget.selected.isEmpty) {
       Navigator.of(context).push(
-        SelectionPageRoute(
-          builder: (context) 
+        PageRouteBuilder(
+          pageBuilder: 
+            (context, animation, secondaryAnimation) 
             => _SelectingReceiptListView(widget.receipts, index)
         )
       );
@@ -183,18 +189,4 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
       widget.selectionChangedCallback();
     }
   }
-}
-
-class SelectionPageRoute<T> extends MaterialPageRoute<T> {
-  SelectionPageRoute({WidgetBuilder builder, RouteSettings settings})
-    : super(builder: builder, settings: settings);
-  
-  @override
-  Widget buildTransitions(
-    BuildContext context, 
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child) {
-      return child;
-    }
 }
