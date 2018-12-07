@@ -51,8 +51,16 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
             BuildContext fromHeroContext,
             BuildContext toHeroContext,
           ) {
+            // TODO: The icon seems to spin at different speeds on push/pop.
+            Animation<double> newAnimation = 
+              Tween<double>(begin: 0, end: 0.5).animate(animation);
+            
+            if (flightDirection == HeroFlightDirection.pop) {
+              newAnimation = ReverseAnimation(newAnimation);
+            }
+
             return RotationTransition(
-              turns: Tween<double>(begin: 0, end: 0.5).animate(animation),
+              turns: newAnimation,
               child: Material(
                 color: Theme.of(context).primaryColor,
                 shadowColor: Theme.of(context).accentColor,
