@@ -20,7 +20,7 @@ class _ReceiptMaterialAppState extends State<ReceiptMaterialApp> {
     return DataProvider(
       child: MaterialApp(
         debugShowCheckedModeBanner: false, 
-        theme: ThemeData.dark(), 
+        theme: ThemeData.light(), 
         home: ReceiptApp(),
       )
     );

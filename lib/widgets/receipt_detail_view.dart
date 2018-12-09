@@ -79,7 +79,7 @@ class _ItemsContainer extends StatelessWidget {
         ),
         Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: _receipt.items.map((i) => Text("${i.subTotal}")).toList(),
         ),
       ]
