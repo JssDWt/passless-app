@@ -62,9 +62,7 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
             return RotationTransition(
               turns: newAnimation,
               child: Material(
-                color: Theme.of(context).primaryColor,
-                shadowColor: Theme.of(context).accentColor,
-                shape: CircleBorder(),
+                type: MaterialType.transparency,
                 child: toHeroContext.widget
               ),
             );
@@ -133,29 +131,32 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
         itemBuilder: (BuildContext context, int index) { 
           Receipt receipt = widget.receipts[index];
           bool isSelected = widget.selected.contains(index);
-          return Card(
-            child: ListTile(
-              selected: isSelected,
-              leading: isSelected ? Icon(Icons.check) : Text(""),
-              title: Text(receipt.vendor.name),
-              subtitle: Text(
-                "${receipt.currency} ${receipt.total}",
-                style: Theme.of(context).textTheme.caption,
-              ),
-              onTap: () {
-                if (_isSelecting) {
+          return Hero(
+            tag: "receipt${receipt.id}",
+            child: Card(
+              child: ListTile(
+                selected: isSelected,
+                leading: isSelected ? Icon(Icons.check) : Text(""),
+                title: Text(receipt.vendor.name),
+                subtitle: Text(
+                  "${receipt.currency} ${receipt.total}",
+                  style: Theme.of(context).textTheme.caption,
+                ),
+                onTap: () {
+                  if (_isSelecting) {
+                    _onReceiptSelected(index);
+                  }
+                  else {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => 
+                          ReceiptDetailPage(receipt, receipt.vendor.name)));
+                  }
+                },
+                onLongPress: () {
                   _onReceiptSelected(index);
-                }
-                else {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => 
-                        ReceiptDetailPage(receipt, receipt.vendor.name)));
-                }
-              },
-              onLongPress: () {
-                _onReceiptSelected(index);
-              },
+                },
+              )
             )
           );
         }

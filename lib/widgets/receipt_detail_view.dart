@@ -7,62 +7,55 @@ class ReceiptDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
-    
-    return Card(
-        child: _LeftAlignedColumn(
+    return Hero(
+      tag: "receipt${_receipt.id}",
+      child: Card(
+        child: Column(
           children: <Widget>[
-            _VendorContainer(_receipt.vendor),
-            Divider(),
-            _ItemsContainer(_receipt.items),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Text("Total", style: theme.textTheme.headline,)
-                ),
-                Text(
-                  _receipt.total.toString(), 
-                  style: theme.textTheme.headline,
-                ),
-              ],
-            )
+            _VendorContainer(_receipt),
+            SemiDivider(),
+            _ItemsContainer(_receipt),
+            SemiDivider(),
+            _TotalContainer(_receipt),
           ],
         )
-      );
+      )
+    );
   }
 }
 
 class _VendorContainer extends StatelessWidget {
-  final Vendor _vendor;
-  _VendorContainer(this._vendor);
+  final Receipt _receipt;
+  _VendorContainer(this._receipt);
   @override
   Widget build(BuildContext context) {
-    return _LeftAlignedColumn(
+    return Column(
       children: <Widget>[
-        Text(_vendor.name), 
-        Text(_vendor.address),
-        Text(_vendor.telNumber),
+        Text(_receipt.vendor.name),
+        Text(_receipt.vendor.address),
+        Text(_receipt.vendor.telNumber),
       ]
     );
   }
 }
 
 class _ItemsContainer extends StatelessWidget {
-  final List<Item> _items;
-  _ItemsContainer(this._items);
+  final Receipt _receipt;
+  _ItemsContainer(this._receipt);
 
   @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        _LeftAlignedColumn(
-          children: _items.map((i) => Text("${i.quantity}")).toList(),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: _receipt.items.map((i) => Text("${i.quantity}")).toList(),
         ),
         Container(
           padding: EdgeInsets.only(left: 1),
-          child: _LeftAlignedColumn(
-            children: _items.map((i) {
+          child: Column(
+            children: _receipt.items.map((i) {
               String text;
               if (i.unit.toLowerCase() == "pc") {
                 text = "";
@@ -78,25 +71,62 @@ class _ItemsContainer extends StatelessWidget {
         Expanded(
           child: Container(
             padding: EdgeInsets.only(left: 8),
-            child:  _LeftAlignedColumn(
-              children: _items.map((i) => Text(i.name)).toList(),
+            child:  Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _receipt.items.map((i) => Text(i.name)).toList(),
             )
           )
         ),
         Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: _items.map((i) => Text("${i.subTotal}")).toList(),
+          children: _receipt.items.map((i) => Text("${i.subTotal}")).toList(),
         ),
       ]
     );
   }
 }
 
-class _LeftAlignedColumn extends Column {
-  _LeftAlignedColumn({List<Widget> children})
-      : super(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: children);
+class _TotalContainer extends StatelessWidget {
+  final Receipt _receipt;
+  _TotalContainer(this._receipt);
+  @override
+  Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+
+    return Column(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: Text("Total", style: theme.textTheme.headline,)
+            ),
+            Text(
+              "${_receipt.currency} ${_receipt.total}", 
+              style: theme.textTheme.headline,
+            ),
+          ],
+        ),
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: Text("Tax")
+            ),
+            Text("${_receipt.currency} ${_receipt.tax}"),
+          ],
+        ),
+      ]
+      
+    );
+  }
+
+}
+class SemiDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding:EdgeInsets.symmetric(horizontal: 8.0),
+      child: Divider()
+    );
+  }
 }

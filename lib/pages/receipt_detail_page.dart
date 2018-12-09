@@ -30,6 +30,7 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
             icon: Icon(Icons.delete), 
             tooltip: "Delete",
             onPressed: () async {
+              // TODO: Move deletion to a BLOC?
               await Repository.of(context).delete(widget._receipt);
               Navigator.of(context).pop();
             },
