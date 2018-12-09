@@ -6,15 +6,40 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: DrawerMenu(),
+      appBar: AppBar(
+        leading: Builder(
+          builder: (context) => Hero(
+            tag: "appBarLeading",
+            child: Material(
+              type: MaterialType.transparency,
+              child: IconButton(
+                icon: Icon(Icons.menu),
+                tooltip: 'Navigation menu',
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              )
+            )
+          )
+        ),
+        title: Text("Settings"),
+        actions: <Widget>[
+          IconButton(
+            icon: Hero(
+              tag: "searchIcon",
+              child: Material(
+                type: MaterialType.transparency,
+                child: Icon(Icons.search)
+              )
+            ),
+            tooltip: 'Search settings',
+            onPressed: null
+          )
+        ]
+      ),
       body: Row(
         children: <Widget>[
-          Text("Light"),
-          Switch(
-            value: false,
-            onChanged: (newValue) {
-              
-            },),
-          Text("Dark")
+          Text("No Settings here yet...")
         ],
       )
     );
