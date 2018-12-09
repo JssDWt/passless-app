@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:passless_android/data/data_provider.dart';
+import 'package:passless_android/widgets/drawer_menu.dart';
 import 'package:passless_android/widgets/receipt_listview.dart';
 import 'package:passless_android/pages/search_page.dart';
 import 'package:passless_android/models/receipt.dart';
@@ -50,19 +51,33 @@ class _RootPageState extends State<RootPage> {
   Widget build(BuildContext context) {
     // Build the page.
     return Scaffold(
+      drawer: DrawerMenu(),
       appBar: AppBar(
-        leading: Hero(
-          tag: "appBarLeading",
-          child: IconButton(
-            icon: Icon(Icons.menu),
-            tooltip: 'Navigation menu',
-            onPressed: null,
+        leading: Builder(
+          builder: (context) => Hero(
+            tag: "appBarLeading",
+            child: Material(
+              type: MaterialType.transparency,
+              child: IconButton(
+                icon: Icon(Icons.menu),
+                tooltip: 'Navigation menu',
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              )
+            )
           )
         ),
         title: Text("Passless receipts"),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.search),
+            icon: Hero(
+              tag: "searchIcon",
+              child: Material(
+                type: MaterialType.transparency,
+                child: Icon(Icons.search)
+              )
+            ),
             tooltip: 'Search',
             onPressed: () {
               Navigator.of(context).push(

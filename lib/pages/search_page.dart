@@ -64,6 +64,18 @@ class _SearchPageState extends State<SearchPage> {
     // Build the page.
     return Scaffold(
       appBar: AppBar(
+        leading: Hero(
+          tag: "appBarLeading",
+          child: Material(
+            type: MaterialType.transparency,
+            child: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ),
+        ),
         title: TextField(
           controller: _controller,
           autofocus: true,
@@ -72,8 +84,14 @@ class _SearchPageState extends State<SearchPage> {
           },
           decoration: InputDecoration(
             prefixIcon: Hero(
-              tag: "appBarLeading",
-              child: Icon(Icons.search)
+              tag: "searchIcon",
+              child: Material(
+                type: MaterialType.transparency,
+                child: Icon(
+                  Icons.search, 
+                  color: Theme.of(context).hintColor,
+                )
+              )
             ),
             hintText: 'Search...',
             suffixIcon: IconButton(
