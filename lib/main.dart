@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:passless_android/data/data_provider.dart';
-import 'package:passless_android/utils/themes.dart';
 import 'package:passless_android/receipt_app.dart';
-
-// TODO: Remove the slowing of animations.
-import 'package:flutter/scheduler.dart' show timeDilation;
 
 /// Main entry point for the app.
 void main() {
-  timeDilation = 4.0;
   runApp(ReceiptMaterialApp());
 }
 
@@ -25,7 +20,7 @@ class _ReceiptMaterialAppState extends State<ReceiptMaterialApp> {
     return DataProvider(
       child: MaterialApp(
         debugShowCheckedModeBanner: false, 
-        theme: ThemeData.light(), 
+        theme: ThemeData.dark(), 
         home: ReceiptApp(),
       )
     );
