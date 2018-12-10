@@ -364,6 +364,14 @@ class Repository {
     return result;
   }
 
+  Future<String> getComments(Receipt receipt) {
+
+  }
+
+  Future updateComments(Receipt receipt) {
+    
+  }
+
   Receipt _fromMap(Map map) {
     var receiptJson = json.decode(map["receipt"]);
     Receipt receipt = Receipt.fromJson(receiptJson);

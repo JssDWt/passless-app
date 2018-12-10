@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/models/receipt.dart';
+import 'package:passless_android/pages/comment_page.dart';
 import 'package:passless_android/widgets/receipt_detail_view.dart';
 
 /// A page that shows receipt details.
@@ -26,7 +27,13 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
             IconButton(
               icon: Icon(Icons.note), 
               tooltip: "Notes",
-              onPressed: null,
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => CommentPage(widget._receipt)
+                  )
+                );
+              },
             ),
             IconButton(
               icon: Icon(Icons.delete), 
