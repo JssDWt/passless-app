@@ -7,15 +7,22 @@ class ReceiptDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: <Widget>[
-          _VendorContainer(_receipt),
-          SemiDivider(),
-          _ItemsContainer(_receipt),
-          SemiDivider(),
-          _TotalContainer(_receipt),
-        ],
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: Card(
+            child: Column(
+              children: <Widget>[
+                _VendorContainer(_receipt),
+                SemiDivider(),
+                _ItemsContainer(_receipt),
+                SemiDivider(),
+                _TotalContainer(_receipt),
+              ],
+            )
+          )
+        )
       )
     );
   }
