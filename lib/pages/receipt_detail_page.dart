@@ -15,63 +15,66 @@ class ReceiptDetailPage extends StatefulWidget {
 
 class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget._title),
-        centerTitle: true,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.note), 
-            tooltip: "Notes",
-            onPressed: null,
-          ),
-          IconButton(
-            icon: Icon(Icons.delete), 
-            tooltip: "Delete",
-            onPressed: () async {
-              bool shouldDelete = await showDialog(
-                context: context, 
-                builder: (context) => AlertDialog(
-                  title: const Text("Delete receipt?"),
-                  content: const Text("You will not be able to recover the receipt later."),
-                  actions: <Widget>[
-                    FlatButton(
-                      child: const Text("CANCEL"),
-                      onPressed: () {
-                        Navigator.of(context, rootNavigator: true).pop(false);
-                      },
-                    ),
-                    FlatButton(
-                      child: const Text("DELETE"),
-                      onPressed: () {
-                        Navigator.of(context, rootNavigator: true).pop(true);
-                      },
-                    ),
-                  ],
-                )
-              );
+  Widget build(BuildContext context) {   
+    return Hero(
+      tag: "receipt${widget._receipt.id}",
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget._title),
+          centerTitle: true,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.note), 
+              tooltip: "Notes",
+              onPressed: null,
+            ),
+            IconButton(
+              icon: Icon(Icons.delete), 
+              tooltip: "Delete",
+              onPressed: () async {
+                bool shouldDelete = await showDialog(
+                  context: context, 
+                  builder: (context) => AlertDialog(
+                    title: const Text("Delete receipt?"),
+                    content: const Text("You will not be able to recover the receipt later."),
+                    actions: <Widget>[
+                      FlatButton(
+                        child: const Text("CANCEL"),
+                        onPressed: () {
+                          Navigator.of(context, rootNavigator: true).pop(false);
+                        },
+                      ),
+                      FlatButton(
+                        child: const Text("DELETE"),
+                        onPressed: () {
+                          Navigator.of(context, rootNavigator: true).pop(true);
+                        },
+                      ),
+                    ],
+                  )
+                );
 
-              if (shouldDelete) {
-                await Repository.of(context).delete(widget._receipt);
-                Navigator.of(context).pop();
-              }
-            },
-          ),
-        ],
-      ),
-      body: ReceiptDetailView(widget._receipt),
-      bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        notchMargin: 4.0,
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            
+                if (shouldDelete) {
+                  await Repository.of(context).delete(widget._receipt);
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
           ],
         ),
-    )
+        body: ReceiptDetailView(widget._receipt),
+        bottomNavigationBar: BottomAppBar(
+          shape: CircularNotchedRectangle(),
+          notchMargin: 4.0,
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              
+            ],
+          ),
+        )
+      )
     );
   }
 }

@@ -7,18 +7,15 @@ class ReceiptDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Hero(
-      tag: "receipt${_receipt.id}",
-      child: Card(
-        child: Column(
-          children: <Widget>[
-            _VendorContainer(_receipt),
-            SemiDivider(),
-            _ItemsContainer(_receipt),
-            SemiDivider(),
-            _TotalContainer(_receipt),
-          ],
-        )
+    return Card(
+      child: Column(
+        children: <Widget>[
+          _VendorContainer(_receipt),
+          SemiDivider(),
+          _ItemsContainer(_receipt),
+          SemiDivider(),
+          _TotalContainer(_receipt),
+        ],
       )
     );
   }
