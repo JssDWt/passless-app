@@ -30,9 +30,32 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
             icon: Icon(Icons.delete), 
             tooltip: "Delete",
             onPressed: () async {
-              // TODO: Move deletion to a BLOC?
-              await Repository.of(context).delete(widget._receipt);
-              Navigator.of(context).pop();
+              bool shouldDelete = await showDialog(
+                context: context, 
+                builder: (context) => AlertDialog(
+                  title: const Text("Delete receipt?"),
+                  content: const Text("You will not be able to recover the receipt later."),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: const Text("CANCEL"),
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).pop(false);
+                      },
+                    ),
+                    FlatButton(
+                      child: const Text("DELETE"),
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).pop(true);
+                      },
+                    ),
+                  ],
+                )
+              );
+
+              if (shouldDelete) {
+                await Repository.of(context).delete(widget._receipt);
+                Navigator.of(context).pop();
+              }
             },
           ),
         ],

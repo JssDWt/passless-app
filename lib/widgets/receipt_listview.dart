@@ -73,9 +73,34 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () async {
-              var toDelete = _selection.map((s) => widget.receipts[s]);
-              await Repository.of(context).deleteBatch(toDelete);
-              Navigator.of(context).pop();
+              String extraS = _selection.length > 1 ? "s" : "";
+              bool shouldDelete = await showDialog(
+                context: context, 
+                builder: (context) => AlertDialog(
+                  title: Text("Delete ${_selection.length} receipt$extraS?"),
+                  content: Text("You will not be able to recover the receipt$extraS later."),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: const Text("CANCEL"),
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).pop(false);
+                      },
+                    ),
+                    FlatButton(
+                      child: const Text("DELETE"),
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).pop(true);
+                      },
+                    ),
+                  ],
+                )
+              );
+
+              if (shouldDelete) {
+                var toDelete = _selection.map((s) => widget.receipts[s]);
+                await Repository.of(context).deleteBatch(toDelete);
+                Navigator.of(context).pop();
+              }
             },
           )
         ],
