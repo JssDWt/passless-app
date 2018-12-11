@@ -2,6 +2,7 @@ import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/models/receipt.dart';
 import 'package:flutter/material.dart';
 import 'package:passless_android/pages/receipt_detail_page.dart';
+import 'package:passless_android/widgets/delete_dialog.dart';
 
 /// Shows a list of receipts.
 class ReceiptListView extends StatelessWidget {
@@ -73,28 +74,9 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () async {
-              String extraS = _selection.length > 1 ? "s" : "";
-              bool shouldDelete = await showDialog(
-                context: context, 
-                builder: (context) => AlertDialog(
-                  title: Text("Delete ${_selection.length} receipt$extraS?"),
-                  content: Text("You will not be able to recover the receipt$extraS later."),
-                  actions: <Widget>[
-                    FlatButton(
-                      child: const Text("CANCEL"),
-                      onPressed: () {
-                        Navigator.of(context, rootNavigator: true).pop(false);
-                      },
-                    ),
-                    FlatButton(
-                      child: const Text("DELETE"),
-                      onPressed: () {
-                        Navigator.of(context, rootNavigator: true).pop(true);
-                      },
-                    ),
-                  ],
-                )
-              );
+              bool shouldDelete = await DeleteDialog.show(
+                context, 
+                _selection.length);
 
               if (shouldDelete) {
                 var toDelete = _selection.map((s) => widget.receipts[s]);

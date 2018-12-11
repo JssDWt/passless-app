@@ -364,12 +364,13 @@ class Repository {
     return result;
   }
 
-  Future<String> getComments(Receipt receipt) {
-
+  Future<String> getComments(Receipt receipt) async {
+    print('getComments called');
+    return 'Blah, die blah.';
   }
 
-  Future updateComments(Receipt receipt) {
-    
+  Future updateComments(Receipt receipt, String comments) {
+    print('updateComments called.');
   }
 
   Receipt _fromMap(Map map) {
