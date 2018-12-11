@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/models/receipt.dart';
@@ -16,6 +18,7 @@ class ReceiptDetailPage extends StatefulWidget {
 }
 
 class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
+  //TODO: add padding to card.
   @override
   Widget build(BuildContext context) {   
     return Hero(
@@ -59,15 +62,18 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: constraints.maxHeight),
               child: Card(
-                child: Column(
-                  children: <Widget>[
-                    _VendorContainer(widget._receipt),
-                    SemiDivider(),
-                    _ItemsContainer(widget._receipt),
-                    SemiDivider(),
-                    _TotalContainer(widget._receipt),
-                    _CommentContainer(widget._receipt)
-                  ],
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Column(
+                    children: <Widget>[
+                      _VendorContainer(widget._receipt),
+                      SemiDivider(),
+                      _ItemsContainer(widget._receipt),
+                      SemiDivider(),
+                      _TotalContainer(widget._receipt),
+                      _NoteContainer(widget._receipt)
+                    ],
+                  )
                 )
               )
             )
@@ -175,20 +181,21 @@ class _TotalContainer extends StatelessWidget {
   }
 }
 
-class _CommentContainer extends StatefulWidget {
+class _NoteContainer extends StatefulWidget {
   final Receipt _receipt;
-  _CommentContainer(this._receipt);
+  _NoteContainer(this._receipt);
   @override
-  _CommentContainerState createState() => _CommentContainerState();
+  _NoteContainerState createState() => _NoteContainerState();
 }
 
-class _CommentContainerState extends State<_CommentContainer> {
+class _NoteContainerState extends State<_NoteContainer> {
   Repository _repository;
-  BehaviorSubject<String> _commentSubject;
+  BehaviorSubject<String> _noteSubject;
   TextEditingController _controller;
+  StreamSubscription<String> _debounceSubscription;
   bool _isLoading = true;
   bool _isEditing = false;
-  String comments;
+  String notes;
 
   @override
   void didChangeDependencies() {
@@ -198,13 +205,13 @@ class _CommentContainerState extends State<_CommentContainer> {
 
   Future _initState() async {
     _repository = Repository.of(context);
-    comments = await _repository.getComments(widget._receipt);
-    _controller = TextEditingController(text: comments);
+    notes = await _repository.getComments(widget._receipt);
+    _controller = TextEditingController(text: notes);
     
-    _commentSubject = BehaviorSubject<String>();
-    _commentSubject.debounce(Duration(milliseconds: 750))
+    _noteSubject = BehaviorSubject<String>();
+    _debounceSubscription = _noteSubject.debounce(Duration(milliseconds: 400))
       .listen((c) => _repository.updateComments(widget._receipt, c));
-    _controller.addListener(() => _commentSubject.add(_controller.text));
+    _controller.addListener(() => _noteSubject.add(_controller.text));
 
     setState(() {
       _isLoading = false;
@@ -214,14 +221,19 @@ class _CommentContainerState extends State<_CommentContainer> {
   @override
   void dispose() {
     super.dispose();
-    if (_commentSubject != null) {
-      _commentSubject.close();
-      _commentSubject = null;
-    }
-
     if (_controller != null) {
       _controller.dispose();
       _controller = null;
+    }
+
+    if (_debounceSubscription != null) {
+      _debounceSubscription.cancel();
+      _debounceSubscription = null;
+    }
+
+    if (_noteSubject != null) {
+      _noteSubject.close();
+      _noteSubject = null;
     }
 
     _repository = null;
@@ -229,13 +241,14 @@ class _CommentContainerState extends State<_CommentContainer> {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
     List<Widget> actions;
     Widget noteField;
     if (_isEditing) {
       noteField = TextField(
         autofocus: true,
         controller: _controller,
+        keyboardType: TextInputType.multiline,
+        maxLines: 20,
       );
       actions = [
         IconButton(
@@ -244,7 +257,7 @@ class _CommentContainerState extends State<_CommentContainer> {
           onPressed: () {
             // NOTE: The comments are saved automagically.
             setState(() {
-              comments = _controller.text;
+              notes = _controller.text;
               _isEditing = false;
             });
           },
@@ -254,14 +267,14 @@ class _CommentContainerState extends State<_CommentContainer> {
           tooltip: "Cancel edit",
           onPressed: () {
             setState(() {
-              _controller.text = comments;
+              _controller.text = notes;
               _isEditing = false;
             });
           },
         ),
       ];
     }
-    else if (comments == null || comments.isEmpty) {
+    else if (notes == null || notes.isEmpty) {
       noteField = Text("");
       actions = [
         IconButton(
@@ -274,7 +287,7 @@ class _CommentContainerState extends State<_CommentContainer> {
       ];
     }
     else {
-      noteField = Text(comments, softWrap: true);
+      noteField = Text(notes, softWrap: true);
       actions = [
         IconButton(
           icon: Icon(Icons.edit),
@@ -288,8 +301,8 @@ class _CommentContainerState extends State<_CommentContainer> {
           tooltip: "Delete notes",
           onPressed: () {
             setState(() {
-              _controller.text = "";
-              comments = null;    
+              _controller.clear();
+              notes = null;    
               _isEditing = false; 
             });
           },
@@ -310,7 +323,14 @@ class _CommentContainerState extends State<_CommentContainer> {
             )
           ],
         ),
-        noteField
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Expanded(
+              child: noteField
+            ),
+          ],
+        )
       ],
     );
   }

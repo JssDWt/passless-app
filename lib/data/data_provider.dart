@@ -44,6 +44,7 @@ class _DataProvider extends InheritedWidget {
 /// A helper for accessing receipt data.
 class Repository {
   static const String RECEIPT_TABLE = "receipts";
+  static const String NOTE_TABLE = "notes";
 
   static Repository of(BuildContext context) {
     final _DataProvider provider = 
@@ -90,10 +91,26 @@ class Repository {
     
     // When creating the db, create the receipts table
     await db.execute(
-      "CREATE TABLE Receipts(id INTEGER PRIMARY KEY, receipt TEXT)");
+      "CREATE TABLE $RECEIPT_TABLE(id INTEGER PRIMARY KEY, receipt TEXT)");
+    
+    await db.execute(
+      """CREATE TABLE $NOTE_TABLE(
+        id INTEGER PRIMARY KEY, 
+        receipt_id INTEGER,
+        note TEXT, 
+        date REAL,
+        CONSTRAINT fk_receipts
+          FOREIGN KEY (receipt_id)
+          REFERENCES receipts(id)
+          ON DELETE CASCADE)""");
 
+    await db.execute(
+      """CREATE UNIQUE INDEX idx_notes_receipt_date
+         ON $NOTE_TABLE (receipt_id DESC, date DESC)""");
+         
+    // TODO: Remove the sample receipts.
     await db.rawInsert(
-      "INSERT INTO Receipts (receipt) VALUES (?)",
+      "INSERT INTO $RECEIPT_TABLE (receipt) VALUES (?)",
       ["""{
       "time": "2018-10-28T10:27:00+01:00",
       "currency": "EUR",
@@ -165,7 +182,7 @@ class Repository {
       }
     }"""]);
     await db.rawInsert(
-      "INSERT INTO Receipts (receipt) VALUES (?)",
+      "INSERT INTO $RECEIPT_TABLE (receipt) VALUES (?)",
       ["""{
       "time": "2017-10-28T10:27:00+01:00",
       "currency": "EUR",
@@ -228,7 +245,7 @@ class Repository {
       }
     }"""]);
     await db.rawInsert(
-      "INSERT INTO Receipts (receipt) VALUES (?)",
+      "INSERT INTO $RECEIPT_TABLE (receipt) VALUES (?)",
       ["""{
       "time": "2018-09-11T11:27:00+01:00",
       "currency": "EUR",
@@ -278,7 +295,7 @@ class Repository {
   Future<List<Receipt>> getReceipts() async {
     var dbClient = await db;
     List<Map> list = 
-      await dbClient.rawQuery("SELECT id, receipt FROM receipts");
+      await dbClient.rawQuery("SELECT id, receipt FROM $RECEIPT_TABLE");
     return list.map(_fromMap).toList();
   }
 
@@ -365,12 +382,45 @@ class Repository {
   }
 
   Future<String> getComments(Receipt receipt) async {
-    print('getComments called');
-    return 'Blah, die blah.';
+    var dbClient = await db;
+    var result = await dbClient.rawQuery(
+      """SELECT note,
+         MAX(date) AS date
+         FROM $NOTE_TABLE 
+         GROUP BY receipt_id
+         HAVING receipt_id = ?""", 
+      [receipt.id]
+    );
+
+    String note;
+    if (result == null || result.isEmpty) {
+      note = "";
+    }
+    else {
+      note = result.first["note"] as String;
+    }
+
+    return note;
   }
 
-  Future updateComments(Receipt receipt, String comments) {
-    print('updateComments called.');
+  Future updateComments(Receipt receipt, String notes) async {
+    var dbClient = await db;
+    
+    if (notes == null || notes.isEmpty) notes = null;
+    await dbClient.transaction((txn) async {
+      int id = await txn.rawInsert(
+        """INSERT INTO $NOTE_TABLE (receipt_id, note, date)
+           VALUES (?, ?, julianday('now'))""",
+        [receipt.id, notes]);
+      
+      // Remove any previous changes from the last 15 minutes.
+      await txn.delete(
+        NOTE_TABLE,
+        where: """id != ? AND receipt_id = ? 
+          AND date > julianday('now', '-15 minutes')""",
+        whereArgs: [id, receipt.id]
+      );
+    });
   }
 
   Receipt _fromMap(Map map) {
