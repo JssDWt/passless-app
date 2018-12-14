@@ -18,7 +18,6 @@ class ReceiptDetailPage extends StatefulWidget {
 }
 
 class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
-  //TODO: add padding to card.
   @override
   Widget build(BuildContext context) {   
     return Hero(
@@ -28,21 +27,6 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
           title: Text(widget._title),
           centerTitle: true,
           actions: <Widget>[
-            // IconButton(
-            //   icon: Icon(Icons.note), 
-            //   tooltip: "Notes",
-            //   onPressed: () {
-            //     Navigator.of(context).push(
-            //       MaterialPageRoute(
-            //         builder: (context) => 
-            //           // TODO: Focus on comments.
-            //           ReceiptDetailPage(
-            //             widget._receipt, 
-            //             widget._receipt.vendor.name)
-            //       )
-            //     );
-            //   },
-            // ),
             IconButton(
               icon: Icon(Icons.delete), 
               tooltip: "Delete",

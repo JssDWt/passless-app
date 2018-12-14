@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/widgets/drawer_menu.dart';
+import 'package:passless_android/widgets/menu_button.dart';
 import 'package:passless_android/widgets/receipt_listview.dart';
 import 'package:passless_android/pages/search_page.dart';
 import 'package:passless_android/models/receipt.dart';
@@ -54,19 +55,7 @@ class _RootPageState extends State<RootPage> {
       drawer: DrawerMenu(),
       appBar: AppBar(
         leading: Builder(
-          builder: (context) => Hero(
-            tag: "appBarLeading",
-            child: Material(
-              type: MaterialType.transparency,
-              child: IconButton(
-                icon: Icon(Icons.menu),
-                tooltip: 'Navigation menu',
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-              )
-            )
-          )
+          builder: (context) => MenuButton()
         ),
         title: Text("Passless receipts"),
         actions: <Widget>[

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:passless_android/widgets/drawer_menu.dart';
+import 'package:passless_android/widgets/menu_button.dart';
 
 class SettingsPage extends StatelessWidget {
   @override
@@ -8,19 +9,7 @@ class SettingsPage extends StatelessWidget {
       drawer: DrawerMenu(),
       appBar: AppBar(
         leading: Builder(
-          builder: (context) => Hero(
-            tag: "appBarLeading",
-            child: Material(
-              type: MaterialType.transparency,
-              child: IconButton(
-                icon: Icon(Icons.menu),
-                tooltip: 'Navigation menu',
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-              )
-            )
-          )
+          builder: (context) => MenuButton()
         ),
         title: Text("Settings"),
         actions: <Widget>[
