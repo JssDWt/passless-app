@@ -1,8 +1,43 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:nfc/nfc.dart';
+import 'package:passless_android/data/nfc_provider.dart';
 import 'package:passless_android/widgets/drawer_menu.dart';
 import 'package:passless_android/widgets/menu_button.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
+  @override
+  _SettingsPageState createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  Nfc _nfc;
+  StreamSubscription<bool> _nfcStateChange;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_nfc == null) {
+      _nfc = NfcProvider.of(context); 
+    }
+    
+    if (_nfcStateChange == null) {
+      _nfcStateChange = _nfc.nfcStateChange.listen((newValue) {
+        setState((){});
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    if (_nfcStateChange != null) {
+      _nfcStateChange.cancel();
+      _nfcStateChange = null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,12 +75,13 @@ class SettingsPage extends StatelessWidget {
                 children: <Widget>[
                   ListTile(
                     leading: Icon(Icons.nfc),
-                    // TODO: Update current nfc state.
-                    title: Text("NFC is ???"),
-                    trailing: FlatButton(
+                    title: Text(
+                      "NFC is ${_nfc.nfcEnabled ? "enabled" : "disabled"}."
+                    ),
+                    trailing: _nfc.nfcEnabled ? null : FlatButton(
                       child: Text("ENABLE"),
                       onPressed: () {
-                        // TODO: Go to settings.
+                        _nfc.gotoNfcSettings();
                       },
                     ),
                   )
@@ -61,7 +97,6 @@ class SettingsPage extends StatelessWidget {
                 children: <Widget>[
                   ListTile(
                     leading: Icon(Icons.sync),
-                    // TODO: Update current nfc state.
                     title: Text("Cloud backup"),
                     trailing: Icon(Icons.arrow_right),
                     onTap: () {
@@ -80,7 +115,6 @@ class SettingsPage extends StatelessWidget {
                 children: <Widget>[
                   ListTile(
                     leading: Icon(Icons.language),
-                    // TODO: Update current nfc state.
                     title: Text("Language"),
                     trailing: Text("English"),
                     onTap: () {
