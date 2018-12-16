@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:nfc/nfc.dart';
 import 'package:passless_android/data/nfc_provider.dart';
@@ -12,34 +10,9 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  Nfc _nfc;
-  StreamSubscription<bool> _nfcStateChange;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_nfc == null) {
-      _nfc = NfcProvider.of(context); 
-    }
-    
-    if (_nfcStateChange == null) {
-      _nfcStateChange = _nfc.nfcStateChange.listen((newValue) {
-        setState((){});
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    if (_nfcStateChange != null) {
-      _nfcStateChange.cancel();
-      _nfcStateChange = null;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    Nfc nfc = NfcProvider.of(context);
     return Scaffold(
       drawer: DrawerMenu(),
       appBar: AppBar(
@@ -76,12 +49,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   ListTile(
                     leading: Icon(Icons.nfc),
                     title: Text(
-                      "NFC is ${_nfc.nfcEnabled ? "enabled" : "disabled"}."
+                      "NFC is ${nfc.nfcEnabled ? "enabled" : "disabled"}."
                     ),
-                    trailing: _nfc.nfcEnabled ? null : FlatButton(
+                    trailing: nfc.nfcEnabled ? null : FlatButton(
                       child: Text("ENABLE"),
                       onPressed: () {
-                        _nfc.gotoNfcSettings();
+                        nfc.gotoNfcSettings();
                       },
                     ),
                   )
