@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:passless_android/data/data_provider.dart';
-import 'package:passless_android/data/nfc_provider.dart';
+import 'package:nfc/nfc_provider.dart';
 import 'package:passless_android/receipt_app.dart';
 
 /// Main entry point for the app.

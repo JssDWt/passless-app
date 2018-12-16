@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nfc/nfc.dart';
-import 'package:passless_android/data/nfc_provider.dart';
+import 'package:nfc/nfc_provider.dart';
 import 'package:passless_android/widgets/drawer_menu.dart';
 import 'package:passless_android/widgets/menu_button.dart';
 
