@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/models/receipt.dart';
 import 'package:passless_android/widgets/receipt_listview.dart';
+import 'package:passless_android/widgets/spinning_hero.dart';
 import 'package:rxdart/subjects.dart';
 
 class SearchBloc {
@@ -64,19 +65,24 @@ class _SearchPageState extends State<SearchPage> {
     // Build the page.
     return Scaffold(
       appBar: AppBar(
-        leading: Hero(
+        leading: SpinningHero(
           tag: "appBarLeading",
           child: Material(
-            type: MaterialType.transparency,
-            child: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+            color: Colors.transparent,
+            child: IconTheme(
+              data: Theme.of(context).primaryIconTheme,
+              child: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
             )
           ),
         ),
         title: TextField(
+          style: Theme.of(context).primaryTextTheme
+            .title.copyWith(fontWeight: FontWeight.normal),
           controller: _controller,
           autofocus: true,
           onChanged: (s) {
@@ -86,20 +92,23 @@ class _SearchPageState extends State<SearchPage> {
             prefixIcon: Hero(
               tag: "searchIcon",
               child: Material(
-                type: MaterialType.transparency,
-                child: Icon(
-                  Icons.search, 
-                  color: Theme.of(context).hintColor,
+                color: Colors.transparent,
+                child: IconTheme(
+                  data: Theme.of(context).primaryIconTheme,
+                  child: Icon(Icons.search)
                 )
               )
             ),
             hintText: 'Search...',
-            suffixIcon: IconButton(
-              icon: Icon(Icons.clear),
-              onPressed: () {
-                _controller.clear();
-                _searchBloc.search.add("");
-              },
+            suffixIcon: IconTheme(
+              data: Theme.of(context).primaryIconTheme,
+              child: IconButton(
+                icon: Icon(Icons.clear),
+                onPressed: () {
+                  _controller.clear();
+                  _searchBloc.search.add("");
+                },
+              ),
             )
           )
         ),

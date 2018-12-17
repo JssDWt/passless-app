@@ -3,6 +3,7 @@ import 'package:passless_android/models/receipt.dart';
 import 'package:flutter/material.dart';
 import 'package:passless_android/pages/receipt_detail_page.dart';
 import 'package:passless_android/widgets/delete_dialog.dart';
+import 'package:passless_android/widgets/spinning_hero.dart';
 
 /// Shows a list of receipts.
 class ReceiptListView extends StatelessWidget {
@@ -37,7 +38,7 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Hero(
+        leading: SpinningHero(
           tag: "appBarLeading",
           child: IconButton(
             icon: Icon(Icons.clear),
@@ -45,31 +46,8 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
               Navigator.of(context).pop();
             },
           ),
-          flightShuttleBuilder: (
-            BuildContext flightContext,
-            Animation<double> animation,
-            HeroFlightDirection flightDirection,
-            BuildContext fromHeroContext,
-            BuildContext toHeroContext,
-          ) {
-            // TODO: The icon seems to spin at different speeds on push/pop.
-            Animation<double> newAnimation = 
-              Tween<double>(begin: 0, end: 0.5).animate(animation);
-            
-            if (flightDirection == HeroFlightDirection.pop) {
-              newAnimation = ReverseAnimation(newAnimation);
-            }
-
-            return RotationTransition(
-              turns: newAnimation,
-              child: Material(
-                type: MaterialType.transparency,
-                child: toHeroContext.widget
-              ),
-            );
-          },
         ),
-        title: Text(_selection.length.toString()),
+        title: Text("${_selection.length} selected"),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.delete),

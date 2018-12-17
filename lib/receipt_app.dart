@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/models/receipt.dart';
-import 'package:passless_android/pages/root_page.dart';
+import 'package:passless_android/pages/latest_receipts_page.dart';
 import 'package:nfc/nfc.dart';
 import 'package:passless_android/pages/receipt_detail_page.dart';
 
@@ -17,26 +17,32 @@ class ReceiptApp extends StatefulWidget {
 /// Root application state. Initializes the receipt data.
 class _ReceiptAppState extends State<ReceiptApp> {
   final Nfc _nfc = Nfc();
+  StreamSubscription _messageSubscription;
   
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     initPlatformState();
   }
 
   /// Initializes the nfc plugin.
   initPlatformState() async {
-    _nfc.configure(
-      onMessage: (String message) async {
-        await _onMessage(message);
-      }
-    );
+    _messageSubscription = _nfc.messages.listen(_onMessage);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    if (_messageSubscription != null) {
+      _messageSubscription.cancel();
+      _messageSubscription = null;
+    }
   }
 
   /// Builds the root page.
   @override
   Widget build(BuildContext context) {
-    return RootPage();
+    return LatestReceiptsPage();
   }
 
   /// Handles received ndef messages (receipts)

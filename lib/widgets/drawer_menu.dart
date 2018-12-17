@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passless_android/pages/latest_receipts_page.dart';
 import 'package:passless_android/pages/search_page.dart';
 import 'package:passless_android/pages/settings_page.dart';
 
@@ -10,12 +11,29 @@ class DrawerMenu extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            child: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
             )
+          ),
+          ListTile(
+            leading: Icon(Icons.receipt),
+            title: Text("Latest receipts"),
+            onTap: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => LatestReceiptsPage())
+              );
+            }
           ),
           ListTile(
             leading: Icon(Icons.search),

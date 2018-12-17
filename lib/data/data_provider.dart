@@ -295,7 +295,9 @@ class Repository {
   Future<List<Receipt>> getReceipts() async {
     var dbClient = await db;
     List<Map> list = 
-      await dbClient.rawQuery("SELECT id, receipt FROM $RECEIPT_TABLE");
+      await dbClient.rawQuery(
+        """SELECT id, receipt FROM $RECEIPT_TABLE
+           ORDER BY id DESC""");
     return list.map(_fromMap).toList();
   }
 

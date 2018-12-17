@@ -7,12 +7,12 @@ import 'package:passless_android/pages/search_page.dart';
 import 'package:passless_android/models/receipt.dart';
 
 /// The root page of the app.
-class RootPage extends StatefulWidget {
+class LatestReceiptsPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _RootPageState();
+  State<StatefulWidget> createState() => _LatestReceiptsPageState();
 }
 
-class _RootPageState extends State<RootPage> {
+class _LatestReceiptsPageState extends State<LatestReceiptsPage> {
   List<Receipt> _receipts;
   bool _isLoading = true;
 
@@ -54,17 +54,18 @@ class _RootPageState extends State<RootPage> {
     return Scaffold(
       drawer: DrawerMenu(),
       appBar: AppBar(
-        leading: Builder(
-          builder: (context) => MenuButton()
-        ),
-        title: Text("Passless receipts"),
+        leading: MenuButton(),
+        title: Text("Latest receipts"),
         actions: <Widget>[
           IconButton(
             icon: Hero(
               tag: "searchIcon",
               child: Material(
-                type: MaterialType.transparency,
-                child: Icon(Icons.search)
+                color: Colors.transparent,
+                child: IconTheme(
+                  data: Theme.of(context).primaryIconTheme,
+                  child: Icon(Icons.search)
+                )
               )
             ),
             tooltip: 'Search',

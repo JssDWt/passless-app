@@ -16,17 +16,18 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       drawer: DrawerMenu(),
       appBar: AppBar(
-        leading: Builder(
-          builder: (context) => MenuButton()
-        ),
+        leading: MenuButton(),
         title: Text("Settings"),
         actions: <Widget>[
           IconButton(
             icon: Hero(
               tag: "searchIcon",
               child: Material(
-                type: MaterialType.transparency,
-                child: Icon(Icons.search)
+                color: Colors.transparent,
+                child: IconTheme(
+                  data: Theme.of(context).primaryIconTheme,
+                  child: Icon(Icons.search)
+                )
               )
             ),
             tooltip: 'Search settings',
