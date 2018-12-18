@@ -2,29 +2,26 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:passless_android/data/data_provider.dart';
+import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/models/receipt.dart';
 import 'package:passless_android/widgets/delete_dialog.dart';
 import 'package:passless_android/widgets/semi_divider.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// A page that shows receipt details.
-class ReceiptDetailPage extends StatefulWidget {
+class ReceiptDetailPage extends StatelessWidget {
   final Receipt _receipt;
   final String _title;
   ReceiptDetailPage(this._receipt, this._title);
 
   @override
-  State<StatefulWidget> createState() => _ReceiptDetailPageState();
-}
-
-class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
-  @override
   Widget build(BuildContext context) {   
+    print('detailpage build');
     return Hero(
-      tag: "receipt${widget._receipt.id}",
+      tag: "receipt${_receipt.id}",
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget._title),
+          title: Text(_title),
           centerTitle: true,
           actions: <Widget>[
             IconButton(
@@ -34,7 +31,7 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
                 bool shouldDelete = await DeleteDialog.show(context, 1);
 
                 if (shouldDelete) {
-                  await Repository.of(context).delete(widget._receipt);
+                  await Repository.of(context).delete(_receipt);
                   Navigator.of(context).pop();
                 }
               },
@@ -50,12 +47,12 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
                   padding: EdgeInsets.all(8),
                   child: Column(
                     children: <Widget>[
-                      _VendorContainer(widget._receipt),
+                      _VendorContainer(_receipt),
                       SemiDivider(),
-                      _ItemsContainer(widget._receipt),
+                      _ItemsContainer(_receipt),
                       SemiDivider(),
-                      _TotalContainer(widget._receipt),
-                      _NoteContainer(widget._receipt)
+                      _TotalContainer(_receipt),
+                      _NoteContainer(_receipt)
                     ],
                   )
                 )
@@ -89,6 +86,8 @@ class _ItemsContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("itemcontainer build");
+    var loc = PasslessLocalizations.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -124,7 +123,11 @@ class _ItemsContainer extends StatelessWidget {
         Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.end,
-          children: _receipt.items.map((i) => Text("${i.subTotal}")).toList(),
+          children: _receipt.items.map(
+            (i) => Text(
+              loc.price(i.subTotal, i.currency)
+            )
+          ).toList(),
         ),
       ]
     );
@@ -146,7 +149,10 @@ class _TotalContainer extends StatelessWidget {
               child: Text("Total", style: theme.textTheme.headline,)
             ),
             Text(
-              "${_receipt.currency} ${_receipt.total}", 
+              PasslessLocalizations.of(context).price(
+                _receipt.total, 
+                _receipt.currency
+              ), 
               style: theme.textTheme.headline,
             ),
           ],
@@ -156,11 +162,15 @@ class _TotalContainer extends StatelessWidget {
             Expanded(
               child: Text("Tax")
             ),
-            Text("${_receipt.currency} ${_receipt.tax}"),
+            Text(
+              PasslessLocalizations.of(context).price(
+                _receipt.tax, 
+                _receipt.currency
+              )
+            ),
           ],
         ),
       ]
-      
     );
   }
 }
@@ -194,9 +204,10 @@ class _NoteContainerState extends State<_NoteContainer> {
     
     _noteSubject = BehaviorSubject<String>();
     _debounceSubscription = _noteSubject.debounce(Duration(milliseconds: 400))
-      .listen((c) => _repository.updateComments(widget._receipt, c));
-    _controller.addListener(() => _noteSubject.add(_controller.text));
+      .listen((c) => _repository?.updateComments(widget._receipt, c));
+    _controller.addListener(() => _noteSubject?.add(_controller.text));
 
+    if (!mounted) return;
     setState(() {
       _isLoading = false;
     });

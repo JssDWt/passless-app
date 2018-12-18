@@ -1,0 +1,9 @@
+{
+  "@@last_modified": "2018-12-17T16:07:03.706617",
+  "title": "Passless",
+  "@title": {
+    "description": "Title for the Passless application",
+    "type": "text",
+    "placeholders": {}
+  }
+}

@@ -57,6 +57,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void dispose() {
     _searchBloc.close();
+    _controller.dispose();
     super.dispose();
   }
 

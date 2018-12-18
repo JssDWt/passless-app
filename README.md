@@ -19,3 +19,9 @@ NdefRecord mimeRecord = NdefRecord.createMime(
     "application/passless+json",
     "{ \"message\": \"NDEF message received\" }".getBytes(Charset.forName("UTF-8")));
 ```
+
+
+To generate localization files, run:
+`flutter pub pub run intl_translation:extract_to_arb --output-dir=lib/l10n lib/l10n/passless_localizations.dart lib/main.dart`
+
+`flutter pub pub run intl_translation:generate_from_arb --output-dir=lib/l10n \ --no-use-deferred-loading lib/l10n/passless_localizations.dart lib/main.dart lib/l10n/intl_*.arb`

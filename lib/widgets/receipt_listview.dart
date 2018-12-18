@@ -1,4 +1,5 @@
 import 'package:passless_android/data/data_provider.dart';
+import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/models/receipt.dart';
 import 'package:flutter/material.dart';
 import 'package:passless_android/pages/receipt_detail_page.dart';
@@ -106,6 +107,7 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
 
   @override
   Widget build(BuildContext context) {
+    print('listview build');
     Widget result;
     if (widget.receipts.isEmpty) {
       result = Text("No receipts found.");
@@ -124,7 +126,10 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
                 leading: isSelected ? Icon(Icons.check) : Text(""),
                 title: Text(receipt.vendor.name),
                 subtitle: Text(
-                  "${receipt.currency} ${receipt.total}",
+                  PasslessLocalizations.of(context).price(
+                    receipt.total, 
+                    receipt.currency
+                  ),
                   style: Theme.of(context).textTheme.caption,
                 ),
                 onTap: () {
