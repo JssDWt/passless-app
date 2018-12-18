@@ -1,6 +1,6 @@
 {
   "@@last_modified": "2018-12-18T23:11:15.013237",
-  "clearTooltip": "Clear",
+  "clearTooltip": "Wissen",
   "@clearTooltip": {
     "description": "Tooltip over the clear button",
     "type": "text",
@@ -12,13 +12,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "newReceiptTitle": "New receipt",
+  "newReceiptTitle": "Nieuwe bon",
   "@newReceiptTitle": {
     "description": "Page title for a new receipt",
     "type": "text",
     "placeholders": {}
   },
-  "settings": "Settings",
+  "settings": "Instellingen",
   "@settings": {
     "description": "Word for settings",
     "type": "text",
@@ -30,19 +30,19 @@
     "type": "text",
     "placeholders": {}
   },
-  "nfcEnabled": "NFC is enabled.",
+  "nfcEnabled": "NFC is geactiveerd.",
   "@nfcEnabled": {
     "description": "Short sentence indicating nfc is enabled.",
     "type": "text",
     "placeholders": {}
   },
-  "nfcDisabled": "NFC is disabled.",
+  "nfcDisabled": "NFC is gedeactiveerd.",
   "@nfcDisabled": {
     "description": "Short sentence indicating nfc is disabled.",
     "type": "text",
     "placeholders": {}
   },
-  "enable": "ENABLE",
+  "enable": "ACTIVEREN",
   "@enable": {
     "description": "Text on button that enables nfc.",
     "type": "text",
@@ -60,25 +60,25 @@
     "type": "text",
     "placeholders": {}
   },
-  "localization": "Localization",
+  "localization": "Regionale instellingen",
   "@localization": {
     "description": "Settings for localization (language, etc.).",
     "type": "text",
     "placeholders": {}
   },
-  "language": "Language",
+  "language": "Taal",
   "@language": {
     "description": "Word for language.",
     "type": "text",
     "placeholders": {}
   },
-  "latestReceiptsTitle": "Latest receipts",
+  "latestReceiptsTitle": "Nieuwste bonnen",
   "@latestReceiptsTitle": {
     "description": "Title for the latest receipts page",
     "type": "text",
     "placeholders": {}
   },
-  "deleteReceiptsDialogTitle": "{howMany,plural, =1{Delete receipt?}other{Delete {howMany} receipts?}}",
+  "deleteReceiptsDialogTitle": "{howMany,plural, =1{Bon verwijderen?}other{{howMany} bonnen verwijderen?}}",
   "@deleteReceiptsDialogTitle": {
     "description": "Title for the delete receipts dialog. Indicating how many receipts will be deleted.",
     "type": "text",
@@ -86,7 +86,7 @@
       "howMany": {}
     }
   },
-  "deleteReceiptsDialogMessage": "{howMany,plural, =1{You will not be able to recover the receipt later.}other{You will not be able to recover the receipts later.}}",
+  "deleteReceiptsDialogMessage": "{howMany,plural, =1{De bon kan later niet worden hersteld.}other{De bonnen kunnen later niet worden hersteld.}}",
   "@deleteReceiptsDialogMessage": {
     "description": "Message for the delete receipts dialog. Indicating that the receipts cannot be recovered.",
     "type": "text",
@@ -94,7 +94,7 @@
       "howMany": {}
     }
   },
-  "receiptsSelectedTitle": "{howMany,plural, =1{{howMany} selected}other{{howMany} selected}}",
+  "receiptsSelectedTitle": "{howMany,plural, =1{{howMany} geselecteerd}other{{howMany} geselecteerd}}",
   "@receiptsSelectedTitle": {
     "description": "Short ttext indicating how many receipts are selected.",
     "type": "text",
@@ -102,55 +102,55 @@
       "howMany": {}
     }
   },
-  "noReceiptsFound": "No receipts found",
+  "noReceiptsFound": "Geen bonnen gevonden",
   "@noReceiptsFound": {
     "description": "Text shown when no receipts were found in a search.",
     "type": "text",
     "placeholders": {}
   },
-  "total": "Total",
+  "total": "Totaal",
   "@total": {
     "description": "Text indicating total price",
     "type": "text",
     "placeholders": {}
   },
-  "tax": "Tax",
+  "tax": "BTW",
   "@tax": {
     "description": "Word for tax",
     "type": "text",
     "placeholders": {}
   },
-  "notes": "Notes",
+  "notes": "Notities",
   "@notes": {
     "description": "Word for notes",
     "type": "text",
     "placeholders": {}
   },
-  "addNotesTooltip": "Add notes",
+  "addNotesTooltip": "Notities toevoegen",
   "@addNotesTooltip": {
     "description": "Imperative to add notes; tooltip over the add button",
     "type": "text",
     "placeholders": {}
   },
-  "deleteNotesTooltip": "Delete notes",
+  "deleteNotesTooltip": "Notities verwijderen",
   "@deleteNotesTooltip": {
     "description": "Imperative to delete notes; tooltip over the delete button",
     "type": "text",
     "placeholders": {}
   },
-  "editNotesTooltip": "Edit notes",
+  "editNotesTooltip": "Notities wijzigen",
   "@editNotesTooltip": {
     "description": "Imperative to edit notes; tooltip over the edit button",
     "type": "text",
     "placeholders": {}
   },
-  "saveNotesTooltip": "Save notes",
+  "saveNotesTooltip": "Notities opslaan",
   "@saveNotesTooltip": {
     "description": "Imperative to save notes; tooltip over the save button",
     "type": "text",
     "placeholders": {}
   },
-  "cancelEditTooltip": "Cancel edit",
+  "cancelEditTooltip": "Wijzigingen annuleren",
   "@cancelEditTooltip": {
     "description": "Imperative to cancel editing",
     "type": "text",

@@ -16,7 +16,6 @@ class ReceiptDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {   
-    print('detailpage build');
     return Hero(
       tag: "receipt${_receipt.id}",
       child: Scaffold(
@@ -26,7 +25,7 @@ class ReceiptDetailPage extends StatelessWidget {
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.delete), 
-              tooltip: "Delete",
+              tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
               onPressed: () async {
                 bool shouldDelete = await DeleteDialog.show(context, 1);
 
@@ -86,31 +85,32 @@ class _ItemsContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("itemcontainer build");
     var loc = PasslessLocalizations.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: _receipt.items.map((i) => Text("${i.quantity}")).toList(),
+          children: _receipt.items.map(
+            (i) => Text(loc.quantity(i.quantity, i.unit))
+          ).toList(),
         ),
-        Container(
-          padding: EdgeInsets.only(left: 1),
-          child: Column(
-            children: _receipt.items.map((i) {
-              String text;
-              if (i.unit.toLowerCase() == "pc") {
-                text = "";
-              }
-              else {
-                text = i.unit;
-              }
+        // Container(
+        //   padding: EdgeInsets.only(left: 1),
+        //   child: Column(
+        //     children: _receipt.items.map((i) {
+        //       String text;
+        //       if (i.unit.toLowerCase() == "pc") {
+        //         text = "";
+        //       }
+        //       else {
+        //         text = i.unit;
+        //       }
 
-              return Text(text);
-            }).toList(),
-          )
-        ),
+        //       return Text(text);
+        //     }).toList(),
+        //   )
+        // ),
         Expanded(
           child: Container(
             padding: EdgeInsets.only(left: 8),
@@ -140,13 +140,14 @@ class _TotalContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
+    var loc = PasslessLocalizations.of(context);
 
     return Column(
       children: <Widget>[
         Row(
           children: <Widget>[
             Expanded(
-              child: Text("Total", style: theme.textTheme.headline,)
+              child: Text(loc.total, style: theme.textTheme.headline,)
             ),
             Text(
               PasslessLocalizations.of(context).price(
@@ -160,7 +161,7 @@ class _TotalContainer extends StatelessWidget {
         Row(
           children: <Widget>[
             Expanded(
-              child: Text("Tax")
+              child: Text(loc.tax)
             ),
             Text(
               PasslessLocalizations.of(context).price(
@@ -236,6 +237,8 @@ class _NoteContainerState extends State<_NoteContainer> {
 
   @override
   Widget build(BuildContext context) {
+    var loc = PasslessLocalizations.of(context);
+
     List<Widget> actions;
     Widget noteField;
     if (_isEditing) {
@@ -248,7 +251,7 @@ class _NoteContainerState extends State<_NoteContainer> {
       actions = [
         IconButton(
           icon: Icon(Icons.save),
-          tooltip: "Save notes",
+          tooltip: loc.saveNotesTooltip,
           onPressed: () {
             // NOTE: The comments are saved automagically.
             setState(() {
@@ -259,7 +262,7 @@ class _NoteContainerState extends State<_NoteContainer> {
         ),
         IconButton(
           icon: Icon(Icons.clear),
-          tooltip: "Cancel edit",
+          tooltip: loc.cancelEditTooltip,
           onPressed: () {
             setState(() {
               _controller.text = notes;
@@ -274,7 +277,7 @@ class _NoteContainerState extends State<_NoteContainer> {
       actions = [
         IconButton(
           icon: Icon(Icons.note_add,),
-          tooltip: "Add notes",
+          tooltip: loc.addNotesTooltip,
           onPressed: () {
             setState(() => _isEditing = true);
           },
@@ -286,14 +289,14 @@ class _NoteContainerState extends State<_NoteContainer> {
       actions = [
         IconButton(
           icon: Icon(Icons.edit),
-          tooltip: "Edit notes",
+          tooltip: loc.editNotesTooltip,
           onPressed: () {
             setState(() => _isEditing = true);
           },
         ),
         IconButton(
           icon: Icon(Icons.delete),
-          tooltip: "Delete notes",
+          tooltip: loc.deleteNotesTooltip,
           onPressed: () {
             setState(() {
               _controller.clear();
@@ -311,7 +314,7 @@ class _NoteContainerState extends State<_NoteContainer> {
         Row(
           children: <Widget>[
             Expanded(
-              child: Text("Notes", style: Theme.of(context).textTheme.subhead),
+              child: Text(loc.notes, style: Theme.of(context).textTheme.subhead),
             ),
             Row(
               children: actions,

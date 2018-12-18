@@ -37,21 +37,24 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
 
   @override
   Widget build(BuildContext context) {
+    var loc = PasslessLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: SpinningHero(
           tag: "appBarLeading",
           child: IconButton(
             icon: Icon(Icons.clear),
+            tooltip: loc.clearTooltip,
             onPressed: () {
               Navigator.of(context).pop();
             },
           ),
         ),
-        title: Text("${_selection.length} selected"),
+        title: Text(loc.receiptsSelectedTitle(_selection.length)),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.delete),
+            tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
             onPressed: () async {
               bool shouldDelete = await DeleteDialog.show(
                 context, 
@@ -107,10 +110,10 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
 
   @override
   Widget build(BuildContext context) {
-    print('listview build');
+    var loc = PasslessLocalizations.of(context);
     Widget result;
     if (widget.receipts.isEmpty) {
-      result = Text("No receipts found.");
+      result = Text(loc.noReceiptsFound);
     }
     else {
       result = ListView.builder(

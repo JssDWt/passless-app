@@ -12,7 +12,7 @@ class MenuButton extends StatelessWidget {
           data: Theme.of(context).primaryIconTheme,
           child: IconButton(
             icon: Icon(Icons.menu),
-            tooltip: 'Navigation menu',
+            tooltip: MaterialLocalizations.of(context).drawerLabel,
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },

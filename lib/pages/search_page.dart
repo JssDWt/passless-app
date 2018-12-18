@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:passless_android/data/data_provider.dart';
+import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/models/receipt.dart';
 import 'package:passless_android/widgets/receipt_listview.dart';
 import 'package:passless_android/widgets/spinning_hero.dart';
@@ -63,6 +64,8 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    var loc = PasslessLocalizations.of(context);
+    var matLoc = MaterialLocalizations.of(context);
     // Build the page.
     return Scaffold(
       appBar: AppBar(
@@ -74,6 +77,7 @@ class _SearchPageState extends State<SearchPage> {
               data: Theme.of(context).primaryIconTheme,
               child: IconButton(
                 icon: Icon(Icons.arrow_back),
+                tooltip: matLoc.backButtonTooltip,
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -100,11 +104,12 @@ class _SearchPageState extends State<SearchPage> {
                 )
               )
             ),
-            hintText: 'Search...',
+            hintText: "${matLoc.searchFieldLabel}...",
             suffixIcon: IconTheme(
               data: Theme.of(context).primaryIconTheme,
               child: IconButton(
                 icon: Icon(Icons.clear),
+                tooltip: loc.clearTooltip,
                 onPressed: () {
                   _controller.clear();
                   _searchBloc.search.add("");

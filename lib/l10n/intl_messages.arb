@@ -1,8 +1,158 @@
 {
-  "@@last_modified": "2018-12-17T16:07:03.706617",
+  "@@last_modified": "2018-12-18T23:11:15.013237",
+  "clearTooltip": "Clear",
+  "@clearTooltip": {
+    "description": "Tooltip over the clear button",
+    "type": "text",
+    "placeholders": {}
+  },
   "title": "Passless",
   "@title": {
     "description": "Title for the Passless application",
+    "type": "text",
+    "placeholders": {}
+  },
+  "newReceiptTitle": "New receipt",
+  "@newReceiptTitle": {
+    "description": "Page title for a new receipt",
+    "type": "text",
+    "placeholders": {}
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Word for settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "nfc": "NFC",
+  "@nfc": {
+    "description": "abbreviation for Near Field Communication",
+    "type": "text",
+    "placeholders": {}
+  },
+  "nfcEnabled": "NFC is enabled.",
+  "@nfcEnabled": {
+    "description": "Short sentence indicating nfc is enabled.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "nfcDisabled": "NFC is disabled.",
+  "@nfcDisabled": {
+    "description": "Short sentence indicating nfc is disabled.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "enable": "ENABLE",
+  "@enable": {
+    "description": "Text on button that enables nfc.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "data": "Data",
+  "@data": {
+    "description": "Header text over the data settings menu container.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "cloudBackup": "Cloud backup",
+  "@cloudBackup": {
+    "description": "Settings for cloud backup.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "localization": "Localization",
+  "@localization": {
+    "description": "Settings for localization (language, etc.).",
+    "type": "text",
+    "placeholders": {}
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Word for language.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "latestReceiptsTitle": "Latest receipts",
+  "@latestReceiptsTitle": {
+    "description": "Title for the latest receipts page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "deleteReceiptsDialogTitle": "{howMany,plural, =1{Delete receipt?}other{Delete {howMany} receipts?}}",
+  "@deleteReceiptsDialogTitle": {
+    "description": "Title for the delete receipts dialog. Indicating how many receipts will be deleted.",
+    "type": "text",
+    "placeholders": {
+      "howMany": {}
+    }
+  },
+  "deleteReceiptsDialogMessage": "{howMany,plural, =1{You will not be able to recover the receipt later.}other{You will not be able to recover the receipts later.}}",
+  "@deleteReceiptsDialogMessage": {
+    "description": "Message for the delete receipts dialog. Indicating that the receipts cannot be recovered.",
+    "type": "text",
+    "placeholders": {
+      "howMany": {}
+    }
+  },
+  "receiptsSelectedTitle": "{howMany,plural, =1{{howMany} selected}other{{howMany} selected}}",
+  "@receiptsSelectedTitle": {
+    "description": "Short ttext indicating how many receipts are selected.",
+    "type": "text",
+    "placeholders": {
+      "howMany": {}
+    }
+  },
+  "noReceiptsFound": "No receipts found",
+  "@noReceiptsFound": {
+    "description": "Text shown when no receipts were found in a search.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "total": "Total",
+  "@total": {
+    "description": "Text indicating total price",
+    "type": "text",
+    "placeholders": {}
+  },
+  "tax": "Tax",
+  "@tax": {
+    "description": "Word for tax",
+    "type": "text",
+    "placeholders": {}
+  },
+  "notes": "Notes",
+  "@notes": {
+    "description": "Word for notes",
+    "type": "text",
+    "placeholders": {}
+  },
+  "addNotesTooltip": "Add notes",
+  "@addNotesTooltip": {
+    "description": "Imperative to add notes; tooltip over the add button",
+    "type": "text",
+    "placeholders": {}
+  },
+  "deleteNotesTooltip": "Delete notes",
+  "@deleteNotesTooltip": {
+    "description": "Imperative to delete notes; tooltip over the delete button",
+    "type": "text",
+    "placeholders": {}
+  },
+  "editNotesTooltip": "Edit notes",
+  "@editNotesTooltip": {
+    "description": "Imperative to edit notes; tooltip over the edit button",
+    "type": "text",
+    "placeholders": {}
+  },
+  "saveNotesTooltip": "Save notes",
+  "@saveNotesTooltip": {
+    "description": "Imperative to save notes; tooltip over the save button",
+    "type": "text",
+    "placeholders": {}
+  },
+  "cancelEditTooltip": "Cancel edit",
+  "@cancelEditTooltip": {
+    "description": "Imperative to cancel editing",
     "type": "text",
     "placeholders": {}
   }

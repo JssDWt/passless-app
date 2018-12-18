@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passless_android/l10n/passless_localizations.dart';
 
 class DeleteDialog extends StatelessWidget {
   final int deleteCount;
@@ -7,19 +8,20 @@ class DeleteDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String extraS = deleteCount > 1 ? "s" : "";
+    var loc = PasslessLocalizations.of(context);
+    var matLoc = MaterialLocalizations.of(context);
     return AlertDialog(
-      title: Text("Delete $deleteCount receipt$extraS?"),
-      content: Text("You will not be able to recover the receipt$extraS later."),
+      title: Text(loc.deleteReceiptsDialogTitle(deleteCount)),
+      content: Text(loc.deleteReceiptsDialogTitle(deleteCount)),
       actions: <Widget>[
         FlatButton(
-          child: const Text("CANCEL"),
+          child: Text(matLoc.cancelButtonLabel),
           onPressed: () {
             Navigator.of(context, rootNavigator: true).pop(false);
           },
         ),
         FlatButton(
-          child: const Text("DELETE"),
+          child: Text(matLoc.deleteButtonTooltip.toUpperCase()),
           onPressed: () {
             Navigator.of(context, rootNavigator: true).pop(true);
           },
