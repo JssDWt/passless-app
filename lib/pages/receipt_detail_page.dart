@@ -16,6 +16,8 @@ class ReceiptDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {   
+    var theme = Theme.of(context);
+
     return Hero(
       tag: "receipt${_receipt.id}",
       child: Scaffold(
@@ -36,6 +38,13 @@ class ReceiptDetailPage extends StatelessWidget {
               },
             ),
           ],
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(
+              8 + theme.primaryTextTheme.body1.fontSize * 2
+            ),
+            // TODO: Make sure the text color matches the location...
+            child: _VendorContainer(_receipt) 
+          ),
         ),
         body: LayoutBuilder(
           builder: (context, constraints) => SingleChildScrollView(
@@ -46,7 +55,7 @@ class ReceiptDetailPage extends StatelessWidget {
                   padding: EdgeInsets.all(8),
                   child: Column(
                     children: <Widget>[
-                      _VendorContainer(_receipt),
+                      _DateContainer(_receipt),
                       SemiDivider(),
                       _ItemsContainer(_receipt),
                       SemiDivider(),
@@ -64,22 +73,52 @@ class ReceiptDetailPage extends StatelessWidget {
   }
 }
 
+class _DateContainer  extends StatelessWidget {
+  final Receipt _receipt;
+  _DateContainer(this._receipt);
+
+  @override
+  Widget build(BuildContext context) {
+    var loc = PasslessLocalizations.of(context);
+    return Row(
+      children: <Widget>[
+        Text(loc.date(_receipt.time)),
+        Padding(
+          padding: EdgeInsets.only(left: 8),
+          child: Text(loc.time(_receipt.time))
+        )
+      ],
+    );
+  }
+}
+
 class _VendorContainer extends StatelessWidget {
   final Receipt _receipt;
   _VendorContainer(this._receipt);
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
     return Column(
       children: <Widget>[
-        Text(_receipt.vendor.name),
-        Text(_receipt.vendor.address),
-        Text(_receipt.vendor.telNumber),
+        // Padding(
+        //   padding: EdgeInsets.all(8),
+        //   child: Text(
+        //     _receipt.vendor.name, 
+        //     style: Theme.of(context).textTheme.headline
+        //   ),
+        // ),
+        Text(_receipt.vendor.address, style: theme.primaryTextTheme.body2),
+        Padding(
+          padding: EdgeInsets.all(4),
+          child: Text(_receipt.vendor.telNumber, style: theme.primaryTextTheme.body2)
+        ),
       ]
     );
   }
 }
 
 class _ItemsContainer extends StatelessWidget {
+  static const double paddingBetweenItems = 4;
   final Receipt _receipt;
   _ItemsContainer(this._receipt);
 
@@ -92,7 +131,10 @@ class _ItemsContainer extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: _receipt.items.map(
-            (i) => Text(loc.quantity(i.quantity, i.unit))
+            (i) => Padding(
+              padding: EdgeInsets.symmetric(vertical: paddingBetweenItems),
+              child: Text(loc.quantity(i.quantity, i.unit))
+            )
           ).toList(),
         ),
         // Container(
@@ -116,7 +158,12 @@ class _ItemsContainer extends StatelessWidget {
             padding: EdgeInsets.only(left: 8),
             child:  Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: _receipt.items.map((i) => Text(i.name)).toList(),
+              children: _receipt.items.map(
+                (i) => Padding(
+                  padding: EdgeInsets.symmetric(vertical: paddingBetweenItems),
+                  child: Text(i.name)
+                )
+              ).toList(),
             )
           )
         ),
@@ -124,8 +171,11 @@ class _ItemsContainer extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: _receipt.items.map(
-            (i) => Text(
-              loc.price(i.subTotal, i.currency)
+            (i) => Padding(
+              padding: EdgeInsets.symmetric(vertical: paddingBetweenItems),
+              child: Text(
+                loc.price(i.subTotal, i.currency)
+              )
             )
           ).toList(),
         ),
@@ -241,10 +291,7 @@ class _NoteContainerState extends State<_NoteContainer> {
 
     List<Widget> actions;
     Widget noteField;
-    if (_isLoading) {
-      noteField = CircularProgressIndicator();
-    }
-    else if (_isEditing) {
+    if (_isEditing) {
       noteField = TextField(
         autofocus: true,
         controller: _controller,
@@ -276,7 +323,7 @@ class _NoteContainerState extends State<_NoteContainer> {
       ];
     }
     else if (notes == null || notes.isEmpty) {
-      noteField = Text("");
+      noteField = const Text("");
       actions = [
         IconButton(
           icon: Icon(Icons.note_add,),

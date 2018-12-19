@@ -258,6 +258,16 @@ class PasslessLocalizations {
 
     return result;
   }
+
+  String date(DateTime date) {
+    final f = DateFormat.yMMMMd(locale.toString());
+    return f.format(date);
+  }
+
+  String time(DateTime time) {
+    final f = DateFormat.Hms(locale.toString());
+    return f.format(time);
+  }
 }
 
 class PasslessLocalizationsDelegate extends 
