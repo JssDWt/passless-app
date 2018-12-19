@@ -12,7 +12,7 @@ class DeleteDialog extends StatelessWidget {
     var matLoc = MaterialLocalizations.of(context);
     return AlertDialog(
       title: Text(loc.deleteReceiptsDialogTitle(deleteCount)),
-      content: Text(loc.deleteReceiptsDialogTitle(deleteCount)),
+      content: Text(loc.deleteReceiptsDialogMessage(deleteCount)),
       actions: <Widget>[
         FlatButton(
           child: Text(matLoc.cancelButtonLabel),
