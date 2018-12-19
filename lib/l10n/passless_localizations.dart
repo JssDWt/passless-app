@@ -234,6 +234,30 @@ class PasslessLocalizations {
     );
   }
 
+  String get receipt {
+    return Intl.message(
+      'Receipt',
+      name: 'receipt',
+      desc: 'Word for receipt',
+    );
+  }
+
+  String get moreButtonLabel {
+    return Intl.message(
+      'MORE',
+      name: 'moreButtonLabel',
+      desc: 'Text on the more button. Shows when overflown text is cut.',
+    );
+  }
+
+  String get lessButtonLabel {
+    return Intl.message(
+      'LESS',
+      name: 'lessButtonLabel',
+      desc: 'Text on the less button. Shows when large text can be hidden.',
+    );
+  }
+
   String price(double price, String currency) {
     var numberFormat = NumberFormat.compactSimpleCurrency(
       locale: locale.toString(), 
@@ -265,7 +289,7 @@ class PasslessLocalizations {
   }
 
   String time(DateTime time) {
-    final f = DateFormat.Hms(locale.toString());
+    final f = DateFormat.Hm(locale.toString());
     return f.format(time);
   }
 }

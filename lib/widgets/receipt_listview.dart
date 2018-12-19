@@ -141,7 +141,7 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => 
-                          ReceiptDetailPage(receipt, receipt.vendor.name)));
+                          ReceiptDetailPage(receipt, loc.receipt)));
                   }
                 },
                 onLongPress: () {

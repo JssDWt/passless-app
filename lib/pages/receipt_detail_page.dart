@@ -5,6 +5,7 @@ import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/models/receipt.dart';
 import 'package:passless_android/widgets/delete_dialog.dart';
+import 'package:passless_android/widgets/overflow_text.dart';
 import 'package:passless_android/widgets/semi_divider.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -17,12 +18,26 @@ class ReceiptDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {   
     var theme = Theme.of(context);
+    var loc = PasslessLocalizations.of(context);
 
     return Hero(
       tag: "receipt${_receipt.id}",
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_title),
+          title: Column(
+            children: <Widget>[
+              Expanded(
+                child: Center(child: Text(_title))
+              ),
+              Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: Text(
+                  loc.date(_receipt.time) + "  " + loc.time(_receipt.time),
+                  style: theme.primaryTextTheme.subhead,
+                )
+              )
+            ]
+          ),
           centerTitle: true,
           actions: <Widget>[
             IconButton(
@@ -38,13 +53,6 @@ class ReceiptDetailPage extends StatelessWidget {
               },
             ),
           ],
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(
-              8 + theme.primaryTextTheme.body1.fontSize * 2
-            ),
-            // TODO: Make sure the text color matches the location...
-            child: _VendorContainer(_receipt) 
-          ),
         ),
         body: LayoutBuilder(
           builder: (context, constraints) => SingleChildScrollView(
@@ -55,7 +63,7 @@ class ReceiptDetailPage extends StatelessWidget {
                   padding: EdgeInsets.all(8),
                   child: Column(
                     children: <Widget>[
-                      _DateContainer(_receipt),
+                      _VendorContainer(_receipt),
                       SemiDivider(),
                       _ItemsContainer(_receipt),
                       SemiDivider(),
@@ -81,6 +89,8 @@ class _DateContainer  extends StatelessWidget {
   Widget build(BuildContext context) {
     var loc = PasslessLocalizations.of(context);
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text(loc.date(_receipt.time)),
         Padding(
@@ -100,17 +110,17 @@ class _VendorContainer extends StatelessWidget {
     var theme = Theme.of(context);
     return Column(
       children: <Widget>[
-        // Padding(
-        //   padding: EdgeInsets.all(8),
-        //   child: Text(
-        //     _receipt.vendor.name, 
-        //     style: Theme.of(context).textTheme.headline
-        //   ),
-        // ),
-        Text(_receipt.vendor.address, style: theme.primaryTextTheme.body2),
+        Padding(
+          padding: EdgeInsets.all(8),
+          child: Text(
+            _receipt.vendor.name, 
+            style: Theme.of(context).textTheme.headline
+          ),
+        ),
+        Text(_receipt.vendor.address),//, style: theme.primaryTextTheme.body2),
         Padding(
           padding: EdgeInsets.all(4),
-          child: Text(_receipt.vendor.telNumber, style: theme.primaryTextTheme.body2)
+          child: Text(_receipt.vendor.telNumber),//, style: theme.primaryTextTheme.body2)
         ),
       ]
     );
@@ -335,7 +345,8 @@ class _NoteContainerState extends State<_NoteContainer> {
       ];
     }
     else {
-      noteField = Text(notes, softWrap: true);
+      noteField = OverflowText(notes, maxLines: 3);
+
       actions = [
         IconButton(
           icon: Icon(Icons.edit),
