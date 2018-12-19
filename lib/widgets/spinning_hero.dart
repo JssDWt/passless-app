@@ -17,7 +17,6 @@ class SpinningHero extends StatelessWidget {
         BuildContext fromHeroContext,
         BuildContext toHeroContext,
       ) {
-        // TODO: The icon seems to spin at different speeds on push/pop.
         // Animation<double> newAnimation = 
         //   Tween<double>(begin: 0, end: 0.5).animate(animation);
         Animation<double> newAnimation = animation;

@@ -84,24 +84,24 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(loc.localization),
-            ),
-            Card(
-              child: Column(
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(Icons.language),
-                    title: Text(loc.language),
-                    trailing: Text("English"),
-                    onTap: () {
-                      // TODO: show language picker and change language.
-                    },
-                  )
-                ],
-              ),
-            )
+            // Padding(
+            //   padding: const EdgeInsets.all(16.0),
+            //   child: Text(loc.localization),
+            // ),
+            // Card(
+            //   child: Column(
+            //     children: <Widget>[
+            //       ListTile(
+            //         leading: Icon(Icons.language),
+            //         title: Text(loc.language),
+            //         trailing: Text("English"),
+            //         onTap: () {
+            //           // show language picker and change language.
+            //         },
+            //       )
+            //     ],
+            //   ),
+            // )
           ],
         )
       )

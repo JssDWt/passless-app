@@ -83,17 +83,15 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
 
 class _ReceiptListView extends StatefulWidget {
   final List<Receipt> receipts;
-  List<int> selected = List<int>();
-  void Function() selectionChangedCallback;
+  final List<int> selected;
+  final void Function() selectionChangedCallback;
 
   _ReceiptListView(
     this.receipts, 
     {
-      List<int> selected,
-      this.selectionChangedCallback,
-    }) {
-    if (selected != null) this.selected = selected;
-  }
+      List<int> selected, 
+      this.selectionChangedCallback
+    }) : this.selected = selected ?? List<int>();
 
   @override
   _ReceiptListViewState createState() => _ReceiptListViewState();

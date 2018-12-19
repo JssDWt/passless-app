@@ -241,7 +241,10 @@ class _NoteContainerState extends State<_NoteContainer> {
 
     List<Widget> actions;
     Widget noteField;
-    if (_isEditing) {
+    if (_isLoading) {
+      noteField = CircularProgressIndicator();
+    }
+    else if (_isEditing) {
       noteField = TextField(
         autofocus: true,
         controller: _controller,

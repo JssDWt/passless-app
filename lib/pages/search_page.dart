@@ -104,7 +104,7 @@ class _SearchPageState extends State<SearchPage> {
                 )
               )
             ),
-            hintText: "${matLoc.searchFieldLabel}...",
+            hintText: matLoc.searchFieldLabel,
             suffixIcon: IconTheme(
               data: Theme.of(context).primaryIconTheme,
               child: IconButton(
