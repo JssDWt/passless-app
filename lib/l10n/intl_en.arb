@@ -155,5 +155,23 @@
     "description": "Imperative to cancel editing",
     "type": "text",
     "placeholders": {}
+  },
+  "receipt": "Receipt",
+  "@receipt": {
+    "description": "Word for receipt",
+    "type": "text",
+    "placeholders": {}
+  },
+  "moreButtonLabel": "MORE",
+  "@moreButtonLabel": {
+    "description": "Text on the more button. Shows when overflown text is cut.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "lessButtonLabel": "LESS",
+  "@lessButtonLabel": {
+    "description": "Text on the less button. Shows when large text can be hidden.",
+    "type": "text",
+    "placeholders": {}  
   }
 }

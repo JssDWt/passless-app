@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-12-18T23:11:15.013237",
+  "@@last_modified": "2018-12-22T09:54:57.319789",
   "clearTooltip": "Clear",
   "@clearTooltip": {
     "description": "Tooltip over the clear button",
@@ -153,6 +153,24 @@
   "cancelEditTooltip": "Cancel edit",
   "@cancelEditTooltip": {
     "description": "Imperative to cancel editing",
+    "type": "text",
+    "placeholders": {}
+  },
+  "receipt": "Receipt",
+  "@receipt": {
+    "description": "Word for receipt",
+    "type": "text",
+    "placeholders": {}
+  },
+  "moreButtonLabel": "MORE",
+  "@moreButtonLabel": {
+    "description": "Text on the more button. Shows when overflown text is cut.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "lessButtonLabel": "LESS",
+  "@lessButtonLabel": {
+    "description": "Text on the less button. Shows when large text can be hidden.",
     "type": "text",
     "placeholders": {}
   }
