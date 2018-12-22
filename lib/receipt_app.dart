@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:nfc/nfc_provider.dart';
 import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/models/receipt.dart';
@@ -18,28 +19,17 @@ class ReceiptApp extends StatefulWidget {
 /// Root application state. Initializes the receipt data.
 class _ReceiptAppState extends State<ReceiptApp> {
   final Nfc _nfc = Nfc();
-  StreamSubscription _messageSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _nfc.configure(
+      onMessage: _onMessage
+    ).then((r) {
+      setState((){});
+    });
+  }
   
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    initPlatformState();
-  }
-
-  /// Initializes the nfc plugin.
-  initPlatformState() async {
-    _messageSubscription = _nfc.messages.listen(_onMessage);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    if (_messageSubscription != null) {
-      _messageSubscription.cancel();
-      _messageSubscription = null;
-    }
-  }
-
   /// Builds the root page.
   @override
   Widget build(BuildContext context) {
@@ -50,7 +40,7 @@ class _ReceiptAppState extends State<ReceiptApp> {
   Future<void> _onMessage(String message) async {
     var receiptJson = json.decode(message);
     Receipt receipt = Receipt.fromJson(receiptJson);
-    await Repository.of(context).saveReceipt(receipt);
+    receipt = await Repository.of(context).saveReceipt(receipt);
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => ReceiptDetailPage(

@@ -35,8 +35,8 @@ class _ReceiptMaterialAppState extends State<ReceiptMaterialApp> {
           debugShowCheckedModeBanner: false, 
           theme: ThemeData.light(), 
           home: ReceiptApp(),
-        )
-      ),
+        ),
+      )
     );
   }
 }
