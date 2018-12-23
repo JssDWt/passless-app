@@ -1,11 +1,12 @@
+import 'dart:math';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show ByteData, rootBundle;
 import 'dart:async';
 import 'dart:convert';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:image/image.dart' as image;
 
 import 'package:passless_android/models/receipt.dart';
 
@@ -117,6 +118,8 @@ class Repository {
          id INTEGER PRIMARY KEY,
          receipt_id INTEGER,
          mime_type TEXT,
+         width INTEGER,
+         height INTEGER,
          logo BLOB,
          CONSTRAINT fk_receipts
            FOREIGN KEY (receipt_id)
@@ -313,42 +316,58 @@ class Repository {
     }"""]);
 
     Uint8List logo = (await rootBundle.load('assets/AH-logo.jpg')).buffer.asUint8List();
-    await db.rawInsert("""INSERT INTO $LOGO_TABLE (receipt_id, mime_type, logo) VALUES(
-      ?, 'image/jpeg', ?
-    )""",
-    [
-      ahId,
-      logo
-    ]);
+    await saveLogo(db, logo, ahId, "image/jpeg");
 
     logo = (await rootBundle.load('assets/Jumbo-logo.png')).buffer.asUint8List();
-    await db.rawInsert("""INSERT INTO $LOGO_TABLE (receipt_id, mime_type, logo) VALUES(
-      ?, 'image/png', ?
-    )""",
-    [
-      jumboId,
-      logo
-    ]);
+    await saveLogo(db, logo, jumboId, "image/png");
 
     logo = (await rootBundle.load('assets/Kruidvat-logo.png')).buffer.asUint8List();
-    await db.rawInsert("""INSERT INTO $LOGO_TABLE (receipt_id, mime_type, logo) VALUES(
-      ?, 'image/png', ?
-    )""",
-    [
-      kruidvatId,
-      logo
-    ]);
+    await saveLogo(db, logo, kruidvatId, "image/png");
+
     print("Created tables");
   }
 
-  Future<Image> getLogo(Receipt receipt, double height) async {
+  Future<void> saveLogo(Database db, Uint8List logo, int receiptId, String mimeType) async {
+    image.Image resultingImage;
+
+    switch (mimeType) {
+      case "image/jpeg":
+        resultingImage = image.decodeJpg(logo);
+        break;
+      case "image/png":
+        resultingImage = image.decodePng(logo);
+        break;
+      default:
+        resultingImage = image.decodeImage(logo);
+        break;
+    }
+
+    await db.rawInsert(
+      """INSERT INTO $LOGO_TABLE (receipt_id, mime_type, width, height, logo) VALUES(
+      ?, ?, ?, ?, ?
+    )""",
+    [
+      receiptId,
+      mimeType,
+      resultingImage.width,
+      resultingImage.height,
+      logo
+    ]);
+  }
+
+  Future<Image> getLogo(Receipt receipt, double area) async {
     var dbClient = await db;
     List<Map<String, dynamic>> map = await dbClient.rawQuery(
-      """SELECT mime_type, logo FROM $LOGO_TABLE WHERE receipt_id = ?""",
+      """SELECT mime_type, width, height, logo FROM $LOGO_TABLE WHERE receipt_id = ?""",
       [receipt.id]);
     if (map.isNotEmpty) {
-      Uint8List bytes = map.first['logo'] as Uint8List;
-      return Image.memory(bytes, height: height);
+      var row = map.first;
+      int width = row['width'] as int;
+      int height = row['height'] as int;
+      double ratio = height / width;
+      double resultingWidth = sqrt(area / ratio);
+      Uint8List bytes = row['logo'] as Uint8List;
+      return Image.memory(bytes, width: resultingWidth);
     }
     
     return null;

@@ -150,8 +150,8 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           FutureBuilder<Widget>(
-                            future: Repository.of(context).getLogo(receipt, 45),
-                            initialData: Container(height: 45,),
+                            future: Repository.of(context).getLogo(receipt, 30.0 * 90.0),
+                            initialData: Container(height: 35,),
                             builder: (context, image) => image.data
                           ),
                           Row(
