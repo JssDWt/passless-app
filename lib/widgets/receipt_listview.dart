@@ -109,6 +109,8 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
   @override
   Widget build(BuildContext context) {
     var loc = PasslessLocalizations.of(context);
+    var theme = Theme.of(context);
+
     Widget result;
     if (widget.receipts.isEmpty) {
       result = Text(loc.noReceiptsFound);
@@ -122,17 +124,9 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
           return Hero(
             tag: "receipt${receipt.id}",
             child: Card(
-              child: ListTile(
-                selected: isSelected,
-                leading: isSelected ? Icon(Icons.check) : Text(""),
-                title: Text(receipt.vendor.name),
-                subtitle: Text(
-                  PasslessLocalizations.of(context).price(
-                    receipt.total, 
-                    receipt.currency
-                  ),
-                  style: Theme.of(context).textTheme.caption,
-                ),
+              clipBehavior: Clip.antiAlias,
+              color: isSelected ? theme.selectedRowColor : theme.cardColor,
+              child: InkWell(
                 onTap: () {
                   if (_isSelecting) {
                     _onReceiptSelected(index);
@@ -147,7 +141,47 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
                 onLongPress: () {
                   _onReceiptSelected(index);
                 },
-              )
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Stack(
+                    alignment: Alignment.centerLeft,
+                    children: <Widget>[ 
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          FutureBuilder<Widget>(
+                            future: Repository.of(context).getLogo(receipt, 45),
+                            initialData: Container(height: 45,),
+                            builder: (context, image) => image.data
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: <Widget>[
+                              Text(
+                                loc.itemCount(receipt.items.length), 
+                                style: theme.textTheme.subhead
+                              ),
+                              Expanded(child: Container(),),
+                              Text(
+                                PasslessLocalizations.of(context).price(
+                                  receipt.total, 
+                                  receipt.currency
+                                ),
+                                style: theme.textTheme.title,
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 12),
+                        child: isSelected ? Icon(Icons.check_circle, color: theme.primaryColor) : Container(),
+                      ),
+                    ]
+                  ),
+                ),
+              ),
             )
           );
         }

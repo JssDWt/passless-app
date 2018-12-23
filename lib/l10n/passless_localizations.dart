@@ -162,6 +162,17 @@ class PasslessLocalizations {
     );
   }
 
+  String itemCount(int howMany) {
+    return Intl.plural(
+      howMany,
+      one: '$howMany item',
+      other: '$howMany items',
+      name: 'itemCount',
+      args: [howMany],
+      desc: 'Indicates how many items are in a receipt.'
+    );
+  }
+  
   String get noReceiptsFound {
     return Intl.message(
       'No receipts found',

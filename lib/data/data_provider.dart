@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show ByteData, rootBundle;
 import 'dart:async';
 import 'dart:convert';
 import 'package:path/path.dart';
@@ -45,6 +48,7 @@ class _DataProvider extends InheritedWidget {
 class Repository {
   static const String RECEIPT_TABLE = "receipts";
   static const String NOTE_TABLE = "notes";
+  static const String LOGO_TABLE = "logos";
 
   static Repository of(BuildContext context) {
     final _DataProvider provider = 
@@ -107,9 +111,27 @@ class Repository {
     await db.execute(
       """CREATE UNIQUE INDEX idx_notes_receipt_date
          ON $NOTE_TABLE (receipt_id DESC, date DESC)""");
-         
+    
+    await db.execute(
+      """CREATE TABLE $LOGO_TABLE(
+         id INTEGER PRIMARY KEY,
+         receipt_id INTEGER,
+         mime_type TEXT,
+         logo BLOB,
+         CONSTRAINT fk_receipts
+           FOREIGN KEY (receipt_id)
+           REFERENCES receipts(id)
+           ON DELETE CASCADE
+      )"""
+    );
+
+    await db.execute(
+      """CREATE UNIQUE INDEX idx_logos_receipt
+         ON $LOGO_TABLE (receipt_id DESC)""");
+
+
     // TODO: Remove the sample receipts.
-    await db.rawInsert(
+    int ahId = await db.rawInsert(
       "INSERT INTO $RECEIPT_TABLE (receipt) VALUES (?)",
       ["""{
       "time": "2018-10-28T10:27:00+01:00",
@@ -181,7 +203,8 @@ class Repository {
           }
       }
     }"""]);
-    await db.rawInsert(
+
+    int jumboId = await db.rawInsert(
       "INSERT INTO $RECEIPT_TABLE (receipt) VALUES (?)",
       ["""{
       "time": "2017-10-28T10:27:00+01:00",
@@ -244,7 +267,7 @@ class Repository {
           }
       }
     }"""]);
-    await db.rawInsert(
+    int kruidvatId = await db.rawInsert(
       "INSERT INTO $RECEIPT_TABLE (receipt) VALUES (?)",
       ["""{
       "time": "2018-09-11T11:27:00+01:00",
@@ -288,7 +311,47 @@ class Repository {
           }
       }
     }"""]);
+
+    Uint8List logo = (await rootBundle.load('assets/AH-logo.jpg')).buffer.asUint8List();
+    await db.rawInsert("""INSERT INTO $LOGO_TABLE (receipt_id, mime_type, logo) VALUES(
+      ?, 'image/jpeg', ?
+    )""",
+    [
+      ahId,
+      logo
+    ]);
+
+    logo = (await rootBundle.load('assets/Jumbo-logo.png')).buffer.asUint8List();
+    await db.rawInsert("""INSERT INTO $LOGO_TABLE (receipt_id, mime_type, logo) VALUES(
+      ?, 'image/png', ?
+    )""",
+    [
+      jumboId,
+      logo
+    ]);
+
+    logo = (await rootBundle.load('assets/Kruidvat-logo.png')).buffer.asUint8List();
+    await db.rawInsert("""INSERT INTO $LOGO_TABLE (receipt_id, mime_type, logo) VALUES(
+      ?, 'image/png', ?
+    )""",
+    [
+      kruidvatId,
+      logo
+    ]);
     print("Created tables");
+  }
+
+  Future<Image> getLogo(Receipt receipt, double height) async {
+    var dbClient = await db;
+    List<Map<String, dynamic>> map = await dbClient.rawQuery(
+      """SELECT mime_type, logo FROM $LOGO_TABLE WHERE receipt_id = ?""",
+      [receipt.id]);
+    if (map.isNotEmpty) {
+      Uint8List bytes = map.first['logo'] as Uint8List;
+      return Image.memory(bytes, height: height);
+    }
+    
+    return null;
   }
 
   /// Retrieves all receipts.
