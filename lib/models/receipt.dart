@@ -10,13 +10,18 @@ class Receipt {
   int id;
   DateTime time;
   String currency;
-  double total;
-  double tax;
+  Price subtotal;
+  Price totalDiscount;
+  Price totalPrice;
+  Price totalFee;
+  Price totalPaid;
   List<Item> items;
   List<Payment> payments;
-  List<Loyalty> loyalties;
   Vendor vendor;
-
+  String vendorReference;
+  List<Fee> fees;
+  List<Loyalty> loyalties;
+  
   factory Receipt.fromJson(Map<String, dynamic> json) => _$ReceiptFromJson(json);
   Map<String, dynamic> toJson() => _$ReceiptToJson(this);
 }
@@ -26,14 +31,17 @@ class Item {
   Item();
 
   String name;
-  String brand;
   double quantity;
   String unit;
-  double unitPrice;
-  String currency;
+  Price unitPrice;
+  Price subtotal;
+  Price totalDiscount;
+  Price totalPrice;
+  TaxClass taxClass;
+  String shortDescription;
+  String description;
+  String brand;
   List<Discount> discounts;
-  double subTotal;
-  double tax;
 
   factory Item.fromJson(Map<String, dynamic> json) => _$ItemFromJson(json);
   Map<String, dynamic> toJson() => _$ItemToJson(this);
@@ -44,7 +52,6 @@ class Payment {
   Payment();
 
   String method;
-  String currency;
   double amount;
   Map<String, dynamic> meta;
 
@@ -58,9 +65,11 @@ class Vendor {
 
   String name;
   String address;
-  String telNumber;
+  String phone;
   String vatNumber;
   String kvkNumber;
+  String logo;
+  String email;
   String web;
   Map<String, dynamic> meta;
 
@@ -83,9 +92,40 @@ class Loyalty {
 class Discount {
   Discount();
   String name;
-  double original;
-  double deduct;
+  Price deduct;
 
   factory Discount.fromJson(Map<String, dynamic> json) => _$DiscountFromJson(json);
   Map<String, dynamic> toJson() => _$DiscountToJson(this);
+}
+
+@JsonSerializable()
+class Fee {
+  Fee();
+  String name;
+  Price price;
+  TaxClass taxClass;
+
+  factory Fee.fromJson(Map<String, dynamic> json) => _$FeeFromJson(json);
+  Map<String, dynamic> toJson() => _$FeeToJson(this);
+}
+
+@JsonSerializable()
+class Price {
+  Price();
+  double withoutTax;
+  double withTax;
+  double tax;
+
+  factory Price.fromJson(Map<String, dynamic> json) => _$PriceFromJson(json);
+  Map<String, dynamic> toJson() => _$PriceToJson(this);
+}
+
+@JsonSerializable()
+class TaxClass {
+  TaxClass();
+  String name;
+  double fraction;
+
+  factory TaxClass.fromJson(Map<String, dynamic> json) => _$TaxClassFromJson(json);
+  Map<String, dynamic> toJson() => _$TaxClassToJson(this);
 }

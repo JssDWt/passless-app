@@ -165,7 +165,7 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
                               Expanded(child: Container(),),
                               Text(
                                 PasslessLocalizations.of(context).price(
-                                  receipt.total, 
+                                  receipt.totalPrice.withTax, 
                                   receipt.currency
                                 ),
                                 style: theme.textTheme.title,

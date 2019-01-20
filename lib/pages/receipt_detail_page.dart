@@ -120,7 +120,7 @@ class _VendorContainer extends StatelessWidget {
         Text(_receipt.vendor.address),//, style: theme.primaryTextTheme.body2),
         Padding(
           padding: EdgeInsets.all(4),
-          child: Text(_receipt.vendor.telNumber),//, style: theme.primaryTextTheme.body2)
+          child: Text(_receipt.vendor.phone),//, style: theme.primaryTextTheme.body2)
         ),
       ]
     );
@@ -184,7 +184,7 @@ class _ItemsContainer extends StatelessWidget {
             (i) => Padding(
               padding: EdgeInsets.symmetric(vertical: paddingBetweenItems),
               child: Text(
-                loc.price(i.subTotal, i.currency)
+                loc.price(i.subtotal.withTax, _receipt.currency)
               )
             )
           ).toList(),
@@ -211,7 +211,7 @@ class _TotalContainer extends StatelessWidget {
             ),
             Text(
               PasslessLocalizations.of(context).price(
-                _receipt.total, 
+                _receipt.totalPrice.withTax, 
                 _receipt.currency
               ), 
               style: theme.textTheme.headline,
@@ -225,7 +225,7 @@ class _TotalContainer extends StatelessWidget {
             ),
             Text(
               PasslessLocalizations.of(context).price(
-                _receipt.tax, 
+                _receipt.totalPrice.tax, 
                 _receipt.currency
               )
             ),
