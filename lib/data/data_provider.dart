@@ -139,39 +139,102 @@ class Repository {
       ["""{
       "time": "2018-10-28T10:27:00+01:00",
       "currency": "EUR",
-      "total": 22.58,
-      "tax": 1.35,
+      "subtotal": {
+        "withoutTax": 21.23,
+        "withTax": 22.58,
+        "tax": 1.35
+      },
+      "totalDiscount": {
+        "withoutTax": 0,
+        "withTax": 0,
+        "tax": 0
+      },
+      "totalPrice": {
+        "withoutTax": 21.23,
+        "withTax": 22.58,
+        "tax": 1.35
+      },
+      "totalFee": {
+        "withoutTax": 0,
+        "withTax": 0,
+        "tax": 0
+      },
+      "totalPaid": 22.58,
       "items": [
           {
               "name": "Bananen",
-              "brand": "AH Biologisch",
               "quantity": 1.00,
               "unit": "KG",
-              "unitPrice": 2.59,
-              "currency": "EUR",
-              "subTotal": 2.59,
-              "tax": 0.1554
+              "unitPrice": {
+                "withoutTax": 2.4346,
+                "withTax": 2.59,
+                "tax": 0.1554
+              },
+              "subtotal": {
+                "withoutTax": 2.4346,
+                "withTax": 2.59,
+                "tax": 0.1554
+              },
+              "totalDiscount": {
+                "withoutTax": 0,
+                "withTax": 0,
+                "tax": 0
+              },
+              "totalPrice": {
+                "withoutTax": 2.4346,
+                "withTax": 2.59,
+                "tax": 0.1554
+              },
+              "taxClass": {
+                "name": "Food rate",
+                "fraction": 0.06
+              },
+              "description": "bananen van biologische oorsprong",
+              "brand": "AH Biologisch"
           },
           {
               "name": "Baby dry pants maat 5",
-              "brand": "Pampers",
               "quantity": 3,
               "unit": "pc",
-              "unitPrice": 9.99,
-              "currency": "EUR",
+              "unitPrice": {
+                "withoutTax": 9.3906,
+                "withTax": 9.99,
+                "tax": 0.5994
+              },
+              "subtotal": {
+                "withoutTax": 28.1718,
+                "withTax": 29.97,
+                "tax": 1.7982
+              },
+              "totalDiscount": {
+                "withoutTax": 9.3906,
+                "withTax": 9.99,
+                "tax": 0.5994
+              },
+              "totalPrice": {
+                "withoutTax": 18.7812,
+                "withTax": 19.98,
+                "tax": 1.1988
+              },
+              "taxClass": {
+                "name": "Food rate",
+                "fraction": 0.06
+              },
+              "description": "Luiers om lekker in te spelen en toch droog te blijven.",
+              "brand": "Pampers",
               "discounts": [{
                   "name": "2 + 1 gratis",
-                  "original": 29.97,
-                  "deduct": 9.99 
-              }],
-              "subTotal": 19.98,
-              "tax": 1.1988
+                  "deduct": {
+                    "withoutTax": 9.3906,
+                    "withTax": 9.99,
+                    "tax": 0.5994
+                  }
+              }] 
           }
       ],
       "payments": [
           {
               "method": "cash",
-              "currency": "EUR",
               "amount": 20.00,
               "meta": {
                   "tendered": 20.00,
@@ -180,7 +243,6 @@ class Repository {
           },
           {
               "method": "card",
-              "currency": "EUR",
               "amount": 2.58,
               "meta": {
                   "type": "Maestro",
@@ -197,10 +259,12 @@ class Repository {
       "vendor": {
           "name": "Albert Heijn 1376",
           "address": "Amsterdamsestraatweg 367A, 3551CK, Utrecht",
-          "telNumber": "030-2420200",
+          "phone": "030-2420200",
           "vatNumber": "NL002230884b01",
           "kvkNumber": "35012085",
+          "email": "info@ah.nl",
           "web": "https://www.ah.nl/winkel/1376",
+          "logo": null,
           "meta": {
             "operator": "Henny van de Hoek"
           }
@@ -212,39 +276,100 @@ class Repository {
       ["""{
       "time": "2017-10-28T10:27:00+01:00",
       "currency": "EUR",
-      "total": 10,
-      "tax": 1,
+      "subtotal": {
+        "withoutTax": 14.1,
+        "withTax": 15,
+        "tax": 0.9
+      },
+      "totalDiscount": {
+          "withoutTax": 4.7,
+          "withTax": 5,
+          "tax": 0.3
+      },
+      "totalPrice": {
+          "withoutTax": 9.4,
+          "withTax": 10,
+          "tax": 0.6
+      },
+      "totalFee": {
+          "withoutTax": 0,
+          "withTax": 0,
+          "tax": 0
+      },
+      "totalPaid": 10,
       "items": [
           {
               "name": "Kaars",
-              "brand": "Honeybush",
-              "quantity": 2.00,
+              "quantity": 2,
               "unit": "pc",
-              "unitPrice": 2.50,
-              "currency": "EUR",
-              "subTotal": 5,
-              "tax": 0.5
+              "unitPrice": {
+                "withoutTax": 2.35,
+                "withTax": 2.5,
+                "tax": 0.15
+              },
+              "subtotal": {
+                "withoutTax": 4.7,
+                "withTax": 5,
+                "tax": 0.3
+              },
+              "totalDiscount": {
+                "withoutTax": 0,
+                "withTax": 0,
+                "tax": 0
+              },
+              "totalPrice": {
+                "withoutTax": 4.7,
+                "withTax": 5,
+                "tax": 0.3
+              },
+              "taxClass": {
+                "name": "Food rate",
+                "fraction": 0.06
+              },
+              "brand": "Honeybush"
           },
           {
               "name": "Aansteker",
-              "brand": "Jumbo",
               "quantity": 10,
               "unit": "pc",
-              "unitPrice": 1,
-              "currency": "EUR",
+              "unitPrice": {
+                "withoutTax": 0.94,
+                "withTax": 1,
+                "tax": 0.06
+              },
+              "subtotal": {
+                "withoutTax": 9.4,
+                "withTax": 10,
+                "tax": 0.6
+              },
+              "totalDiscount": {
+                  "withoutTax": 4.7,
+                  "withTax": 5,
+                  "tax": 0.3
+              },
+              "totalPrice": {
+                  "withoutTax": 4.7,
+                  "withTax": 5,
+                  "tax": 0.3
+              },
+              "taxClass": {
+                  "name": "Food rate",
+                  "fraction": 0.06
+              },
+              "brand": "Jumbo",
               "discounts": [{
-                  "name": "2e gratis",
-                  "original": 10,
-                  "deduct": 5 
-              }],
-              "subTotal": 5,
-              "tax": 1
+                "name": "2e gratis",
+                "deduct": {
+                  "withoutTax": 4.7,
+                  "withTax": 5,
+                  "tax": 0.3
+                }
+              }]
           }
       ],
       "payments": [
           {
               "method": "card",
-              "currency": "EUR",
               "amount": 10,
               "meta": {
                   "type": "Maestro",
@@ -261,10 +386,12 @@ class Repository {
       "vendor": {
           "name": "Jumbo Utrecht Merelstraat",
           "address": "Merelstraat 46, 3514 CN Utrecht",
-          "telNumber": "030-6630160",
+          "phone": "030-6630160",
           "vatNumber": "NL00123012303",
           "kvkNumber": "87234821",
+          "email": "info@jumbosupermarkten.nl",
           "web": "https://www.jumbo.com/winkels/jumbo-utrecht-merelstraat/",
+          "logo": null,
           "meta": {
             "operator": "Pietje Dirk"
           }
@@ -273,26 +400,64 @@ class Repository {
     int kruidvatId = await db.rawInsert(
       "INSERT INTO $RECEIPT_TABLE (receipt) VALUES (?)",
       ["""{
-      "time": "2018-09-11T11:27:00+01:00",
+      "time": "2019-01-11T11:27:00+01:00",
       "currency": "EUR",
-      "total": 4.59,
-      "tax": 0.77,
+      "subtotal": {
+        "withoutTax": 4.18,
+        "withTax": 4.59,
+        "tax": 0.41
+      },
+      "totalDiscount": {
+          "withoutTax": 0,
+          "withTax": 0,
+          "tax": 0
+      },
+      "totalPrice": {
+        "withoutTax": 4.18,
+        "withTax": 4.59,
+        "tax": 0.41
+      },
+      "totalFee": {
+          "withoutTax": 0,
+          "withTax": 0,
+          "tax": 0
+      },
+      "totalPaid": 4.59,
       "items": [
           {
               "name": "Prrrikweg",
-              "brand": "A. Vogel",
-              "quantity": 1.00,
+              "quantity": 1,
               "unit": "pc",
-              "unitPrice": 4.59,
-              "currency": "EUR",
-              "subTotal": 4.59,
-              "tax": 0.77
+              "unitPrice": {
+                "withoutTax": 4.18,
+                "withTax": 4.59,
+                "tax": 0.41
+              },
+              "subtotal": {
+                "withoutTax": 4.18,
+                "withTax": 4.59,
+                "tax": 0.41
+              },
+              "totalDiscount": {
+                  "withoutTax": 0,
+                  "withTax": 0,
+                  "tax": 0
+              },
+              "totalPrice": {
+                "withoutTax": 4.18,
+                "withTax": 4.59,
+                "tax": 0.41
+              },
+              "taxClass": {
+                  "name": "Food rate",
+                  "fraction": 0.09
+              },
+              "brand": "A. Vogel"
           }
       ],
       "payments": [
           {
               "method": "card",
-              "currency": "EUR",
               "amount": 4.59,
               "meta": {
                   "type": "Maestro",
@@ -305,9 +470,10 @@ class Repository {
       "vendor": {
           "name": "Kruidvat",
           "address": "Amsterdamsestraatweg 391, 3551 CL Utrecht",
-          "telNumber": "0318-798000",
+          "phone": "0318-798000",
           "vatNumber": "NL001229847123",
           "kvkNumber": "98375892",
+          "email": "klantenservice@kruidvat.nl",
           "web": "https://www.kruidvat.nl/winkel/DROGISTERIJ%20KRUIDVAT%20850",
           "meta": {
             "operator": "Suraya Vos"

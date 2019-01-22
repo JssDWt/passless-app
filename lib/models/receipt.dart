@@ -14,7 +14,7 @@ class Receipt {
   Price totalDiscount;
   Price totalPrice;
   Price totalFee;
-  Price totalPaid;
+  double totalPaid;
   List<Item> items;
   List<Payment> payments;
   Vendor vendor;

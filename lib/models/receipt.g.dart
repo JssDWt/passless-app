@@ -23,9 +23,7 @@ Receipt _$ReceiptFromJson(Map<String, dynamic> json) {
     ..totalFee = json['totalFee'] == null
         ? null
         : Price.fromJson(json['totalFee'] as Map<String, dynamic>)
-    ..totalPaid = json['totalPaid'] == null
-        ? null
-        : Price.fromJson(json['totalPaid'] as Map<String, dynamic>)
+    ..totalPaid = (json['totalPaid'] as num)?.toDouble()
     ..items = (json['items'] as List)
         ?.map(
             (e) => e == null ? null : Item.fromJson(e as Map<String, dynamic>))
