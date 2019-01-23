@@ -493,7 +493,7 @@ class Repository {
     print("Created tables");
   }
 
-  Future<void> saveLogo(Database db, Uint8List logo, int receiptId, String mimeType) async {
+  Future<void> saveLogo(DatabaseExecutor db, Uint8List logo, int receiptId, String mimeType) async {
     image.Image resultingImage;
 
     switch (mimeType) {
@@ -554,10 +554,36 @@ class Repository {
     // TODO: Check for doubles
     var dbClient = await db;
     Receipt result;
+    bool hasLogo = false;
+    String mimeType = null;
+    Uint8List bytes = null;
+
+    if (receipt.vendor.logo != null) {
+      var logoDataUrl = receipt.vendor.logo;
+      receipt.vendor.logo = null;
+
+      int endIndex = logoDataUrl.indexOf(";base64");
+      int startIndex = logoDataUrl.indexOf(":") + 1;
+      if (endIndex != -1 &&  startIndex != 0) {
+        mimeType = logoDataUrl.substring(startIndex, endIndex);
+        int logoIndex = logoDataUrl.indexOf(",") + 1;
+        if (logoIndex != 0) {
+          String logoString = logoDataUrl.substring(logoIndex);
+          bytes = base64Decode(logoString);
+          hasLogo = true;
+        }
+      }
+    }
+
     await dbClient.transaction((txn) async {
       int id = await txn.insert(
         RECEIPT_TABLE, 
         {"receipt": json.encode(receipt.toJson())});
+      
+      if (hasLogo) {
+        await saveLogo(txn, bytes, id, mimeType);
+      }
+
       var inserted = await txn.query(
         RECEIPT_TABLE, 
         where: "id = ?", 

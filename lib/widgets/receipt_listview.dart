@@ -152,7 +152,7 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
                           FutureBuilder<Widget>(
                             future: Repository.of(context).getLogo(receipt, 30.0 * 90.0),
                             initialData: Container(height: 35,),
-                            builder: (context, image) => image.data
+                            builder: (context, image) => image?.data ?? Container()
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
