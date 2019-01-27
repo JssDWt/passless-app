@@ -67,6 +67,7 @@ class ReceiptDetailPage extends StatelessWidget {
                       SemiDivider(),
                       _ItemsContainer(_receipt),
                       SemiDivider(),
+                      _DiscountContainer(_receipt),
                       _TotalContainer(_receipt),
                       _NoteContainer(_receipt)
                     ],
@@ -147,22 +148,6 @@ class _ItemsContainer extends StatelessWidget {
             )
           ).toList(),
         ),
-        // Container(
-        //   padding: EdgeInsets.only(left: 1),
-        //   child: Column(
-        //     children: _receipt.items.map((i) {
-        //       String text;
-        //       if (i.unit.toLowerCase() == "pc") {
-        //         text = "";
-        //       }
-        //       else {
-        //         text = i.unit;
-        //       }
-
-        //       return Text(text);
-        //     }).toList(),
-        //   )
-        // ),
         Expanded(
           child: Container(
             padding: EdgeInsets.only(left: 8),
@@ -194,6 +179,58 @@ class _ItemsContainer extends StatelessWidget {
   }
 }
 
+class _DiscountContainer extends StatelessWidget {
+  final Receipt _receipt;
+  _DiscountContainer(this._receipt);
+
+  @override
+  Widget build(BuildContext context) {
+    var loc = PasslessLocalizations.of(context);
+    var discountLists = _receipt.items.map((i) => i.discounts).where((d) => d != null && d.isNotEmpty).toList();
+    if (discountLists.isEmpty) {
+      return Container();
+    }
+
+    var expanded = discountLists.expand((d) => d).toList();
+
+    return Column(
+      children: <Widget>[
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.only(left: 8),
+                child:  Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: expanded.map(
+                    (d) => Padding(
+                      padding: EdgeInsets.symmetric(vertical: 4),
+                      child: Text(d.name)
+                    )
+                  ).toList(),
+                )
+              )
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: expanded.map(
+                (d) => Padding(
+                  padding: EdgeInsets.symmetric(vertical: 4),
+                  child: Text(
+                    loc.price(-d.deduct.withTax, _receipt.currency)
+                  )
+                )
+              ).toList(),
+            ),
+          ]
+        ),
+        SemiDivider()
+      ],
+    );
+  }
+}
 class _TotalContainer extends StatelessWidget {
   final Receipt _receipt;
   _TotalContainer(this._receipt);
