@@ -133,7 +133,7 @@ class Repository {
          ON $LOGO_TABLE (receipt_id DESC)""");
 
 
-    // TODO: Remove the sample receipts.
+    // TODO: Remove the sample receipts and their image assets.
     int ahId = await db.rawInsert(
       "INSERT INTO $RECEIPT_TABLE (receipt) VALUES (?)",
       ["""{
@@ -496,6 +496,7 @@ class Repository {
   Future<void> saveLogo(DatabaseExecutor db, Uint8List logo, int receiptId, String mimeType) async {
     image.Image resultingImage;
 
+    // TODO: Fail gracefully
     switch (mimeType) {
       case "image/jpeg":
         resultingImage = image.decodeJpg(logo);
