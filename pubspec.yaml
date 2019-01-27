@@ -37,6 +37,12 @@ dev_dependencies:
   build_runner: ^1.0.0
   json_serializable: ^2.0.0
   test:
+  flutter_launcher_icons: ^0.7.0
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/Passless-logo-definitief.png"
 
 
 # For information on the generic Dart part of this file, see the
