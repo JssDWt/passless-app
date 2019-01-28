@@ -3,7 +3,9 @@ import 'package:nfc/nfc.dart';
 import 'package:nfc/nfc_provider.dart';
 import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/widgets/drawer_menu.dart';
+import 'package:passless_android/widgets/include_tax_dialog.dart';
 import 'package:passless_android/widgets/menu_button.dart';
+import 'package:passless_android/widgets/preferences_provider.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -15,6 +17,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     var loc = PasslessLocalizations.of(context);
     var matLoc = MaterialLocalizations.of(context);
+    var preferencesProvider = PreferencesProvider.of(context);
 
     Nfc nfc = NfcProvider.of(context);
     return Scaffold(
@@ -84,24 +87,37 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
               ),
             ),
-            // Padding(
-            //   padding: const EdgeInsets.all(16.0),
-            //   child: Text(loc.localization),
-            // ),
-            // Card(
-            //   child: Column(
-            //     children: <Widget>[
-            //       ListTile(
-            //         leading: Icon(Icons.language),
-            //         title: Text(loc.language),
-            //         trailing: Text("English"),
-            //         onTap: () {
-            //           // show language picker and change language.
-            //         },
-            //       )
-            //     ],
-            //   ),
-            // )
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(loc.preferences),
+            ),
+            Card(
+              child: Column(
+                children: <Widget>[
+                  ListTile(
+                    title: Text(loc.vatSettings),
+                    subtitle: Text(
+                      preferencesProvider.preferences.includeTax 
+                        ? loc.includeTax : loc.excludeTax
+                    ),
+                    onTap: () async {
+                      bool oldShouldInclude = 
+                        preferencesProvider.preferences.includeTax;
+                      bool shouldInclude = await showDialog(
+                        context: context, 
+                        builder: (context) => IncludeTaxDialog(oldShouldInclude)
+                      );
+
+                      if (oldShouldInclude != shouldInclude) {
+                        var newPreferences = preferencesProvider.preferences;
+                        newPreferences.includeTax = shouldInclude;
+                        preferencesProvider.updatePreferences(newPreferences);
+                      }
+                    },
+                  )
+                ],
+              ),
+            )
           ],
         )
       )

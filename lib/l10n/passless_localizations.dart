@@ -272,7 +272,8 @@ class PasslessLocalizations {
   String price(double price, String currency) {
     var numberFormat = NumberFormat.compactSimpleCurrency(
       locale: locale.toString(), 
-      name: currency);
+      name: currency,
+      decimalDigits: 2);
     var formattedPrice = numberFormat.format(price);
     print('price $price and currency $currency returns $formattedPrice for locale $locale');
     return formattedPrice;
@@ -302,6 +303,46 @@ class PasslessLocalizations {
   String time(DateTime time) {
     final f = DateFormat.Hm(locale.toString());
     return f.format(time);
+  }
+
+  String get preferences {
+     return Intl.message(
+      'Preferences',
+      name: 'preferences',
+      desc: 'Text to indicate user preferences section.',
+    );
+  }
+
+  String get vatSettings {
+     return Intl.message(
+      'Vat settings',
+      name: 'vatSettings',
+      desc: 'Text to indicate vat settings (include in price/ exclude in price).',
+    );
+  }
+
+  String get includeTax {
+     return Intl.message(
+      'Include tax in prices',
+      name: 'includeTax',
+      desc: 'Text to indicate that tax is included in the prices.',
+    );
+  }
+
+  String get excludeTax {
+     return Intl.message(
+      'Exclude tax from prices',
+      name: 'excludeTax',
+      desc: 'Text to indicate that tax is excluded from the prices.',
+    );
+  }
+
+  String get readyButtonLabel {
+     return Intl.message(
+      'DONE',
+      name: 'readyButtonLabel',
+      desc: 'Label on the button indicating you are ready/done.',
+    );
   }
 }
 

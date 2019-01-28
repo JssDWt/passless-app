@@ -4,6 +4,8 @@ import 'package:passless_android/models/receipt.dart';
 import 'package:flutter/material.dart';
 import 'package:passless_android/pages/receipt_detail_page.dart';
 import 'package:passless_android/widgets/delete_dialog.dart';
+import 'package:passless_android/widgets/preferences_provider.dart';
+import 'package:passless_android/widgets/price_provider.dart';
 import 'package:passless_android/widgets/spinning_hero.dart';
 
 /// Shows a list of receipts.
@@ -109,6 +111,7 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
   @override
   Widget build(BuildContext context) {
     var loc = PasslessLocalizations.of(context);
+    var pri = PriceProvider.of(context);
     var theme = Theme.of(context);
 
     Widget result;
@@ -165,8 +168,8 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
                               ),
                               Expanded(child: Container(),),
                               Text(
-                                PasslessLocalizations.of(context).price(
-                                  receipt.totalPrice.withTax, 
+                                pri.price(
+                                  receipt.totalPrice, 
                                   receipt.currency
                                 ),
                                 style: theme.textTheme.title,

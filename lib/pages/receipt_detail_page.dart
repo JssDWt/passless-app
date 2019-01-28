@@ -6,6 +6,8 @@ import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/models/receipt.dart';
 import 'package:passless_android/widgets/delete_dialog.dart';
 import 'package:passless_android/widgets/overflow_text.dart';
+import 'package:passless_android/widgets/preferences_provider.dart';
+import 'package:passless_android/widgets/price_provider.dart';
 import 'package:passless_android/widgets/semi_divider.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -136,6 +138,8 @@ class _ItemsContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var loc = PasslessLocalizations.of(context);
+    var pri = PriceProvider.of(context);
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -169,7 +173,7 @@ class _ItemsContainer extends StatelessWidget {
             (i) => Padding(
               padding: EdgeInsets.symmetric(vertical: paddingBetweenItems),
               child: Text(
-                loc.price(i.subtotal.withTax, _receipt.currency)
+                pri.price(i.subtotal, _receipt.currency)
               )
             )
           ).toList(),
@@ -186,7 +190,9 @@ class _DiscountContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var loc = PasslessLocalizations.of(context);
-    var discountLists = _receipt.items.map((i) => i.discounts).where((d) => d != null && d.isNotEmpty).toList();
+    var pri = PriceProvider.of(context);
+    var discountLists = _receipt.items.map((i) => i.discounts)
+      .where((d) => d != null && d.isNotEmpty).toList();
     if (discountLists.isEmpty) {
       return Container();
     }
@@ -219,7 +225,7 @@ class _DiscountContainer extends StatelessWidget {
                 (d) => Padding(
                   padding: EdgeInsets.symmetric(vertical: 4),
                   child: Text(
-                    loc.price(-d.deduct.withTax, _receipt.currency)
+                    pri.negativePrice(d.deduct, _receipt.currency)
                   )
                 )
               ).toList(),
@@ -238,6 +244,7 @@ class _TotalContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     var loc = PasslessLocalizations.of(context);
+    var pri = PriceProvider.of(context);
 
     return Column(
       children: <Widget>[
@@ -247,8 +254,8 @@ class _TotalContainer extends StatelessWidget {
               child: Text(loc.total, style: theme.textTheme.headline,)
             ),
             Text(
-              PasslessLocalizations.of(context).price(
-                _receipt.totalPrice.withTax, 
+              pri.price(
+                _receipt.totalPrice, 
                 _receipt.currency
               ), 
               style: theme.textTheme.headline,
@@ -261,7 +268,7 @@ class _TotalContainer extends StatelessWidget {
               child: Text(loc.tax)
             ),
             Text(
-              PasslessLocalizations.of(context).price(
+              loc.price(
                 _receipt.totalPrice.tax, 
                 _receipt.currency
               )

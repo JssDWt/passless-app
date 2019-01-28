@@ -4,6 +4,8 @@ import 'package:nfc/nfc_provider.dart';
 import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/receipt_app.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:passless_android/widgets/preferences_provider.dart';
+import 'package:passless_android/widgets/price_provider.dart';
 
 /// Main entry point for the app.
 void main() {
@@ -22,19 +24,21 @@ class _ReceiptMaterialAppState extends State<ReceiptMaterialApp> {
   Widget build(BuildContext context) {
     return NfcProvider(
       child: DataProvider(
-        child: MaterialApp(
-          localizationsDelegates: [
-            const PasslessLocalizationsDelegate(),
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate
-          ],
-          supportedLocales: [
-            const Locale('en', 'US'),
-            const Locale('nl', 'NL')
-          ],
-          debugShowCheckedModeBanner: false, 
-          theme: ThemeData.light(), 
-          home: ReceiptApp(),
+        child: PreferencesProvider(
+          child: MaterialApp(
+            localizationsDelegates: [
+              const PasslessLocalizationsDelegate(),
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate
+            ],
+            supportedLocales: [
+              const Locale('en', 'US'),
+              const Locale('nl', 'NL')
+            ],
+            debugShowCheckedModeBanner: false, 
+            theme: ThemeData.light(), 
+            home: ReceiptApp(),
+          ),
         ),
       )
     );

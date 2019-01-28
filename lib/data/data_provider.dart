@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:passless_android/models/preferences.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:path/path.dart';
@@ -50,6 +51,7 @@ class Repository {
   static const String RECEIPT_TABLE = "receipts";
   static const String NOTE_TABLE = "notes";
   static const String LOGO_TABLE = "logos";
+  static const String PREFERENCE_TABLE = "preferences";
 
   static Repository of(BuildContext context) {
     final _DataProvider provider = 
@@ -93,7 +95,12 @@ class Repository {
 
   /// Creates the initial setup of the database.
   void _onCreate(Database db, int version) async {
+    await db.execute(
+      """CREATE TABLE $PREFERENCE_TABLE(
+        id INTEGER PRIMARY KEY, includeTax INTEGER)""");
     
+    await _updatePreferences(db, Preferences.defaults);
+
     // When creating the db, create the receipts table
     await db.execute(
       "CREATE TABLE $RECEIPT_TABLE(id INTEGER PRIMARY KEY, receipt TEXT)");
@@ -482,18 +489,43 @@ class Repository {
     }"""]);
 
     Uint8List logo = (await rootBundle.load('assets/AH-logo.jpg')).buffer.asUint8List();
-    await saveLogo(db, logo, ahId, "image/jpeg");
+    await _saveLogo(db, logo, ahId, "image/jpeg");
 
     logo = (await rootBundle.load('assets/Jumbo-logo.png')).buffer.asUint8List();
-    await saveLogo(db, logo, jumboId, "image/png");
+    await _saveLogo(db, logo, jumboId, "image/png");
 
     logo = (await rootBundle.load('assets/Kruidvat-logo.png')).buffer.asUint8List();
-    await saveLogo(db, logo, kruidvatId, "image/png");
+    await _saveLogo(db, logo, kruidvatId, "image/png");
 
     print("Created tables");
   }
 
-  Future<void> saveLogo(DatabaseExecutor db, Uint8List logo, int receiptId, String mimeType) async {
+  Future<void> updatePreferences(Preferences preferences) async {
+    var dbClient = await db;
+    await _updatePreferences(dbClient, preferences);
+  }
+
+  Future<void> _updatePreferences(DatabaseExecutor db, Preferences preferences) async {
+    await db.insert(PREFERENCE_TABLE, {
+      "includeTax": preferences.includeTax
+    });
+  }
+
+  Future<Preferences> getPreferences() async {
+    var dbClient = await db;
+    var map = await dbClient.rawQuery(
+      """SELECT * FROM $PREFERENCE_TABLE
+         WHERE id = (SELECT MAX(id) FROM $PREFERENCE_TABLE)""");
+    if (map == null || map.isEmpty) {
+      return Preferences.defaults;
+    }
+    
+    var obj = map.first;
+    return Preferences()
+      ..includeTax = obj['includeTax'] == 1;
+  }
+
+  Future<void> _saveLogo(DatabaseExecutor db, Uint8List logo, int receiptId, String mimeType) async {
     image.Image resultingImage;
 
     // TODO: Fail gracefully
@@ -582,7 +614,7 @@ class Repository {
         {"receipt": json.encode(receipt.toJson())});
       
       if (hasLogo) {
-        await saveLogo(txn, bytes, id, mimeType);
+        await _saveLogo(txn, bytes, id, mimeType);
       }
 
       var inserted = await txn.query(
