@@ -3,9 +3,9 @@ import 'package:nfc/nfc.dart';
 import 'package:nfc/nfc_provider.dart';
 import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/widgets/drawer_menu.dart';
-import 'package:passless_android/widgets/include_tax_dialog.dart';
+import 'package:passless_android/settings/include_tax_dialog.dart';
 import 'package:passless_android/widgets/menu_button.dart';
-import 'package:passless_android/widgets/preferences_provider.dart';
+import 'package:passless_android/settings/preferences_provider.dart';
 
 class SettingsPage extends StatefulWidget {
   @override

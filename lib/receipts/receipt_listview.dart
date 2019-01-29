@@ -2,10 +2,9 @@ import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/models/receipt.dart';
 import 'package:flutter/material.dart';
-import 'package:passless_android/pages/receipt_detail_page.dart';
-import 'package:passless_android/widgets/delete_dialog.dart';
-import 'package:passless_android/widgets/preferences_provider.dart';
-import 'package:passless_android/widgets/price_provider.dart';
+import 'package:passless_android/receipts/receipt_detail_page.dart';
+import 'package:passless_android/receipts/delete_dialog.dart';
+import 'package:passless_android/settings/price_provider.dart';
 import 'package:passless_android/widgets/spinning_hero.dart';
 
 /// Shows a list of receipts.

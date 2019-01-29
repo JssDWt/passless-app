@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:nfc/nfc_provider.dart';
 import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/models/receipt.dart';
-import 'package:passless_android/pages/latest_receipts_page.dart';
+import 'package:passless_android/receipts/latest_receipts_page.dart';
+import 'package:passless_android/receipts/receipt_detail_page.dart';
 import 'package:nfc/nfc.dart';
-import 'package:passless_android/pages/receipt_detail_page.dart';
+
 
 /// Root application part.
 class ReceiptApp extends StatefulWidget {

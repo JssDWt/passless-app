@@ -4,8 +4,7 @@ import 'package:nfc/nfc_provider.dart';
 import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/receipt_app.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:passless_android/widgets/preferences_provider.dart';
-import 'package:passless_android/widgets/price_provider.dart';
+import 'package:passless_android/settings/preferences_provider.dart';
 
 /// Main entry point for the app.
 void main() {
