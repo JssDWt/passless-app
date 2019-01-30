@@ -166,9 +166,27 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
                         children: <Widget>[
                           FutureBuilder<Widget>(
                             // TODO: Logo flickers, make it load during transitions.
-                            future: Repository.of(context).getLogo(receipt, 30.0 * 90.0),
-                            initialData: Container(height: 35,),
-                            builder: (context, image) => image?.data ?? Container()
+                            future: Repository.of(context).getLogo(receipt, 2700),
+                            initialData: Container(height: 65, width: 150,),
+                            builder: (context, image) {
+                              if (image?.data is Image) {
+                                var data = image.data as Image;
+                                return Container(
+                                  height: 65, 
+                                  width: 150, 
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: <Widget>[data],
+                                  )
+                                );
+                              }
+                              else {
+                                return Container(height: 65, width: 150,);
+                              }
+                            }
+
+                              
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,

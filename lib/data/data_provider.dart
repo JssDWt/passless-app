@@ -609,7 +609,7 @@ class Repository {
       double ratio = height / width;
       double resultingWidth = sqrt(area / ratio);
       Uint8List bytes = row['logo'] as Uint8List;
-      return Image.memory(bytes, width: resultingWidth);
+      return Image.memory(bytes, width: resultingWidth, fit: BoxFit.contain);
     }
     
     return null;
