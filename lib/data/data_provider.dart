@@ -146,7 +146,7 @@ class Repository {
       """CREATE TABLE $NOTE_TABLE(
         id INTEGER PRIMARY KEY NOT NULL, 
         receipt_id INTEGER NOT NULL,
-        note TEXT NOT NULL, 
+        note TEXT NULL, 
         date REAL NOT NULL,
         CONSTRAINT fk_receipts
           FOREIGN KEY (receipt_id)
