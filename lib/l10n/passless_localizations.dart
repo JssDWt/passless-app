@@ -305,6 +305,11 @@ class PasslessLocalizations {
     return f.format(time);
   }
 
+  String datetime(DateTime datetime) {
+    final f = DateFormat.yMMMMd(locale.toString()).add_Hm();
+    return f.format(datetime);
+  }
+
   String get preferences {
      return Intl.message(
       'Preferences',

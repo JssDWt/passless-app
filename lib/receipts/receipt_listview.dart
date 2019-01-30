@@ -185,16 +185,23 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
                                 return Container(height: 65, width: 150,);
                               }
                             }
-
-                              
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: <Widget>[
-                              Text(
-                                loc.itemCount(receipt.items.length), 
-                                style: theme.textTheme.subhead
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    loc.itemCount(receipt.items.length), 
+                                    style: theme.textTheme.subhead
+                                  ),
+                                  Text(
+                                    loc.datetime(receipt.time), 
+                                    style: theme.textTheme.subhead
+                                  )
+                                ],
                               ),
                               Expanded(child: Container(),),
                               Text(
