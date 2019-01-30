@@ -22,46 +22,47 @@ class ReceiptDetailPage extends StatelessWidget {
     var theme = Theme.of(context);
     var loc = PasslessLocalizations.of(context);
 
-    return Hero(
-      tag: "receipt${_receipt.id}",
-      child: LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Card(
-              margin: EdgeInsets.all(16),
-              elevation: 8,
-              child: Padding(
-                padding: EdgeInsets.all(8).copyWith(top: 32),
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Expanded(child: _VendorContainer(_receipt)),
-                        FloatingActionButton(
-                          child: Icon(Icons.delete),
-                          tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
-                          onPressed: () async {
-                            await Repository.of(context).delete(_receipt);
-                            Navigator.of(context).pop(ReceiptState.deleted);
-                            // TODO: Make sure a receipt in the recycle bin will be deleted permanently.
-                          },
-                        )
-                      ],
-                    ),
-                    _DateContainer(_receipt),
-                    SemiDivider(),
-                    _ItemsContainer(_receipt),
-                    SemiDivider(),
-                    _DiscountContainer(_receipt),
-                    _TotalContainer(_receipt),
-                    _NoteContainer(_receipt)
-                  ],
+    return SafeArea(
+      child: Hero(
+        tag: "receipt${_receipt.id}",
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Card(
+                elevation: 8,
+                child: Padding(
+                  padding: EdgeInsets.all(8).copyWith(top: 32),
+                  child: Column(
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Expanded(child: _VendorContainer(_receipt)),
+                          FloatingActionButton(
+                            child: Icon(Icons.delete),
+                            tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
+                            onPressed: () async {
+                              await Repository.of(context).delete(_receipt);
+                              Navigator.of(context).pop(ReceiptState.deleted);
+                              // TODO: Make sure a receipt in the recycle bin will be deleted permanently.
+                            },
+                          )
+                        ],
+                      ),
+                      _DateContainer(_receipt),
+                      SemiDivider(),
+                      _ItemsContainer(_receipt),
+                      SemiDivider(),
+                      _DiscountContainer(_receipt),
+                      _TotalContainer(_receipt),
+                      _NoteContainer(_receipt)
+                    ],
+                  )
                 )
               )
             )
           )
-        )
+        ),
       ),
     );
   }
@@ -96,6 +97,7 @@ class _VendorContainer extends StatelessWidget {
     var theme = Theme.of(context);
     return Column(
       children: <Widget>[
+        
         Padding(
           padding: EdgeInsets.all(8),
           child: Text(
