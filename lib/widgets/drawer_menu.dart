@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/receipts/latest_receipts_page.dart';
+import 'package:passless_android/receipts/recycle_bin.dart';
 import 'package:passless_android/receipts/search_page.dart';
 import 'package:passless_android/settings/settings_page.dart';
 
@@ -48,6 +49,17 @@ class DrawerMenu extends StatelessWidget {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => SearchPage())
+              );
+            }
+          ),
+          ListTile(
+            leading: Icon(Icons.delete),
+            title: Text(loc.recycleBin),
+            onTap: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => RecycleBinPage())
               );
             }
           ),

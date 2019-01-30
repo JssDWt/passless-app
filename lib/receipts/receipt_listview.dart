@@ -2,6 +2,7 @@ import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/models/receipt.dart';
 import 'package:flutter/material.dart';
+import 'package:passless_android/models/receipt_state.dart';
 import 'package:passless_android/receipts/receipt_detail_page.dart';
 import 'package:passless_android/receipts/delete_dialog.dart';
 import 'package:passless_android/settings/price_provider.dart';
@@ -10,17 +11,22 @@ import 'package:passless_android/widgets/spinning_hero.dart';
 /// Shows a list of receipts.
 class ReceiptListView extends StatelessWidget {
   final List<Receipt> receipts;
-  ReceiptListView(this.receipts);
+  final bool isSelectable;
+  ReceiptListView(this.receipts, {this.isSelectable = true});
 
   /// Builds the receipt list.
   @override
-  Widget build(BuildContext context) => _ReceiptListView(receipts);
+  Widget build(BuildContext context) => 
+    _ReceiptListView(receipts, isSelectable: isSelectable,);
 }
 
 class _SelectingReceiptListView extends StatefulWidget {
   final List<Receipt> receipts;
   final int primarySelection;
-  _SelectingReceiptListView(this.receipts, this.primarySelection);
+
+  _SelectingReceiptListView(
+    this.receipts, 
+    this.primarySelection);
 
   @override
   _SelectingReceiptListViewState createState() 
@@ -47,7 +53,8 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
             icon: Icon(Icons.clear),
             tooltip: loc.clearTooltip,
             onPressed: () {
-              Navigator.of(context).pop();
+              // Indicate zero receipts deleted.
+              Navigator.of(context).pop(0);
             },
           ),
         ),
@@ -57,15 +64,9 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
             icon: Icon(Icons.delete),
             tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
             onPressed: () async {
-              bool shouldDelete = await DeleteDialog.show(
-                context, 
-                _selection.length);
-
-              if (shouldDelete) {
-                var toDelete = _selection.map((s) => widget.receipts[s]);
-                await Repository.of(context).deleteBatch(toDelete);
-                Navigator.of(context).pop();
-              }
+              var toDelete = _selection.map((s) => widget.receipts[s]).toList();
+              await Repository.of(context).deleteBatch(toDelete);
+              Navigator.of(context).pop(toDelete.length);
             },
           )
         ],
@@ -86,10 +87,12 @@ class _ReceiptListView extends StatefulWidget {
   final List<Receipt> receipts;
   final List<int> selected;
   final void Function() selectionChangedCallback;
+  final bool isSelectable;
 
   _ReceiptListView(
     this.receipts, 
     {
+      this.isSelectable,
       List<int> selected, 
       this.selectionChangedCallback
     }) : this.selected = selected ?? List<int>();
@@ -129,19 +132,29 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
               clipBehavior: Clip.antiAlias,
               color: isSelected ? theme.selectedRowColor : theme.cardColor,
               child: InkWell(
-                onTap: () {
+                onTap: () async {
                   if (_isSelecting) {
                     _onReceiptSelected(index);
                   }
                   else {
-                    Navigator.of(context).push(
+                    ReceiptState state = await Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => 
                           ReceiptDetailPage(receipt, loc.receipt)));
+                    if (state == ReceiptState.deleted) {
+                      // TODO: Add UNDO button.
+                      Scaffold.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(loc.movedToRecycleBin(1))
+                        )
+                      );
+                    }
                   }
                 },
                 onLongPress: () {
-                  _onReceiptSelected(index);
+                  if (widget.isSelectable) {
+                    _onReceiptSelected(index);
+                  }
                 },
                 child: Padding(
                   padding: EdgeInsets.all(8),
@@ -194,17 +207,30 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
     return result;
   }
 
-  void _onReceiptSelected(int index) {
+  Future<void> _onReceiptSelected(int index) async {
+    var loc = PasslessLocalizations.of(context);
     // If the selected list is currently empty, this will be a new selection.
     // In that case push a new selection page with the same receipts.
     if (widget.selected.isEmpty) {
-      Navigator.of(context).push(
+      int deleteCount = await Navigator.of(context).push(
         PageRouteBuilder(
           pageBuilder: 
-            (context, animation, secondaryAnimation) 
-            => _SelectingReceiptListView(widget.receipts, index)
+            (context, animation, secondaryAnimation) => 
+              _SelectingReceiptListView(
+                widget.receipts, 
+                index
+              )
         )
       );
+
+      if (deleteCount > 0) {
+        Scaffold.of(context).showSnackBar(
+          SnackBar(
+            content: Text(loc.movedToRecycleBin(deleteCount))
+          )
+        );
+      }
+
       return;
     }
 
@@ -218,7 +244,7 @@ class _ReceiptListViewState extends State<_ReceiptListView> {
     // NOTE: The only way this function is called, is through selection, so
     // the selection page will be preceded by the non-selected page.
     if (widget.selected.isEmpty) {
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(0);
     }
     else {
       // Make sure to update the changes in the list, and a listening parent.

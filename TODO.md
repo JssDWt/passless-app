@@ -11,6 +11,12 @@
   - Price calculation, supplier information
 - Include vat rates in tax container.
 - Pretty design of receipt details.
-- Store signed receipts on a webservice.
+- Store receipt signatures on a webservice.
 - Exclude logo from receipt model. Call a webservice seperately from the exchange process.
-- Create a bin to store deleted receipts.
+- Make a new receipt enter on the new receipt page (initial route)
+- Make receipts paging
+- Show date/time in receipt list.
+- Remove the appbar on receipt detail and show fullblown card.
+- Show messages on delete from the recycle bin.
+- Make deletes from the recycle bin delete permanently.
+- Make selections in the receipt list not change the list tile size.

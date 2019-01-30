@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:passless_android/data/data_exception.dart';
 import 'package:passless_android/models/preferences.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -49,6 +50,8 @@ class _DataProvider extends InheritedWidget {
 /// A helper for accessing receipt data.
 class Repository {
   static const String RECEIPT_TABLE = "receipts";
+  static const String ACTIVE_RECEIPT_TABLE = "active_receipts";
+  static const String RECYCLE_BIN_TABLE = "recycle_bin";
   static const String NOTE_TABLE = "notes";
   static const String LOGO_TABLE = "logos";
   static const String PREFERENCE_TABLE = "preferences";
@@ -97,20 +100,54 @@ class Repository {
   void _onCreate(Database db, int version) async {
     await db.execute(
       """CREATE TABLE $PREFERENCE_TABLE(
-        id INTEGER PRIMARY KEY, includeTax INTEGER)""");
+        id INTEGER PRIMARY KEY NOT NULL, 
+        includeTax INTEGER NOT NULL)""");
     
-    await _updatePreferences(db, Preferences.defaults);
-
-    // When creating the db, create the receipts table
     await db.execute(
-      "CREATE TABLE $RECEIPT_TABLE(id INTEGER PRIMARY KEY, receipt TEXT)");
+      """CREATE TABLE $RECEIPT_TABLE(
+        id INTEGER PRIMARY KEY NOT NULL, 
+        receipt TEXT NOT NULL)""");
+
+    await db.execute(
+      """CREATE TABLE $ACTIVE_RECEIPT_TABLE(
+        id INTEGER PRIMARY KEY NOT NULL, 
+        receipt_id INTEGER NOT NULL,
+        CONSTRAINT fk_receipts
+          FOREIGN KEY (receipt_id)
+          REFERENCES receipts(id)
+          ON DELETE CASCADE)""");
     
+    await db.execute(
+      """CREATE UNIQUE INDEX idx_active_receipts_receipt
+         ON $ACTIVE_RECEIPT_TABLE (receipt_id DESC)""");
+    
+    await db.execute(
+      """CREATE TRIGGER make_active_receipt AFTER INSERT
+         ON $RECEIPT_TABLE
+         BEGIN
+          INSERT INTO $ACTIVE_RECEIPT_TABLE(receipt_id) VALUES (new.id);
+         END"""
+    );
+
+    await db.execute(
+      """CREATE TABLE $RECYCLE_BIN_TABLE(
+        id INTEGER PRIMARY KEY NOT NULL, 
+        receipt_id INTEGER NOT NULL,
+        CONSTRAINT fk_receipts
+          FOREIGN KEY (receipt_id)
+          REFERENCES receipts(id)
+          ON DELETE CASCADE)""");
+    
+    await db.execute(
+      """CREATE UNIQUE INDEX idx_recycle_bin_receipt
+         ON $RECYCLE_BIN_TABLE (receipt_id DESC)""");
+
     await db.execute(
       """CREATE TABLE $NOTE_TABLE(
-        id INTEGER PRIMARY KEY, 
-        receipt_id INTEGER,
-        note TEXT, 
-        date REAL,
+        id INTEGER PRIMARY KEY NOT NULL, 
+        receipt_id INTEGER NOT NULL,
+        note TEXT NOT NULL, 
+        date REAL NOT NULL,
         CONSTRAINT fk_receipts
           FOREIGN KEY (receipt_id)
           REFERENCES receipts(id)
@@ -122,12 +159,12 @@ class Repository {
     
     await db.execute(
       """CREATE TABLE $LOGO_TABLE(
-         id INTEGER PRIMARY KEY,
-         receipt_id INTEGER,
-         mime_type TEXT,
-         width INTEGER,
-         height INTEGER,
-         logo BLOB,
+         id INTEGER PRIMARY KEY NOT NULL,
+         receipt_id INTEGER NOT NULL,
+         mime_type TEXT NOT NULL,
+         width INTEGER NOT NULL,
+         height INTEGER NOT NULL,
+         logo BLOB NOT NULL,
          CONSTRAINT fk_receipts
            FOREIGN KEY (receipt_id)
            REFERENCES receipts(id)
@@ -139,7 +176,13 @@ class Repository {
       """CREATE UNIQUE INDEX idx_logos_receipt
          ON $LOGO_TABLE (receipt_id DESC)""");
 
+    
 
+
+    // Insert initial data.
+
+    await _updatePreferences(db, Preferences.defaults);
+    
     // TODO: Remove the sample receipts and their image assets.
     int ahId = await db.rawInsert(
       "INSERT INTO $RECEIPT_TABLE (receipt) VALUES (?)",
@@ -577,8 +620,22 @@ class Repository {
     var dbClient = await db;
     List<Map> list = 
       await dbClient.rawQuery(
-        """SELECT id, receipt FROM $RECEIPT_TABLE
-           ORDER BY id DESC""");
+        """SELECT r.id, r.receipt 
+           FROM $RECEIPT_TABLE r
+           INNER JOIN $ACTIVE_RECEIPT_TABLE a ON a.receipt_id = r.id
+           ORDER BY r.id DESC""");
+    return list.map(_fromMap).toList();
+  }
+
+  /// Retrieves all receipts.
+  Future<List<Receipt>> getDeletedReceipts() async {
+    var dbClient = await db;
+    List<Map> list = 
+      await dbClient.rawQuery(
+        """SELECT r.id, r.receipt 
+           FROM $RECEIPT_TABLE r
+           INNER JOIN $RECYCLE_BIN_TABLE b ON b.receipt_id = r.id
+           ORDER BY r.id DESC""");
     return list.map(_fromMap).toList();
   }
 
@@ -638,22 +695,65 @@ class Repository {
     return receipts;
   }
 
-  Future<bool> delete(Receipt receipt) async {
+  Future<bool> undelete(Receipt receipt) async {
+    return undeleteBatch([receipt]);
+  }
+
+  Future<bool> undeleteBatch(Iterable<Receipt> receipts) async {
+    int count = receipts.length;
+    if (count == 0) {
+      return false;
+    }
+
+    String questionMarks = receipts.map((r) => "?").join(",");
+    var receiptIds = receipts.map((r) => r.id).toList();
     var dbClient = await db;
-    int deleted = await dbClient.delete(
-      RECEIPT_TABLE, 
-      where: "id = ?", 
-      whereArgs: [receipt.id]);
-    bool result = false;
-    if (deleted > 0) {
-      result = true;
-      notifyDataChanged();
-      if (deleted > 1) {
-        print("More than one record was deleted. Ouch.");
+
+    bool result;
+    await dbClient.transaction((txn) async {
+      int deleted = await txn.rawDelete(
+        "DELETE FROM $RECYCLE_BIN_TABLE WHERE receipt_id in ($questionMarks)", 
+        receiptIds);
+      
+      if (deleted < count) {
+        var bin = await txn.rawQuery(
+          "SELECT id FROM $ACTIVE_RECEIPT_TABLE WHERE receipt_id in ($questionMarks)",
+          receiptIds);
+          
+        if (bin == null || bin.length < count) {
+          throw DataException(
+            "Could not delete receipt(s), because they/some do not exist.");
+        }
+
+        result = false;
       }
+      else if (deleted == count) {
+        for (var id in receiptIds) {
+          await txn.insert(
+            ACTIVE_RECEIPT_TABLE, 
+            {
+              "receipt_id": id
+            });
+        }
+
+        result = true;
+      }
+      else {
+        throw DataException(
+          "Expected to delete $count active receipt(s). Would delete $deleted.");
+      }
+    });
+
+
+    if (result == true) {
+      notifyDataChanged();
     }
 
     return result;
+  }
+
+  Future<bool> delete(Receipt receipt) async {
+    return deleteBatch([receipt]);
   }
 
   Future<bool> deleteBatch(Iterable<Receipt> receipts) async {
@@ -662,28 +762,88 @@ class Repository {
       return false;
     }
 
-    if (count == 1) {
-      return delete(receipts.first);
+    String questionMarks = receipts.map((r) => "?").join(",");
+    var receiptIds = receipts.map((r) => r.id).toList();
+    var dbClient = await db;
+
+    bool result;
+    await dbClient.transaction((txn) async {
+      int deleted = await txn.rawDelete(
+        "DELETE FROM $ACTIVE_RECEIPT_TABLE WHERE receipt_id in ($questionMarks)", 
+        receiptIds);
+      
+      if (deleted < count) {
+        var bin = await txn.rawQuery(
+          "SELECT id FROM $RECYCLE_BIN_TABLE WHERE receipt_id in ($questionMarks)",
+          receiptIds);
+          
+        if (bin == null || bin.length < count) {
+          throw DataException(
+            "Could not delete receipt(s), because they/some do not exist.");
+        }
+
+        result = false;
+      }
+      else if (deleted == count) {
+        for (var id in receiptIds) {
+          await txn.insert(
+            RECYCLE_BIN_TABLE, 
+            {
+              "receipt_id": id
+            });
+        }
+
+        result = true;
+      }
+      else {
+        throw DataException(
+          "Expected to delete $count active receipt(s). Would delete $deleted.");
+      }
+    });
+
+
+    if (result == true) {
+      notifyDataChanged();
+    }
+
+    return result;
+  }
+
+  Future<bool> deletePermanently(Receipt receipt) async {
+    return deleteBatchPermanently([receipt]);
+  }
+
+  Future<bool> deleteBatchPermanently(Iterable<Receipt> receipts) async {
+    // TODO: Save the hash of the deleted receipt for future reference.
+    int count = receipts.length;
+    if (count == 0) {
+      return false;
     }
 
     String questionMarks = receipts.map((r) => "?").join(",");
+    var receiptIds = receipts.map((r) => r.id).toList();
     var dbClient = await db;
-    
-    int deleted = await dbClient.rawDelete(
-      "DELETE FROM $RECEIPT_TABLE WHERE id in ($questionMarks)", 
-      receipts.map((r) => r.id).toList());
 
-    bool result = false;
-    if (deleted == count) {
-      result = true;
-      notifyDataChanged();
-    }
-    else if (deleted == 0) {
-      // Do nothing
-    }
-    else {
-      print("Expected to delete $count, but deleted $deleted");
-      result = false;
+    bool result;
+    int deleted;
+    await dbClient.transaction((txn) async {
+      deleted = await txn.rawDelete(
+      "DELETE FROM $RECEIPT_TABLE WHERE id in ($questionMarks)", 
+      receiptIds);
+    
+      if (deleted < count) {
+        result = false;
+      }
+      else if (deleted == count) {
+        result = true;
+      }
+      else {
+        throw DataException(
+          "Expected to delete $count active receipt(s). Would delete $deleted.");
+      }
+    });
+
+    if (deleted > 0) {
       notifyDataChanged();
     }
 

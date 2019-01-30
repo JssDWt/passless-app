@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/models/receipt.dart';
+import 'package:passless_android/models/receipt_state.dart';
 import 'package:passless_android/receipts/delete_dialog.dart';
 import 'package:passless_android/widgets/overflow_text.dart';
 import 'package:passless_android/settings/price_provider.dart';
@@ -45,12 +46,9 @@ class ReceiptDetailPage extends StatelessWidget {
               icon: Icon(Icons.delete), 
               tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
               onPressed: () async {
-                bool shouldDelete = await DeleteDialog.show(context, 1);
-
-                if (shouldDelete) {
-                  await Repository.of(context).delete(_receipt);
-                  Navigator.of(context).pop();
-                }
+                await Repository.of(context).delete(_receipt);
+                Navigator.of(context).pop(ReceiptState.deleted);
+                // TODO: Make sure a receipt in the recycle bin will be deleted permanently.
               },
             ),
           ],

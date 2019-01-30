@@ -344,6 +344,41 @@ class PasslessLocalizations {
       desc: 'Label on the button indicating you are ready/done.',
     );
   }
+
+  String get recycleBin {
+     return Intl.message(
+      'Recycle bin',
+      name: 'recycleBin',
+      desc: 'Name for the recycle bin that contains deleted receipts.',
+    );
+  }
+
+  String get emptyRecycleBin {
+     return Intl.message(
+      'Empty recycle bin',
+      name: 'emptyRecycleBin',
+      desc: 'Tooltip indicating the button will empty the recycle bin.',
+    );
+  }
+
+  String get restoreFromTrash {
+     return Intl.message(
+      'Restore from trash',
+      name: 'restoreFromTrash',
+      desc: 'Tooltip indicating the button will restore the receipt(s) from the recycle bin.',
+    );
+  }
+
+  String movedToRecycleBin(int howMany) {
+    return Intl.plural(
+      howMany,
+      one: 'Moved receipt to the recycle bin.',
+      other: 'Moved $howMany receipts to the recycle bin.',
+      name: 'movedToRecycleBin',
+      args: [howMany],
+      desc: 'Snackbar message indicating that receipt(s) have been moved to the recycle bin.',
+    );
+  }
 }
 
 class PasslessLocalizationsDelegate extends 
