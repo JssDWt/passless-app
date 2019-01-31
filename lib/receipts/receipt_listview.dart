@@ -1,32 +1,122 @@
+import 'dart:async';
+
 import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/models/receipt.dart';
 import 'package:flutter/material.dart';
-import 'package:passless_android/models/receipt_state.dart';
-import 'package:passless_android/receipts/receipt_detail_page.dart';
-import 'package:passless_android/receipts/delete_dialog.dart';
-import 'package:passless_android/settings/price_provider.dart';
+import 'package:passless_android/receipts/receipt_list_card.dart';
+import 'package:passless_android/utils/scrolling_listview.dart';
 import 'package:passless_android/widgets/spinning_hero.dart';
 
-/// Shows a list of receipts.
-class ReceiptListView extends StatelessWidget {
-  final List<Receipt> receipts;
-  final bool isSelectable;
-  ReceiptListView(this.receipts, {this.isSelectable = true});
+typedef List<Widget> SelectionActionBuilder(
+  BuildContext context, 
+  List<Receipt> receipts
+);
 
-  /// Builds the receipt list.
+class ReceiptListView extends StatefulWidget {
+  final DataFunction dataFunction;
+  final List<Receipt> initialData;
+  final SelectionActionBuilder selectionActionBuilder;
+  ReceiptListView(
+    {
+      List<Receipt> initialData,
+      @required this.dataFunction,
+      this.selectionActionBuilder
+    }) : this.initialData = initialData ?? List<Receipt>();
+
   @override
-  Widget build(BuildContext context) => 
-    _ReceiptListView(receipts, isSelectable: isSelectable,);
+  _ReceiptListViewState createState() => _ReceiptListViewState();
+}
+
+class _ReceiptListViewState extends State<ReceiptListView> {
+  Key scrollKey = UniqueKey();
+
+  @override 
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // TODO: Make sure the same amount of receipts is loaded.
+    Repository.of(context).listen(() {
+      setState(() {
+        scrollKey = UniqueKey();
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScrollingListView(
+      key: scrollKey,
+      dataFunction: widget.dataFunction,
+      itemBuilder: (context, receipt) 
+        => ReceiptListCard(
+          receipt,
+          deleteCallback: _onReceiptDeleted,
+          selectCallback: _onReceiptSelected,
+          showSelectionMarker: false,
+        ),
+      length: 15,
+      noContentBuilder: (context) 
+        => Text(PasslessLocalizations.of(context).noReceiptsFound),
+    );
+  }
+
+  void _onReceiptDeleted(Receipt receipt) {
+    var loc = PasslessLocalizations.of(context);
+    setState(() {});
+
+    // TODO: Add UNDO button.
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Text(loc.movedToRecycleBin(1))
+      )
+    );
+  }
+
+  Future<void> _onReceiptSelected(Receipt receipt, bool selected) async {
+    var loc = PasslessLocalizations.of(context);
+
+    var result = await Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: 
+          (context, animation, secondaryAnimation) => 
+            // TODO: Fill initialData here.
+            _SelectingReceiptListView(
+              selection: [receipt],
+              dataFunction: widget.dataFunction,
+              selectionActionBuilder: widget.selectionActionBuilder,
+            )
+      )
+    );
+
+    int deleteCount = 0;
+    if (result is int) {
+      deleteCount = result;
+    }
+    
+    if (deleteCount > 0) {
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text(loc.movedToRecycleBin(deleteCount))
+        )
+      );
+
+      setState(() {});
+    }
+  }
 }
 
 class _SelectingReceiptListView extends StatefulWidget {
-  final List<Receipt> receipts;
-  final int primarySelection;
-
+  final DataFunction dataFunction;
+  final List<Receipt> selection;
+  final SelectionActionBuilder selectionActionBuilder;
   _SelectingReceiptListView(
-    this.receipts, 
-    this.primarySelection);
+    {
+      List<Receipt> selection,
+      @required this.dataFunction,
+      this.selectionActionBuilder
+    } 
+  ) : this.selection = selection ?? List<Receipt>();
 
   @override
   _SelectingReceiptListViewState createState() 
@@ -34,14 +124,6 @@ class _SelectingReceiptListView extends StatefulWidget {
 }
 
 class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
-  List<int> _selection;
-
-  @override
-  void initState() {
-    super.initState();
-    this._selection = [widget.primarySelection];
-  }
-
   @override
   Widget build(BuildContext context) {
     var loc = PasslessLocalizations.of(context);
@@ -58,223 +140,53 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
             },
           ),
         ),
-        title: Text(loc.receiptsSelectedTitle(_selection.length)),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.delete),
-            tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
-            onPressed: () async {
-              var toDelete = _selection.map((s) => widget.receipts[s]).toList();
-              await Repository.of(context).deleteBatch(toDelete);
-              Navigator.of(context).pop(toDelete.length);
-            },
-          )
-        ],
+        title: Text(loc.receiptsSelectedTitle(widget.selection.length)),
+        actions: widget.selectionActionBuilder == null
+          ? <Widget>[
+            IconButton(
+              icon: Icon(Icons.delete),
+              tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
+              onPressed: () async {
+                await Repository.of(context).deleteBatch(widget.selection);
+                Navigator.of(context).pop(widget.selection.length);
+              },
+            )
+          ]
+        : widget.selectionActionBuilder(context, widget.selection),
       ),
-      body: _ReceiptListView(
-        widget.receipts, 
-        selected: _selection,
-        selectionChangedCallback: _selectionChangedCallback),
+      body: ScrollingListView(
+        dataFunction: widget.dataFunction,
+        itemBuilder: (context, receipt) 
+          => ReceiptListCard(
+            receipt,
+            deleteCallback: null,
+            selectCallback: _onReceiptSelected,
+            initiallySelected: widget.selection.map((r) => r.id).contains(receipt.id),
+            selectOnTap: true,
+          ),
+        length: 15,
+        noContentBuilder: (context) 
+          => Text(PasslessLocalizations.of(context).noReceiptsFound),
+      )
     );
   }
 
-  void _selectionChangedCallback() {
-    setState(() {});
-  }
-}
-
-class _ReceiptListView extends StatefulWidget {
-  final List<Receipt> receipts;
-  final List<int> selected;
-  final void Function() selectionChangedCallback;
-  final bool isSelectable;
-
-  _ReceiptListView(
-    this.receipts, 
-    {
-      this.isSelectable,
-      List<int> selected, 
-      this.selectionChangedCallback
-    }) : this.selected = selected ?? List<int>();
-
-  @override
-  _ReceiptListViewState createState() => _ReceiptListViewState();
-}
-
-class _ReceiptListViewState extends State<_ReceiptListView> {
-  bool _isSelecting = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _isSelecting = widget.selected.isNotEmpty;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var loc = PasslessLocalizations.of(context);
-    var pri = PriceProvider.of(context);
-    var theme = Theme.of(context);
-
-    Widget result;
-    if (widget.receipts.isEmpty) {
-      result = Text(loc.noReceiptsFound);
+  void _onReceiptSelected(Receipt receipt, bool selected) {
+    if (selected) {
+      setState(() {
+        widget.selection.add(receipt);
+      });
     }
     else {
-      result = ListView.builder(
-        itemCount: widget.receipts.length,
-        itemBuilder: (BuildContext context, int index) { 
-          Receipt receipt = widget.receipts[index];
-          bool isSelected = widget.selected.contains(index);
-          return Hero(
-            tag: "receipt${receipt.id}",
-            child: Card(
-              clipBehavior: Clip.antiAlias,
-              color: isSelected ? theme.selectedRowColor : theme.cardColor,
-              child: InkWell(
-                onTap: () async {
-                  if (_isSelecting) {
-                    _onReceiptSelected(index);
-                  }
-                  else {
-                    ReceiptState state = await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => 
-                          ReceiptDetailPage(receipt, loc.receipt)));
-                    if (state == ReceiptState.deleted) {
-                      // TODO: Add UNDO button.
-                      Scaffold.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(loc.movedToRecycleBin(1))
-                        )
-                      );
-                    }
-                  }
-                },
-                onLongPress: () {
-                  if (widget.isSelectable) {
-                    _onReceiptSelected(index);
-                  }
-                },
-                child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Stack(
-                    alignment: Alignment.centerLeft,
-                    children: <Widget>[ 
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          FutureBuilder<Widget>(
-                            // TODO: Logo flickers, make it load during transitions.
-                            future: Repository.of(context).getLogo(receipt, 2700),
-                            initialData: Container(height: 65, width: 150,),
-                            builder: (context, image) {
-                              if (image?.data is Image) {
-                                var data = image.data as Image;
-                                return Container(
-                                  height: 65, 
-                                  width: 150, 
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[data],
-                                  )
-                                );
-                              }
-                              else {
-                                return Container(height: 65, width: 150,);
-                              }
-                            }
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: <Widget>[
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    loc.itemCount(receipt.items.length), 
-                                    style: theme.textTheme.subhead
-                                  ),
-                                  Text(
-                                    loc.datetime(receipt.time), 
-                                    style: theme.textTheme.subhead
-                                  )
-                                ],
-                              ),
-                              Expanded(child: Container(),),
-                              Text(
-                                pri.price(
-                                  receipt.totalPrice, 
-                                  receipt.currency
-                                ),
-                                style: theme.textTheme.title,
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 12),
-                        child: isSelected ? Icon(Icons.check_circle, color: theme.primaryColor) : Container(),
-                      ),
-                    ]
-                  ),
-                ),
-              ),
-            )
-          );
-        }
-      );
-    }
+      // TODO: Make an equality comparer for receipts to remove them more easily.
+      widget.selection.removeWhere((r) => r.id == receipt.id);
 
-    return result;
-  }
-
-  Future<void> _onReceiptSelected(int index) async {
-    var loc = PasslessLocalizations.of(context);
-    // If the selected list is currently empty, this will be a new selection.
-    // In that case push a new selection page with the same receipts.
-    if (widget.selected.isEmpty) {
-      int deleteCount = await Navigator.of(context).push(
-        PageRouteBuilder(
-          pageBuilder: 
-            (context, animation, secondaryAnimation) => 
-              _SelectingReceiptListView(
-                widget.receipts, 
-                index
-              )
-        )
-      );
-
-      if (deleteCount > 0) {
-        Scaffold.of(context).showSnackBar(
-          SnackBar(
-            content: Text(loc.movedToRecycleBin(deleteCount))
-          )
-        );
+      if (widget.selection.isEmpty) {
+        Navigator.of(context).pop(0);
       }
-
-      return;
-    }
-
-    // If the receipt was already selected, remove it
-    // otherwise add it to selection
-    if (!widget.selected.remove(index)) {
-      widget.selected.add(index);
-    }
-
-    // The last receipt may have been deselected. Then pop to the previous list.
-    // NOTE: The only way this function is called, is through selection, so
-    // the selection page will be preceded by the non-selected page.
-    if (widget.selected.isEmpty) {
-      Navigator.of(context).pop(0);
-    }
-    else {
-      // Make sure to update the changes in the list, and a listening parent.
-      setState(() {});
-      widget.selectionChangedCallback();
+      else {
+        setState(() {});
+      }
     }
   }
 }

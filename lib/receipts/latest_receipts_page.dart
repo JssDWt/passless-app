@@ -5,49 +5,9 @@ import 'package:passless_android/widgets/drawer_menu.dart';
 import 'package:passless_android/widgets/menu_button.dart';
 import 'package:passless_android/receipts/receipt_listview.dart';
 import 'package:passless_android/receipts/search_page.dart';
-import 'package:passless_android/models/receipt.dart';
 
 /// The root page of the app.
-class LatestReceiptsPage extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => _LatestReceiptsPageState();
-}
-
-class _LatestReceiptsPageState extends State<LatestReceiptsPage> {
-  List<Receipt> _receipts;
-  bool _isLoading = true;
-
-  // Use this method as an alternative to initState, 
-  // in order to use the repository.
-  @override
-  void didChangeDependencies() { 
-    _initReceipts();
-
-    // Listen for data changes.
-    Repository.of(context).listen(() => _initReceipts());
-    super.didChangeDependencies();
-  }
-
-  _initReceipts() async {
-    var receipts;
-    try {
-      receipts = await Repository.of(context).getReceipts();
-    } catch (e) {
-      print("Failed to get receipts: '${e.message}'.");
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    /// Sets the receipts as state and stops the loading process.
-    setState(() {
-      _receipts = receipts;
-      _isLoading = false;
-    });
-  }
-
+class LatestReceiptsPage extends StatelessWidget {
   /// Builds the root page.
   @override
   Widget build(BuildContext context) {
@@ -78,9 +38,9 @@ class _LatestReceiptsPageState extends State<LatestReceiptsPage> {
         ]
       ),
       // Either load or show the list of receipts.
-      body: _isLoading ? 
-        const CircularProgressIndicator() : 
-        ReceiptListView(_receipts),
+      body: ReceiptListView(
+        dataFunction: Repository.of(context).getReceipts,
+      ),
     );
   }
 }

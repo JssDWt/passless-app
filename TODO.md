@@ -15,8 +15,3 @@
 - Store receipt signatures on a webservice.
 - Exclude logo from receipt model. Call a webservice seperately from the exchange process.
 - Make a new receipt enter on the new receipt page (initial route)
-- Make receipts paging
-- Remove the appbar on receipt detail and show fullblown card.
-- Show messages on delete from the recycle bin.
-- Make deletes from the recycle bin delete permanently.
-- Make selections in the receipt list not change the list tile size.

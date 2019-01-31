@@ -151,6 +151,36 @@ class PasslessLocalizations {
     );
   }
 
+  String restoreReceiptsDialogTitle(int howMany) {
+    return Intl.plural(
+      howMany,
+      one: 'Restore receipt?',
+      other: 'Restore $howMany receipts?',
+      name: 'restoreReceiptsDialogTitle',
+      args: [howMany],
+      desc: 'Title for the restore receipts dialog. Indicating how many receipts will be restored from the recycle bin.',
+    );
+  }
+
+  String restoreReceiptsDialogMessage(int howMany) {
+    return Intl.plural(
+      howMany,
+      one: 'The receipt will be moved back to the active receipts.',
+      other: 'The receipts will be moved back to the active receipts.',
+      name: 'restoreReceiptsDialogMessage',
+      args: [howMany],
+      desc: 'Message for the restore receipts dialog. Indicating that the receipts will be restored to the active receipts.',
+    );
+  }
+
+  String get restoreButtonTooltip {
+    return Intl.message(
+      'Restore',
+      name: 'restoreButtonTooltip',
+      desc: 'Text shown on the restore button (which will restore receipts from the recycle bin).',
+    );
+  }
+
   String receiptsSelectedTitle(int howMany) {
     return Intl.plural(
       howMany,

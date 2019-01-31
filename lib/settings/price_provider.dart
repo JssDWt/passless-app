@@ -23,7 +23,7 @@ class PriceProvider{
     return _price(price, currency, true);
   }
 
-  String _price(Price price String currency, bool negative) {
+  String _price(Price price, String currency, bool negative) {
     double amount = preferences.includeTax ? price.withTax : price.withoutTax;
     if (negative) amount = -amount;
     return PasslessLocalizations.of(context).price(amount, currency);

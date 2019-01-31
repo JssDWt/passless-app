@@ -616,26 +616,30 @@ class Repository {
   }
 
   /// Retrieves all receipts.
-  Future<List<Receipt>> getReceipts() async {
+  Future<List<Receipt>> getReceipts(int offset, int length) async {
     var dbClient = await db;
     List<Map> list = 
       await dbClient.rawQuery(
         """SELECT r.id, r.receipt 
            FROM $RECEIPT_TABLE r
            INNER JOIN $ACTIVE_RECEIPT_TABLE a ON a.receipt_id = r.id
-           ORDER BY r.id DESC""");
+           ORDER BY r.id DESC
+           LIMIT ? OFFSET ?""",
+           [length, offset]);
     return list.map(_fromMap).toList();
   }
 
   /// Retrieves all receipts.
-  Future<List<Receipt>> getDeletedReceipts() async {
+  Future<List<Receipt>> getDeletedReceipts(int offset, int length) async {
     var dbClient = await db;
     List<Map> list = 
       await dbClient.rawQuery(
         """SELECT r.id, r.receipt 
            FROM $RECEIPT_TABLE r
            INNER JOIN $RECYCLE_BIN_TABLE b ON b.receipt_id = r.id
-           ORDER BY r.id DESC""");
+           ORDER BY r.id DESC
+           LIMIT ? OFFSET ?""",
+           [length, offset]);
     return list.map(_fromMap).toList();
   }
 
@@ -685,9 +689,11 @@ class Repository {
     return result;
   }
 
-  Future<List<Receipt>> search(String search) async {
+  Future<List<Receipt>> search(String search, int offset, int length) async {
     search = search.toLowerCase();
-    List<Receipt> receipts = await getReceipts();
+
+    // TODO: This sucks. Do an actual search in the database.
+    List<Receipt> receipts = await getReceipts(offset, length * 2);
     receipts.retainWhere((receipt) => 
       receipt.vendor.name.toLowerCase().contains(search)
       || receipt.items.any((item) => item.name.toLowerCase().contains(search)));
@@ -848,6 +854,24 @@ class Repository {
     }
 
     return result;
+  }
+
+  Future<void> emptyRecycleBin() async {
+    var dbClient = await db;
+    int deleted = await dbClient.rawDelete(
+      """DELETE FROM $RECEIPT_TABLE 
+         WHERE id in (SELECT receipt_id 
+                      FROM $RECYCLE_BIN_TABLE)""");
+
+    if (deleted > 0) {
+      notifyDataChanged();
+    }
+  }
+
+  Future<int> getRecycleBinSize() async {
+    var dbClient = await db;
+    var map = await dbClient.rawQuery("SELECT COUNT(*) as count FROM $RECYCLE_BIN_TABLE");
+    return map[0]["count"] as int;
   }
 
   Future<String> getComments(Receipt receipt) async {
