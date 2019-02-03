@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:passless_android/data/data_exception.dart';
 import 'package:passless_android/models/preferences.dart';
+import 'package:passless_android/models/receipt_state.dart';
 import 'dart:convert';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -635,6 +636,37 @@ class Repository {
            LIMIT ? OFFSET ?""",
            [length, offset]);
     return list.map(_fromMap).toList();
+  }
+
+  Future<ReceiptState> getReceiptState(Receipt receipt) async {
+    var dbClient = await db;
+    var list = await dbClient.rawQuery(
+      """SELECT 1 AS active, 0 AS deleted
+         FROM $ACTIVE_RECEIPT_TABLE
+         WHERE receipt_id = :1
+         UNION ALL
+         SELECT 0 AS active, 1 as deleted
+         FROM $RECYCLE_BIN_TABLE
+         WHERE receipt_id = :1
+         """,
+      [receipt.id]
+    );
+
+    ReceiptState result;
+    if (list == null || list.isEmpty) {
+      result = ReceiptState.unknown;
+    }
+    else if (list.length == 1) {
+      result = list[0]["active"] == 1 ? ReceiptState.active : ReceiptState.deleted;
+    }
+    else {
+      throw DataException(
+        "Getting receipt state returned more than 1 receipt." +
+        "This indicates corrupt data."
+      );
+    }
+
+    return result;
   }
 
   /// Retrieves all receipts.

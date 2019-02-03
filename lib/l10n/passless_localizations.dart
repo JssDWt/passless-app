@@ -404,6 +404,14 @@ class PasslessLocalizations {
     );
   }
 
+  String get deletePermanentlyTooltip {
+     return Intl.message(
+      'Delete permanently',
+      name: 'deletePermanentlyTooltip',
+      desc: 'Tooltip indicating the button will delete the receipt permanently.',
+    );
+  }
+
   String movedToRecycleBin(int howMany) {
     return Intl.plural(
       howMany,

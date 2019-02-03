@@ -1,4 +1,6 @@
 enum ReceiptState {
+  unknown,
   active,
-  deleted
+  deleted,
+  deletedPermanently
 }
