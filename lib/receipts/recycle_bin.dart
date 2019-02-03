@@ -7,33 +7,59 @@ import 'package:passless_android/widgets/drawer_menu.dart';
 import 'package:passless_android/widgets/menu_button.dart';
 import 'package:passless_android/receipts/receipt_listview.dart';
 
-class RecycleBinPage extends StatelessWidget {
+class RecycleBinPage extends StatefulWidget {
+  @override
+  RecycleBinPageState createState() {
+    return new RecycleBinPageState();
+  }
+}
+
+class RecycleBinPageState extends State<RecycleBinPage> {
+  int binSize = 0;
+
+  @override
+  void didChangeDependencies() {
+    _initSize();
+    super.didChangeDependencies();
+  }
+
+  Future<void> _initSize() async {
+    int size = await Repository.of(context).getRecycleBinSize();
+    setState(() {
+      binSize = size;
+    });
+  }
+
   /// Builds the root page.
   @override
   Widget build(BuildContext context) {
     var loc = PasslessLocalizations.of(context);
+    var actions = List<Widget>();
+    if (binSize > 0) {
+      actions.add(
+        IconButton(
+          icon: Icon(Icons.delete_forever),
+          tooltip: loc.emptyRecycleBin,
+          onPressed: () async {
+            bool shouldDelete = await DeleteDialog.show(
+              context, 
+              binSize);
+
+            if (shouldDelete) {
+              await Repository.of(context).emptyRecycleBin();
+              Navigator.of(context).pop();
+            }
+          },
+        )
+      );
+    }
+
     return Scaffold(
       drawer: DrawerMenu(),
       appBar: AppBar(
         leading: MenuButton(),
         title: Text(loc.recycleBin),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.delete_forever),
-            tooltip: loc.emptyRecycleBin,
-            onPressed: () async {
-              int size = await Repository.of(context).getRecycleBinSize();
-              bool shouldDelete = await DeleteDialog.show(
-                context, 
-                size);
-
-              if (shouldDelete) {
-                await Repository.of(context).emptyRecycleBin();
-                Navigator.of(context).pop();
-              }
-            },
-          )
-        ],
+        actions: actions,
       ),
       body: ReceiptListView(
         dataFunction: Repository.of(context).getDeletedReceipts,

@@ -93,8 +93,17 @@ class Repository {
   Future<Database> initDb() async {
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, "passless.db");
-    var theDb = await openDatabase(path, version: 1, onCreate: _onCreate);
+    var theDb = await openDatabase(
+      path, 
+      version: 1, 
+      onConfigure: _onConfigure, 
+      onCreate: _onCreate
+    );
     return theDb;
+  }
+
+  void _onConfigure(Database db) {
+    db.execute("PRAGMA foreign_keys = ON");
   }
 
   /// Creates the initial setup of the database.
@@ -120,14 +129,14 @@ class Repository {
     
     await db.execute(
       """CREATE UNIQUE INDEX idx_active_receipts_receipt
-         ON $ACTIVE_RECEIPT_TABLE (receipt_id DESC)""");
+          ON $ACTIVE_RECEIPT_TABLE (receipt_id DESC)""");
     
     await db.execute(
       """CREATE TRIGGER make_active_receipt AFTER INSERT
-         ON $RECEIPT_TABLE
-         BEGIN
+          ON $RECEIPT_TABLE
+          BEGIN
           INSERT INTO $ACTIVE_RECEIPT_TABLE(receipt_id) VALUES (new.id);
-         END"""
+          END"""
     );
 
     await db.execute(
@@ -141,7 +150,7 @@ class Repository {
     
     await db.execute(
       """CREATE UNIQUE INDEX idx_recycle_bin_receipt
-         ON $RECYCLE_BIN_TABLE (receipt_id DESC)""");
+          ON $RECYCLE_BIN_TABLE (receipt_id DESC)""");
 
     await db.execute(
       """CREATE TABLE $NOTE_TABLE(
@@ -156,26 +165,26 @@ class Repository {
 
     await db.execute(
       """CREATE UNIQUE INDEX idx_notes_receipt_date
-         ON $NOTE_TABLE (receipt_id DESC, date DESC)""");
+          ON $NOTE_TABLE (receipt_id DESC, date DESC)""");
     
     await db.execute(
       """CREATE TABLE $LOGO_TABLE(
-         id INTEGER PRIMARY KEY NOT NULL,
-         receipt_id INTEGER NOT NULL,
-         mime_type TEXT NOT NULL,
-         width INTEGER NOT NULL,
-         height INTEGER NOT NULL,
-         logo BLOB NOT NULL,
-         CONSTRAINT fk_receipts
-           FOREIGN KEY (receipt_id)
-           REFERENCES receipts(id)
-           ON DELETE CASCADE
+          id INTEGER PRIMARY KEY NOT NULL,
+          receipt_id INTEGER NOT NULL,
+          mime_type TEXT NOT NULL,
+          width INTEGER NOT NULL,
+          height INTEGER NOT NULL,
+          logo BLOB NOT NULL,
+          CONSTRAINT fk_receipts
+            FOREIGN KEY (receipt_id)
+            REFERENCES receipts(id)
+            ON DELETE CASCADE
       )"""
     );
 
     await db.execute(
       """CREATE UNIQUE INDEX idx_logos_receipt
-         ON $LOGO_TABLE (receipt_id DESC)""");
+          ON $LOGO_TABLE (receipt_id DESC)""");
 
     
 
@@ -559,7 +568,7 @@ class Repository {
     var dbClient = await db;
     var map = await dbClient.rawQuery(
       """SELECT * FROM $PREFERENCE_TABLE
-         WHERE id = (SELECT MAX(id) FROM $PREFERENCE_TABLE)""");
+          WHERE id = (SELECT MAX(id) FROM $PREFERENCE_TABLE)""");
     if (map == null || map.isEmpty) {
       return Preferences.defaults;
     }
@@ -630,11 +639,11 @@ class Repository {
     List<Map> list = 
       await dbClient.rawQuery(
         """SELECT r.id, r.receipt 
-           FROM $RECEIPT_TABLE r
-           INNER JOIN $ACTIVE_RECEIPT_TABLE a ON a.receipt_id = r.id
-           ORDER BY r.id DESC
-           LIMIT ? OFFSET ?""",
-           [length, offset]);
+            FROM $RECEIPT_TABLE r
+            INNER JOIN $ACTIVE_RECEIPT_TABLE a ON a.receipt_id = r.id
+            ORDER BY r.id DESC
+            LIMIT ? OFFSET ?""",
+            [length, offset]);
     return list.map(_fromMap).toList();
   }
 
@@ -642,13 +651,13 @@ class Repository {
     var dbClient = await db;
     var list = await dbClient.rawQuery(
       """SELECT 1 AS active, 0 AS deleted
-         FROM $ACTIVE_RECEIPT_TABLE
-         WHERE receipt_id = :1
-         UNION ALL
-         SELECT 0 AS active, 1 as deleted
-         FROM $RECYCLE_BIN_TABLE
-         WHERE receipt_id = :1
-         """,
+          FROM $ACTIVE_RECEIPT_TABLE
+          WHERE receipt_id = :1
+          UNION ALL
+          SELECT 0 AS active, 1 as deleted
+          FROM $RECYCLE_BIN_TABLE
+          WHERE receipt_id = :1
+          """,
       [receipt.id]
     );
 
@@ -675,11 +684,11 @@ class Repository {
     List<Map> list = 
       await dbClient.rawQuery(
         """SELECT r.id, r.receipt 
-           FROM $RECEIPT_TABLE r
-           INNER JOIN $RECYCLE_BIN_TABLE b ON b.receipt_id = r.id
-           ORDER BY r.id DESC
-           LIMIT ? OFFSET ?""",
-           [length, offset]);
+            FROM $RECEIPT_TABLE r
+            INNER JOIN $RECYCLE_BIN_TABLE b ON b.receipt_id = r.id
+            ORDER BY r.id DESC
+            LIMIT ? OFFSET ?""",
+            [length, offset]);
     return list.map(_fromMap).toList();
   }
 
@@ -737,7 +746,7 @@ class Repository {
     receipts.retainWhere((receipt) => 
       receipt.vendor.name.toLowerCase().contains(search)
       || receipt.items.any((item) => item.name.toLowerCase().contains(search)));
- 
+  
     return receipts;
   }
 
@@ -900,7 +909,7 @@ class Repository {
     var dbClient = await db;
     int deleted = await dbClient.rawDelete(
       """DELETE FROM $RECEIPT_TABLE 
-         WHERE id in (SELECT receipt_id 
+          WHERE id in (SELECT receipt_id 
                       FROM $RECYCLE_BIN_TABLE)""");
 
     if (deleted > 0) {
@@ -909,6 +918,7 @@ class Repository {
   }
 
   Future<int> getRecycleBinSize() async {
+    // TODO: This method does not return the right number. DELETE CASCADE not working?
     var dbClient = await db;
     var map = await dbClient.rawQuery("SELECT COUNT(*) as count FROM $RECYCLE_BIN_TABLE");
     return map[0]["count"] as int;
@@ -918,10 +928,10 @@ class Repository {
     var dbClient = await db;
     var result = await dbClient.rawQuery(
       """SELECT note,
-         MAX(date) AS date
-         FROM $NOTE_TABLE 
-         GROUP BY receipt_id
-         HAVING receipt_id = ?""", 
+          MAX(date) AS date
+          FROM $NOTE_TABLE 
+          GROUP BY receipt_id
+          HAVING receipt_id = ?""", 
       [receipt.id]
     );
 
@@ -943,7 +953,7 @@ class Repository {
     await dbClient.transaction((txn) async {
       int id = await txn.rawInsert(
         """INSERT INTO $NOTE_TABLE (receipt_id, note, date)
-           VALUES (?, ?, julianday('now'))""",
+            VALUES (?, ?, julianday('now'))""",
         [receipt.id, notes]);
       
       // Remove any previous changes from the last 15 minutes.
