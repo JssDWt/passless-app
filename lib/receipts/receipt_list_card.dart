@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/l10n/passless_localizations.dart';
@@ -80,7 +78,7 @@ class _ReceiptListCardState extends State<ReceiptListCard> {
               ReceiptState state = await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => 
-                    ReceiptDetailPage(widget.receipt, loc.receipt)));
+                    ReceiptDetailPage(widget.receipt)));
               if (state == ReceiptState.deleted) {
                 widget.deleteCallback(widget.receipt);
               }

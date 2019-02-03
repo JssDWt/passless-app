@@ -1,9 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/l10n/passless_localizations.dart';
-import 'package:passless_android/models/receipt.dart';
 import 'package:passless_android/receipts/receipt_listview.dart';
 import 'package:passless_android/widgets/spinning_hero.dart';
 import 'package:rxdart/subjects.dart';

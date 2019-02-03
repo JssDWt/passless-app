@@ -1,9 +1,7 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:passless_android/data/data_provider.dart';
-import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/models/receipt.dart';
 import 'package:passless_android/receipts/latest_receipts_page.dart';
 import 'package:passless_android/receipts/receipt_detail_page.dart';
@@ -43,10 +41,7 @@ class _ReceiptAppState extends State<ReceiptApp> {
     receipt = await Repository.of(context).saveReceipt(receipt);
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => ReceiptDetailPage(
-          receipt, 
-          PasslessLocalizations.of(context).newReceiptTitle
-        )
+        builder: (context) => ReceiptDetailPage(receipt)
       )
     );
   }

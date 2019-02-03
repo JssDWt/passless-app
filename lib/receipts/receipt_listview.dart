@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/models/receipt.dart';
@@ -178,7 +176,6 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
       });
     }
     else {
-      // TODO: Make an equality comparer for receipts to remove them more easily.
       widget.selection.removeWhere((r) => r.id == receipt.id);
 
       if (widget.selection.isEmpty) {

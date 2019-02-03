@@ -5,7 +5,6 @@ import 'package:passless_android/data/data_provider.dart';
 import 'package:passless_android/l10n/passless_localizations.dart';
 import 'package:passless_android/models/receipt.dart';
 import 'package:passless_android/models/receipt_state.dart';
-import 'package:passless_android/receipts/delete_dialog.dart';
 import 'package:passless_android/widgets/overflow_text.dart';
 import 'package:passless_android/settings/price_provider.dart';
 import 'package:passless_android/widgets/semi_divider.dart';
@@ -14,14 +13,10 @@ import 'package:rxdart/rxdart.dart';
 /// A page that shows receipt details.
 class ReceiptDetailPage extends StatelessWidget {
   final Receipt _receipt;
-  final String _title;
-  ReceiptDetailPage(this._receipt, this._title);
+  ReceiptDetailPage(this._receipt);
 
   @override
   Widget build(BuildContext context) {   
-    var theme = Theme.of(context);
-    var loc = PasslessLocalizations.of(context);
-
     return SafeArea(
       child: Hero(
         tag: "receipt${_receipt.id}",
@@ -94,7 +89,6 @@ class _VendorContainer extends StatelessWidget {
   _VendorContainer(this._receipt);
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
     return Column(
       children: <Widget>[
         
@@ -174,7 +168,6 @@ class _DiscountContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var loc = PasslessLocalizations.of(context);
     var pri = PriceProvider.of(context);
     var discountLists = _receipt.items.map((i) => i.discounts)
       .where((d) => d != null && d.isNotEmpty).toList();
@@ -277,7 +270,6 @@ class _NoteContainerState extends State<_NoteContainer> {
   BehaviorSubject<String> _noteSubject;
   TextEditingController _controller;
   StreamSubscription<String> _debounceSubscription;
-  bool _isLoading = true;
   bool _isEditing = false;
   String notes;
 
@@ -298,9 +290,7 @@ class _NoteContainerState extends State<_NoteContainer> {
     _controller.addListener(() => _noteSubject?.add(_controller.text));
 
     if (!mounted) return;
-    setState(() {
-      _isLoading = false;
-    });
+    setState(() {});
   }
 
   @override

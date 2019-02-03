@@ -1,10 +1,10 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:passless_android/data/data_exception.dart';
 import 'package:passless_android/models/preferences.dart';
-import 'dart:async';
 import 'dart:convert';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -571,30 +571,38 @@ class Repository {
   Future<void> _saveLogo(DatabaseExecutor db, Uint8List logo, int receiptId, String mimeType) async {
     image.Image resultingImage;
 
-    // TODO: Fail gracefully
-    switch (mimeType) {
-      case "image/jpeg":
-        resultingImage = image.decodeJpg(logo);
-        break;
-      case "image/png":
-        resultingImage = image.decodePng(logo);
-        break;
-      default:
-        resultingImage = image.decodeImage(logo);
-        break;
-    }
+    try 
+    {
+      switch (mimeType) {
+        case "image/jpeg":
+          resultingImage = image.decodeJpg(logo);
+          break;
+        case "image/png":
+          resultingImage = image.decodePng(logo);
+          break;
+        default:
+          resultingImage = image.decodeImage(logo);
+          break;
+      }
 
-    await db.rawInsert(
-      """INSERT INTO $LOGO_TABLE (receipt_id, mime_type, width, height, logo) VALUES(
-      ?, ?, ?, ?, ?
-    )""",
-    [
-      receiptId,
-      mimeType,
-      resultingImage.width,
-      resultingImage.height,
-      logo
-    ]);
+      await db.rawInsert(
+        """INSERT INTO $LOGO_TABLE (receipt_id, mime_type, width, height, logo) VALUES(
+        ?, ?, ?, ?, ?
+      )""",
+      [
+        receiptId,
+        mimeType,
+        resultingImage.width,
+        resultingImage.height,
+        logo
+      ]);
+    }
+    on Exception catch (e) {
+      debugPrint("Exception while parsing logo:\n$e");
+    }
+    catch(e, s) {
+      debugPrint("Something was thrown while parsing logo:\n$e\n\nStacktrace:\n$s");
+    }
   }
 
   Future<Image> getLogo(Receipt receipt, double area) async {
@@ -649,8 +657,8 @@ class Repository {
     var dbClient = await db;
     Receipt result;
     bool hasLogo = false;
-    String mimeType = null;
-    Uint8List bytes = null;
+    String mimeType;
+    Uint8List bytes;
 
     if (receipt.vendor.logo != null) {
       var logoDataUrl = receipt.vendor.logo;

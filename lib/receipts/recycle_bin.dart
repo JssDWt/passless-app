@@ -6,8 +6,6 @@ import 'package:passless_android/receipts/restore_dialog.dart';
 import 'package:passless_android/widgets/drawer_menu.dart';
 import 'package:passless_android/widgets/menu_button.dart';
 import 'package:passless_android/receipts/receipt_listview.dart';
-import 'package:passless_android/receipts/search_page.dart';
-import 'package:passless_android/models/receipt.dart';
 
 class RecycleBinPage extends StatelessWidget {
   /// Builds the root page.
@@ -37,7 +35,6 @@ class RecycleBinPage extends StatelessWidget {
           )
         ],
       ),
-      // TODO: Make sure the appbar action buttons on select delete and restore.
       body: ReceiptListView(
         dataFunction: Repository.of(context).getDeletedReceipts,
         selectionActionBuilder: (context, receipts) =>
