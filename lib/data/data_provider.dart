@@ -3,15 +3,15 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:passless_android/data/data_exception.dart';
-import 'package:passless_android/models/preferences.dart';
-import 'package:passless_android/models/receipt_state.dart';
+import 'package:passless/data/data_exception.dart';
+import 'package:passless/models/preferences.dart';
+import 'package:passless/models/receipt_state.dart';
 import 'dart:convert';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:image/image.dart' as image;
 
-import 'package:passless_android/models/receipt.dart';
+import 'package:passless/models/receipt.dart';
 
 class DataProvider extends StatefulWidget {
   final Widget child;

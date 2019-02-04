@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:passless_android/l10n/passless_localizations.dart';
+import 'package:passless/l10n/passless_localizations.dart';
 
 class OverflowText extends StatefulWidget {
   final String text;

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:passless_android/data/data_provider.dart';
-import 'package:passless_android/l10n/passless_localizations.dart';
-import 'package:passless_android/models/receipt.dart';
-import 'package:passless_android/models/receipt_state.dart';
-import 'package:passless_android/receipts/receipt_detail_page.dart';
-import 'package:passless_android/settings/price_provider.dart';
+import 'package:passless/data/data_provider.dart';
+import 'package:passless/l10n/passless_localizations.dart';
+import 'package:passless/models/receipt.dart';
+import 'package:passless/models/receipt_state.dart';
+import 'package:passless/receipts/receipt_detail_page.dart';
+import 'package:passless/settings/price_provider.dart';
 
 class ReceiptListCard extends StatefulWidget {
   final Receipt receipt;

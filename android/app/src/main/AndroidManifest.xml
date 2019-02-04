@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.passlessandroid">
+    package="com.passless.passless">
 
     <!-- The minimum sdk version is 14, to include all NFC support-->
-    <uses-sdk android:minSdkVersion="14"/>
+    <uses-sdk android:minSdkVersion="16"/>
 
     <!-- The INTERNET permission is required for development. Specifically,
          flutter needs it to communicate with the running application
@@ -24,7 +24,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="passless_android"
+        android:label="passless"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
@@ -43,11 +43,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="application/passless+json" />
             </intent-filter>
         </activity>
     </application>

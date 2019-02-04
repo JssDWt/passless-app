@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:passless_android/data/data_provider.dart';
-import 'package:passless_android/l10n/passless_localizations.dart';
-import 'package:passless_android/models/receipt.dart';
-import 'package:passless_android/models/receipt_state.dart';
-import 'package:passless_android/receipts/delete_dialog.dart';
-import 'package:passless_android/widgets/overflow_text.dart';
-import 'package:passless_android/settings/price_provider.dart';
-import 'package:passless_android/widgets/semi_divider.dart';
+import 'package:passless/data/data_provider.dart';
+import 'package:passless/l10n/passless_localizations.dart';
+import 'package:passless/models/receipt.dart';
+import 'package:passless/models/receipt_state.dart';
+import 'package:passless/receipts/delete_dialog.dart';
+import 'package:passless/widgets/overflow_text.dart';
+import 'package:passless/settings/price_provider.dart';
+import 'package:passless/widgets/semi_divider.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// A page that shows receipt details.

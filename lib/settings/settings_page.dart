@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nfc/nfc.dart';
 import 'package:nfc/nfc_provider.dart';
-import 'package:passless_android/l10n/passless_localizations.dart';
-import 'package:passless_android/widgets/drawer_menu.dart';
-import 'package:passless_android/settings/include_tax_dialog.dart';
-import 'package:passless_android/widgets/menu_button.dart';
-import 'package:passless_android/settings/preferences_provider.dart';
+import 'package:passless/l10n/passless_localizations.dart';
+import 'package:passless/widgets/drawer_menu.dart';
+import 'package:passless/settings/include_tax_dialog.dart';
+import 'package:passless/widgets/menu_button.dart';
+import 'package:passless/settings/preferences_provider.dart';
 
 class SettingsPage extends StatefulWidget {
   @override

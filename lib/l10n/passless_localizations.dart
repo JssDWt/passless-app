@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:passless_android/l10n/messages_all.dart';
+import 'package:passless/l10n/messages_all.dart';
 
 
 class PasslessLocalizations {

@@ -1,5 +1,5 @@
 import "package:test/test.dart";
-import 'package:passless_android/models/receipt.dart';
+import 'package:passless/models/receipt.dart';
 import 'dart:convert';
 
 void main() {

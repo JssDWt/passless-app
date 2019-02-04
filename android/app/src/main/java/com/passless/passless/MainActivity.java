@@ -1,4 +1,4 @@
-package com.example.passlessandroid;
+package com.passless.passless;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

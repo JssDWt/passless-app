@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:passless_android/data/data_provider.dart';
-import 'package:passless_android/l10n/passless_localizations.dart';
-import 'package:passless_android/widgets/drawer_menu.dart';
-import 'package:passless_android/widgets/menu_button.dart';
-import 'package:passless_android/receipts/receipt_listview.dart';
-import 'package:passless_android/receipts/search_page.dart';
+import 'package:passless/data/data_provider.dart';
+import 'package:passless/l10n/passless_localizations.dart';
+import 'package:passless/widgets/drawer_menu.dart';
+import 'package:passless/widgets/menu_button.dart';
+import 'package:passless/receipts/receipt_listview.dart';
+import 'package:passless/receipts/search_page.dart';
 
 /// The root page of the app.
 class LatestReceiptsPage extends StatelessWidget {

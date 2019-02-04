@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:passless_android/data/data_provider.dart';
-import 'package:passless_android/models/receipt.dart';
-import 'package:passless_android/receipts/latest_receipts_page.dart';
-import 'package:passless_android/receipts/receipt_detail_page.dart';
+import 'package:passless/data/data_provider.dart';
+import 'package:passless/models/receipt.dart';
+import 'package:passless/receipts/latest_receipts_page.dart';
+import 'package:passless/receipts/receipt_detail_page.dart';
 import 'package:nfc/nfc.dart';
 
 

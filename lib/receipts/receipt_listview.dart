@@ -1,10 +1,10 @@
-import 'package:passless_android/data/data_provider.dart';
-import 'package:passless_android/l10n/passless_localizations.dart';
-import 'package:passless_android/models/receipt.dart';
 import 'package:flutter/material.dart';
-import 'package:passless_android/receipts/receipt_list_card.dart';
-import 'package:passless_android/utils/scrolling_listview.dart';
-import 'package:passless_android/widgets/spinning_hero.dart';
+import 'package:passless/data/data_provider.dart';
+import 'package:passless/l10n/passless_localizations.dart';
+import 'package:passless/models/receipt.dart';
+import 'package:passless/receipts/receipt_list_card.dart';
+import 'package:passless/utils/scrolling_listview.dart';
+import 'package:passless/widgets/spinning_hero.dart';
 
 typedef List<Widget> SelectionActionBuilder(
   BuildContext context, 

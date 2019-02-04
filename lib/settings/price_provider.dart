@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:passless_android/l10n/passless_localizations.dart';
-import 'package:passless_android/models/preferences.dart';
-import 'package:passless_android/models/receipt.dart';
-import 'package:passless_android/settings/preferences_provider.dart';
+import 'package:passless/l10n/passless_localizations.dart';
+import 'package:passless/models/preferences.dart';
+import 'package:passless/models/receipt.dart';
+import 'package:passless/settings/preferences_provider.dart';
 
 class PriceProvider{
   final Preferences preferences;

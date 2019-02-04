@@ -1,4 +1,4 @@
-name: passless_android
+name: passless
 description: A new Flutter project.
 
 # The following defines the version and build number for your application.
@@ -59,7 +59,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   # TODO: Remove these assets when removing default receipts.
   assets:
-    - assets/
+   - assets/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.

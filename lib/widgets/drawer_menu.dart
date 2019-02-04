@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:passless_android/l10n/passless_localizations.dart';
-import 'package:passless_android/receipts/latest_receipts_page.dart';
-import 'package:passless_android/receipts/recycle_bin.dart';
-import 'package:passless_android/receipts/search_page.dart';
-import 'package:passless_android/settings/settings_page.dart';
+import 'package:passless/l10n/passless_localizations.dart';
+import 'package:passless/receipts/latest_receipts_page.dart';
+import 'package:passless/receipts/recycle_bin.dart';
+import 'package:passless/receipts/search_page.dart';
+import 'package:passless/settings/settings_page.dart';
 
 class DrawerMenu extends StatelessWidget {
   @override
