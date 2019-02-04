@@ -9,7 +9,7 @@
   - Only after processing these steps, should a receipt be considered verified.
   - Date check, trading partner id and addresses, availability of mandatory or conditionally required data, vat numbers, product and service codes, etc.
   - Price calculation, supplier information
-  - Show a bagde indicating whether the receipt has been verified.
+  - Show a badge indicating whether the receipt has been verified.
 - Include vat rates in tax container.
   - Shoud the total VAT per vat rate be included in the receipt?
 - Pretty design of receipt details.
@@ -17,4 +17,3 @@
 - Exclude logo from receipt model. Call a webservice seperately from the exchange process.
 - Make a new receipt enter on the new receipt page (initial route)
 - Test everything.
-- Get app to run on an iOS simulator. Even before NFC plugin has been implemented.
