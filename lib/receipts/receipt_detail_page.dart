@@ -82,25 +82,36 @@ class ReceiptDetailPageState extends State<ReceiptDetailPage> {
               constraints: BoxConstraints(minHeight: constraints.maxHeight),
               child: Card(
                 elevation: 8,
-                child: Padding(
-                  padding: EdgeInsets.all(8).copyWith(top: 32),
-                  child: Column(
-                    children: <Widget>[
-                      Row(
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        BackButton()
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Column(
                         children: <Widget>[
-                          Expanded(child: _VendorContainer(widget._receipt)),
-                          deleteButton
+                          Row(
+                            children: <Widget>[
+                              Expanded(child: _VendorContainer(widget._receipt)),
+                              deleteButton
+                            ],
+                          ),
+                          _DateContainer(widget._receipt),
+                          SemiDivider(),
+                          _ItemsContainer(widget._receipt),
+                          SemiDivider(),
+                          _DiscountContainer(widget._receipt),
+                          _TotalContainer(widget._receipt),
+                          _NoteContainer(widget._receipt)
                         ],
-                      ),
-                      _DateContainer(widget._receipt),
-                      SemiDivider(),
-                      _ItemsContainer(widget._receipt),
-                      SemiDivider(),
-                      _DiscountContainer(widget._receipt),
-                      _TotalContainer(widget._receipt),
-                      _NoteContainer(widget._receipt)
-                    ],
-                  )
+                      )
+                    ),
+                  ],
                 )
               )
             )
