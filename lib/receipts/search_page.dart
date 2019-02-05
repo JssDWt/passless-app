@@ -21,6 +21,7 @@ class _SearchPageState extends State<SearchPage> {
     _searchSubject.stream
       .debounce(Duration(milliseconds: 400))
       .listen((s) {
+        if (!mounted) return;
         setState(() {
           currentSearch = s;
         });

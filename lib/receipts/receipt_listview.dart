@@ -35,6 +35,7 @@ class _ReceiptListViewState extends State<ReceiptListView> {
 
     // TODO: Make sure the same amount of receipts is loaded.
     Repository.of(context).listen(() {
+      if (!mounted) return;
       setState(() {
         scrollKey = UniqueKey();
       });
@@ -99,6 +100,7 @@ class _ReceiptListViewState extends State<ReceiptListView> {
         )
       );
 
+      if (!mounted) return;
       setState(() {});
     }
   }

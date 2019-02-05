@@ -63,6 +63,7 @@ class Payment {
 class Vendor {
   Vendor();
 
+  String identifier;
   String name;
   String address;
   String phone;

@@ -34,6 +34,7 @@ class ReceiptDetailPageState extends State<ReceiptDetailPage> {
   Future<void> _updateReceiptState() async {
     ReceiptState currentState = 
       await Repository.of(context).getReceiptState(widget._receipt);
+    if (!mounted) return;
     setState(() {
       receiptState = currentState;
     });

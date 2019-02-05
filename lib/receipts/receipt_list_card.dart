@@ -5,6 +5,7 @@ import 'package:passless/models/receipt.dart';
 import 'package:passless/models/receipt_state.dart';
 import 'package:passless/receipts/receipt_detail_page.dart';
 import 'package:passless/settings/price_provider.dart';
+import 'package:passless/widgets/logo_widget.dart';
 
 class ReceiptListCard extends StatefulWidget {
   final Receipt receipt;
@@ -30,23 +31,8 @@ class ReceiptListCard extends StatefulWidget {
 }
 
 class _ReceiptListCardState extends State<ReceiptListCard> {
-  Image logo;
   bool isSelected;
   _ReceiptListCardState({this.isSelected = false});
-
-  @override 
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _fetchLogo();
-  }
-
-  Future<void> _fetchLogo() async {
-    var logoData = await Repository.of(context).getLogo(widget.receipt, 2700);
-    if (!mounted) return;
-    setState(() {
-      logo = logoData;
-    });
-  }
 
   void _onReceiptSelected() {
     if (widget.showSelectionMarker) {
@@ -95,14 +81,11 @@ class _ReceiptListCardState extends State<ReceiptListCard> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Container(
-                      height: 65, 
-                      width: 150, 
-                      child: logo == null ? null : Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[logo],
-                      )
+                    LogoWidget(
+                      widget.receipt,
+                      area: 2700,
+                      maxHeight: 65,
+                      maxWidth: 150
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,

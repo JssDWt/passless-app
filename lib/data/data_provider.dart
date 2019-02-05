@@ -4,12 +4,13 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:passless/data/data_exception.dart';
+import 'package:passless/models/logo.dart';
 import 'package:passless/models/preferences.dart';
 import 'package:passless/models/receipt_state.dart';
 import 'dart:convert';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:image/image.dart' as image;
+
 
 import 'package:passless/models/receipt.dart';
 
@@ -51,6 +52,7 @@ class _DataProvider extends InheritedWidget {
 /// A helper for accessing receipt data.
 class Repository {
   static const String RECEIPT_TABLE = "receipts";
+  static const String RECEIPT_VENDOR_TABLE = "receipt_vendors";
   static const String ACTIVE_RECEIPT_TABLE = "active_receipts";
   static const String RECYCLE_BIN_TABLE = "recycle_bin";
   static const String NOTE_TABLE = "notes";
@@ -124,7 +126,7 @@ class Repository {
         receipt_id INTEGER NOT NULL,
         CONSTRAINT fk_receipts
           FOREIGN KEY (receipt_id)
-          REFERENCES receipts(id)
+          REFERENCES $RECEIPT_TABLE(id)
           ON DELETE CASCADE)""");
     
     await db.execute(
@@ -145,7 +147,7 @@ class Repository {
         receipt_id INTEGER NOT NULL,
         CONSTRAINT fk_receipts
           FOREIGN KEY (receipt_id)
-          REFERENCES receipts(id)
+          REFERENCES $RECEIPT_TABLE(id)
           ON DELETE CASCADE)""");
     
     await db.execute(
@@ -160,7 +162,7 @@ class Repository {
         date REAL NOT NULL,
         CONSTRAINT fk_receipts
           FOREIGN KEY (receipt_id)
-          REFERENCES receipts(id)
+          REFERENCES $RECEIPT_TABLE(id)
           ON DELETE CASCADE)""");
 
     await db.execute(
@@ -170,27 +172,20 @@ class Repository {
     await db.execute(
       """CREATE TABLE $LOGO_TABLE(
           id INTEGER PRIMARY KEY NOT NULL,
-          receipt_id INTEGER NOT NULL,
+          vendor_identifier TEXT NOT NULL,
           mime_type TEXT NOT NULL,
           width INTEGER NOT NULL,
           height INTEGER NOT NULL,
           logo BLOB NOT NULL,
-          CONSTRAINT fk_receipts
-            FOREIGN KEY (receipt_id)
-            REFERENCES receipts(id)
-            ON DELETE CASCADE
+          UNIQUE(vendor_identifier) ON CONFLICT REPLACE
       )"""
     );
 
     await db.execute(
-      """CREATE UNIQUE INDEX idx_logos_receipt
-          ON $LOGO_TABLE (receipt_id DESC)""");
-
-    
-
+      """CREATE UNIQUE INDEX idx_logos_vendor
+          ON $LOGO_TABLE (vendor_identifier)""");
 
     // Insert initial data.
-
     await _updatePreferences(db, Preferences.defaults);
     
     // TODO: Remove the sample receipts and their image assets.
@@ -317,6 +312,7 @@ class Repository {
           }
       ],
       "vendor": {
+          "identifier": "albert-heijn-1376",
           "name": "Albert Heijn 1376",
           "address": "Amsterdamsestraatweg 367A, 3551CK, Utrecht",
           "phone": "030-2420200",
@@ -324,7 +320,6 @@ class Repository {
           "kvkNumber": "35012085",
           "email": "info@ah.nl",
           "web": "https://www.ah.nl/winkel/1376",
-          "logo": null,
           "meta": {
             "operator": "Henny van de Hoek"
           }
@@ -444,6 +439,7 @@ class Repository {
           }
       ],
       "vendor": {
+          "identifier": "jumbo-utrecht-merelstraat",
           "name": "Jumbo Utrecht Merelstraat",
           "address": "Merelstraat 46, 3514 CN Utrecht",
           "phone": "030-6630160",
@@ -451,7 +447,6 @@ class Repository {
           "kvkNumber": "87234821",
           "email": "info@jumbosupermarkten.nl",
           "web": "https://www.jumbo.com/winkels/jumbo-utrecht-merelstraat/",
-          "logo": null,
           "meta": {
             "operator": "Pietje Dirk"
           }
@@ -528,6 +523,7 @@ class Repository {
       ],
       "loyalties": [],
       "vendor": {
+          "identifier": "kruidvat-20850",
           "name": "Kruidvat",
           "address": "Amsterdamsestraatweg 391, 3551 CL Utrecht",
           "phone": "0318-798000",
@@ -540,15 +536,6 @@ class Repository {
           }
       }
     }"""]);
-
-    Uint8List logo = (await rootBundle.load('assets/AH-logo.jpg')).buffer.asUint8List();
-    await _saveLogo(db, logo, ahId, "image/jpeg");
-
-    logo = (await rootBundle.load('assets/Jumbo-logo.png')).buffer.asUint8List();
-    await _saveLogo(db, logo, jumboId, "image/png");
-
-    logo = (await rootBundle.load('assets/Kruidvat-logo.png')).buffer.asUint8List();
-    await _saveLogo(db, logo, kruidvatId, "image/png");
 
     print("Created tables");
   }
@@ -578,59 +565,44 @@ class Repository {
       ..includeTax = obj['includeTax'] == 1;
   }
 
-  Future<void> _saveLogo(DatabaseExecutor db, Uint8List logo, int receiptId, String mimeType) async {
-    image.Image resultingImage;
+  Future<void> saveLogo(String vendorIdentifier, Logo logo) async {
+    var dbClient = await db;
 
-    try 
-    {
-      switch (mimeType) {
-        case "image/jpeg":
-          resultingImage = image.decodeJpg(logo);
-          break;
-        case "image/png":
-          resultingImage = image.decodePng(logo);
-          break;
-        default:
-          resultingImage = image.decodeImage(logo);
-          break;
-      }
-
-      await db.rawInsert(
-        """INSERT INTO $LOGO_TABLE (receipt_id, mime_type, width, height, logo) VALUES(
-        ?, ?, ?, ?, ?
-      )""",
-      [
-        receiptId,
-        mimeType,
-        resultingImage.width,
-        resultingImage.height,
-        logo
-      ]);
-    }
-    on Exception catch (e) {
-      debugPrint("Exception while parsing logo:\n$e");
-    }
-    catch(e, s) {
-      debugPrint("Something was thrown while parsing logo:\n$e\n\nStacktrace:\n$s");
-    }
+    // ON CONFLICT(vendor_identifier) DO UPDATE SET
+    //      mime_type=excluded.mime_type,
+    //      width=excluded.width,
+    //      height=excluded.height,
+    //      logo=excluded.logo
+    dbClient.rawInsert(
+      """INSERT INTO $LOGO_TABLE(vendor_identifier, mime_type, width, height, logo)
+         VALUES(?, ?, ?, ?, ?)""",
+         [
+           vendorIdentifier,
+           logo.mimeType,
+           logo.width,
+           logo.height,
+           logo.data
+         ]);
   }
 
-  Future<Image> getLogo(Receipt receipt, double area) async {
+  Future<Logo> getLogo(Receipt receipt) async {
     var dbClient = await db;
     List<Map<String, dynamic>> map = await dbClient.rawQuery(
-      """SELECT mime_type, width, height, logo FROM $LOGO_TABLE WHERE receipt_id = ?""",
-      [receipt.id]);
+      """SELECT mime_type, width, height, logo FROM $LOGO_TABLE WHERE vendor_identifier = ?""",
+      [receipt.vendor.identifier]);
+    
+    Logo result;
     if (map.isNotEmpty) {
       var row = map.first;
-      int width = row['width'] as int;
-      int height = row['height'] as int;
-      double ratio = height / width;
-      double resultingWidth = sqrt(area / ratio);
-      Uint8List bytes = row['logo'] as Uint8List;
-      return Image.memory(bytes, width: resultingWidth, fit: BoxFit.contain);
+      result = Logo(
+        row['width'] as int,
+        row['height'] as int,
+        row['mime_type'],
+        row['logo'] as Uint8List
+      );
     }
     
-    return null;
+    return result;
   }
 
   /// Retrieves all receipts.
@@ -697,35 +669,11 @@ class Repository {
     // TODO: Check for doubles
     var dbClient = await db;
     Receipt result;
-    bool hasLogo = false;
-    String mimeType;
-    Uint8List bytes;
-
-    if (receipt.vendor.logo != null) {
-      var logoDataUrl = receipt.vendor.logo;
-      receipt.vendor.logo = null;
-
-      int endIndex = logoDataUrl.indexOf(";base64");
-      int startIndex = logoDataUrl.indexOf(":") + 1;
-      if (endIndex != -1 &&  startIndex != 0) {
-        mimeType = logoDataUrl.substring(startIndex, endIndex);
-        int logoIndex = logoDataUrl.indexOf(",") + 1;
-        if (logoIndex != 0) {
-          String logoString = logoDataUrl.substring(logoIndex);
-          bytes = base64Decode(logoString);
-          hasLogo = true;
-        }
-      }
-    }
 
     await dbClient.transaction((txn) async {
       int id = await txn.insert(
         RECEIPT_TABLE, 
         {"receipt": json.encode(receipt.toJson())});
-      
-      if (hasLogo) {
-        await _saveLogo(txn, bytes, id, mimeType);
-      }
 
       var inserted = await txn.query(
         RECEIPT_TABLE, 

@@ -120,6 +120,7 @@ Map<String, dynamic> _$PaymentToJson(Payment instance) => <String, dynamic>{
 
 Vendor _$VendorFromJson(Map<String, dynamic> json) {
   return Vendor()
+    ..identifier = json['identifier'] as String
     ..name = json['name'] as String
     ..address = json['address'] as String
     ..phone = json['phone'] as String
@@ -132,6 +133,7 @@ Vendor _$VendorFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$VendorToJson(Vendor instance) => <String, dynamic>{
+      'identifier': instance.identifier,
       'name': instance.name,
       'address': instance.address,
       'phone': instance.phone,

@@ -25,6 +25,7 @@ class RecycleBinPageState extends State<RecycleBinPage> {
 
   Future<void> _initSize() async {
     int size = await Repository.of(context).getRecycleBinSize();
+    if (!mounted) return;
     setState(() {
       binSize = size;
     });

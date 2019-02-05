@@ -19,5 +19,13 @@ To generate localization files, run:
 `flutter pub pub run intl_translation:generate_from_arb --output-dir=lib/l10n \ --no-use-deferred-loading lib/l10n/passless_localizations.dart lib/main.dart lib/l10n/intl_*.arb`
 
 
-In order to generate launcher icons for android and iOS, run
+In order to generate launcher icons for android and iOS, run:
 `flutter packages pub run flutter_launcher_icons:main`
+
+
+To generate json serializable classes, run:
+`flutter packages pub run build_runner build`
+or:
+`flutter packages pub run build_runner build --delete-conflicting-outputs`
+and if those fail, try:
+`flutter packages pub run build_runner clean`

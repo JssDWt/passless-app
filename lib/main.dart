@@ -5,6 +5,7 @@ import 'package:passless/data/data_provider.dart';
 import 'package:passless/l10n/passless_localizations.dart';
 import 'package:passless/receipt_app.dart';
 import 'package:passless/settings/preferences_provider.dart';
+import 'package:passless/utils/app_config.dart';
 
 /// Main entry point for the app.
 void main() {
@@ -21,25 +22,28 @@ class ReceiptMaterialApp extends StatefulWidget {
 class _ReceiptMaterialAppState extends State<ReceiptMaterialApp> {
   @override
   Widget build(BuildContext context) {
-    return NfcProvider(
-      child: DataProvider(
-        child: PreferencesProvider(
-          child: MaterialApp(
-            localizationsDelegates: [
-              const PasslessLocalizationsDelegate(),
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate
-            ],
-            supportedLocales: [
-              const Locale('en', 'US'),
-              const Locale('nl', 'NL')
-            ],
-            debugShowCheckedModeBanner: false, 
-            theme: ThemeData.light(), 
-            home: ReceiptApp(),
+    return AppConfig(
+      apiBaseUrl: "http://10.0.2.2:5000/api/",
+      child: NfcProvider(
+        child: DataProvider(
+          child: PreferencesProvider(
+            child: MaterialApp(
+              localizationsDelegates: [
+                const PasslessLocalizationsDelegate(),
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate
+              ],
+              supportedLocales: [
+                const Locale('en', 'US'),
+                const Locale('nl', 'NL')
+              ],
+              debugShowCheckedModeBanner: false, 
+              theme: ThemeData.light(), 
+              home: ReceiptApp(),
+            ),
           ),
-        ),
-      )
+        )
+      ),
     );
   }
 }

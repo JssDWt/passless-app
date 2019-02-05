@@ -24,6 +24,7 @@ class _ReceiptAppState extends State<ReceiptApp> {
     _nfc.configure(
       onMessage: _onMessage
     ).then((r) {
+      if (!mounted) return;
       setState((){});
     });
   }
