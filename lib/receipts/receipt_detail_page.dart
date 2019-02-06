@@ -6,77 +6,22 @@ import 'package:passless/l10n/passless_localizations.dart';
 import 'package:passless/models/receipt.dart';
 import 'package:passless/models/receipt_state.dart';
 import 'package:passless/receipts/delete_dialog.dart';
+import 'package:passless/receipts/delete_receipt_button.dart';
 import 'package:passless/widgets/overflow_text.dart';
 import 'package:passless/settings/price_provider.dart';
 import 'package:passless/widgets/semi_divider.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// A page that shows receipt details.
-class ReceiptDetailPage extends StatefulWidget {
+class ReceiptDetailPage extends StatelessWidget {
   final Receipt _receipt;
   ReceiptDetailPage(this._receipt);
 
   @override
-  ReceiptDetailPageState createState() {
-    return new ReceiptDetailPageState();
-  }
-}
-
-class ReceiptDetailPageState extends State<ReceiptDetailPage> {
-  ReceiptState receiptState = ReceiptState.unknown;
-
-  @override
-  void didChangeDependencies() {
-    _updateReceiptState();
-    super.didChangeDependencies();
-  }
-
-  Future<void> _updateReceiptState() async {
-    ReceiptState currentState = 
-      await Repository.of(context).getReceiptState(widget._receipt);
-    if (!mounted) return;
-    setState(() {
-      receiptState = currentState;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {   
-
-    Widget deleteButton;
-    switch (receiptState) {
-      case ReceiptState.active:
-        deleteButton = FloatingActionButton(
-          child: Icon(Icons.delete),
-          tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
-          onPressed: () async {
-            await Repository.of(context).delete(widget._receipt);
-            Navigator.of(context).pop(ReceiptState.deleted);
-          },
-        );
-        break;
-      case ReceiptState.deleted:
-        deleteButton = FloatingActionButton(
-          child: Icon(Icons.delete_forever),
-          tooltip: PasslessLocalizations.of(context).deletePermanentlyTooltip,
-          onPressed: () async {
-            bool shouldDelete = await DeleteDialog.show(context, 1);
-            if (shouldDelete) {
-              await Repository.of(context).deletePermanently(widget._receipt);
-              Navigator.of(context).pop(ReceiptState.deletedPermanently);
-            }
-          },
-        );
-        break;
-      case ReceiptState.unknown:
-      default:
-        deleteButton = Container();
-        break;
-    }
-
     return SafeArea(
       child: Hero(
-        tag: "receipt${widget._receipt.id}",
+        tag: "receipt${_receipt.id}",
         child: LayoutBuilder(
           builder: (context, constraints) => SingleChildScrollView(
             child: ConstrainedBox(
@@ -98,17 +43,17 @@ class ReceiptDetailPageState extends State<ReceiptDetailPage> {
                         children: <Widget>[
                           Row(
                             children: <Widget>[
-                              Expanded(child: _VendorContainer(widget._receipt)),
-                              deleteButton
+                              Expanded(child: _VendorContainer(_receipt)),
+                              DeleteReceiptButton(_receipt)
                             ],
                           ),
-                          _DateContainer(widget._receipt),
+                          _DateContainer(_receipt),
                           SemiDivider(),
-                          _ItemsContainer(widget._receipt),
+                          _ItemsContainer(_receipt),
                           SemiDivider(),
-                          _DiscountContainer(widget._receipt),
-                          _TotalContainer(widget._receipt),
-                          _NoteContainer(widget._receipt)
+                          _DiscountContainer(_receipt),
+                          _TotalContainer(_receipt),
+                          _NoteContainer(_receipt)
                         ],
                       )
                     ),
