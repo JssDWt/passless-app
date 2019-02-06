@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:passless/data/data_exception.dart';
+import 'package:passless/data/invalid_receipt_exception.dart';
 import 'package:passless/models/logo.dart';
 import 'package:passless/models/preferences.dart';
 import 'package:passless/models/receipt_state.dart';
@@ -189,9 +190,7 @@ class Repository {
     await _updatePreferences(db, Preferences.defaults);
     
     // TODO: Remove the sample receipts and their image assets.
-    int ahId = await db.rawInsert(
-      "INSERT INTO $RECEIPT_TABLE (receipt) VALUES (?)",
-      ["""{
+    int ahId = await _saveReceipt(db, """{
       "time": "2018-10-28T10:27:00+01:00",
       "currency": "EUR",
       "subtotal": {
@@ -324,11 +323,9 @@ class Repository {
             "operator": "Henny van de Hoek"
           }
       }
-    }"""]);
+    }""");
 
-    int jumboId = await db.rawInsert(
-      "INSERT INTO $RECEIPT_TABLE (receipt) VALUES (?)",
-      ["""{
+    int jumboId = await _saveReceipt(db, """{
       "time": "2017-10-28T10:27:00+01:00",
       "currency": "EUR",
       "subtotal": {
@@ -451,10 +448,9 @@ class Repository {
             "operator": "Pietje Dirk"
           }
       }
-    }"""]);
-    int kruidvatId = await db.rawInsert(
-      "INSERT INTO $RECEIPT_TABLE (receipt) VALUES (?)",
-      ["""{
+    }""");
+
+    int kruidvatId = await _saveReceipt(db, """{
       "time": "2019-01-11T11:27:00+01:00",
       "currency": "EUR",
       "subtotal": {
@@ -535,7 +531,7 @@ class Repository {
             "operator": "Suraya Vos"
           }
       }
-    }"""]);
+    }""");
 
     print("Created tables");
   }
@@ -665,15 +661,13 @@ class Repository {
   }
 
   /// Stores the specified receipt.
-  Future<Receipt> saveReceipt(Receipt receipt) async {
+  Future<Receipt> saveReceipt(String receipt) async {
     // TODO: Check for doubles
     var dbClient = await db;
     Receipt result;
 
     await dbClient.transaction((txn) async {
-      int id = await txn.insert(
-        RECEIPT_TABLE, 
-        {"receipt": json.encode(receipt.toJson())});
+      int id = await _saveReceipt(txn, receipt);
 
       var inserted = await txn.query(
         RECEIPT_TABLE, 
@@ -684,6 +678,10 @@ class Repository {
 
     if (result != null) notifyDataChanged();
     return result;
+  }
+
+  Future<int> _saveReceipt(DatabaseExecutor db, String receipt) async {
+    return await db.insert(RECEIPT_TABLE, {"receipt": receipt});
   }
 
   Future<List<Receipt>> search(String search, int offset, int length) async {
@@ -915,9 +913,16 @@ class Repository {
   }
 
   Receipt _fromMap(Map map) {
-    var receiptJson = json.decode(map["receipt"]);
-    Receipt receipt = Receipt.fromJson(receiptJson);
-    receipt.id = map["id"] as int;
-    return receipt;
+    try {
+      var receiptJson = json.decode(map["receipt"]);
+      Receipt receipt = Receipt.fromJson(receiptJson);
+      receipt.id = map["id"] as int;
+      return receipt;
+    }
+    catch (e)
+    {
+      debugPrint("Failed to deserialize receipt:\n$e");
+      throw InvalidReceiptException(e.toString());
+    }
   }
 }

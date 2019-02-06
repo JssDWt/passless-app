@@ -5,6 +5,7 @@ import 'package:passless/data/data_provider.dart';
 import 'package:passless/models/receipt.dart';
 import 'package:passless/receipts/latest_receipts_page.dart';
 import 'package:passless/receipts/receipt_detail_page.dart';
+import 'package:passless/data/invalid_receipt_exception.dart';
 import 'package:nfc/nfc.dart';
 
 
@@ -37,9 +38,22 @@ class _ReceiptAppState extends State<ReceiptApp> {
 
   /// Handles received ndef messages (receipts)
   Future<void> _onMessage(String message) async {
-    var receiptJson = json.decode(message);
-    Receipt receipt = Receipt.fromJson(receiptJson);
-    receipt = await Repository.of(context).saveReceipt(receipt);
+    Receipt receipt;
+    try
+    {
+      receipt = await Repository.of(context).saveReceipt(message);
+    }
+    on InvalidReceiptException catch (e)
+    {
+      // TODO: Notify issuer receipt is not valid.
+      debugPrint("Failed to deserialize receipt:\n$e");
+    }
+
+    if (receipt == null || !mounted) return;
+
+    // TODO: Verify receipt integrity
+    // TODO: Verify receipt contents
+    // TODO: Persist the validation stages.
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => ReceiptDetailPage(receipt)
