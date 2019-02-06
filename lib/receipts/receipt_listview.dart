@@ -50,6 +50,7 @@ class _ReceiptListViewState extends State<ReceiptListView> {
       itemBuilder: (context, receipt) 
         => ReceiptListCard(
           receipt,
+          isSelected: false,
           deleteCallback: _onReceiptDeleted,
           selectCallback: _onReceiptSelected,
           showSelectionMarker: false,
@@ -61,8 +62,8 @@ class _ReceiptListViewState extends State<ReceiptListView> {
   }
 
   void _onReceiptDeleted(Receipt receipt) {
-    var loc = PasslessLocalizations.of(context);
     setState(() {});
+    var loc = PasslessLocalizations.of(context);
 
     // TODO: Add UNDO button.
     Scaffold.of(context).showSnackBar(
@@ -159,9 +160,9 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
         itemBuilder: (context, receipt) 
           => ReceiptListCard(
             receipt,
+            isSelected: widget.selection.map((r) => r.id).contains(receipt.id),
             deleteCallback: null,
             selectCallback: _onReceiptSelected,
-            initiallySelected: widget.selection.map((r) => r.id).contains(receipt.id),
             selectOnTap: true,
           ),
         length: 15,

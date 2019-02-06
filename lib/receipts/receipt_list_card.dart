@@ -7,42 +7,23 @@ import 'package:passless/receipts/receipt_detail_page.dart';
 import 'package:passless/settings/price_provider.dart';
 import 'package:passless/widgets/logo_widget.dart';
 
-class ReceiptListCard extends StatefulWidget {
+class ReceiptListCard extends StatelessWidget {
   final Receipt receipt;
+  final bool isSelected;
   final void Function(Receipt receipt, bool selected) selectCallback;
   final void Function(Receipt receipt) deleteCallback;
   final bool selectOnTap;
-  final bool initiallySelected;
   final bool showSelectionMarker;
 
   ReceiptListCard(
     this.receipt, 
-    { 
+    {
+      @required this.isSelected,
       @required this.selectCallback,
       @required this.deleteCallback,
       this.selectOnTap = false,
-      this.initiallySelected = false,
       this.showSelectionMarker = true
     });
-
-  @override
-  _ReceiptListCardState createState() 
-    => _ReceiptListCardState(isSelected: initiallySelected);
-}
-
-class _ReceiptListCardState extends State<ReceiptListCard> {
-  bool isSelected;
-  _ReceiptListCardState({this.isSelected = false});
-
-  void _onReceiptSelected() {
-    if (widget.showSelectionMarker) {
-      setState(() {
-        isSelected = !isSelected;
-      });
-    }
-    
-    widget.selectCallback(widget.receipt, isSelected);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,22 +32,22 @@ class _ReceiptListCardState extends State<ReceiptListCard> {
     var pri = PriceProvider.of(context);
 
     return Hero(
-      tag: "receipt${widget.receipt.id}",
+      tag: "receipt${receipt.id}",
       child: Card(
         clipBehavior: Clip.antiAlias,
         color: isSelected ? theme.selectedRowColor : theme.cardColor,
         child: InkWell(
           onTap: () async {
-            if (widget.selectOnTap) {
+            if (selectOnTap) {
               _onReceiptSelected();
             }
             else {
               ReceiptState state = await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => 
-                    ReceiptDetailPage(widget.receipt)));
+                    ReceiptDetailPage(receipt)));
               if (state == ReceiptState.deleted) {
-                widget.deleteCallback(widget.receipt);
+                deleteCallback(receipt);
               }
             }
           },
@@ -82,7 +63,7 @@ class _ReceiptListCardState extends State<ReceiptListCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     LogoWidget(
-                      widget.receipt,
+                      receipt,
                       area: 2700,
                       maxHeight: 65,
                       maxWidth: 150
@@ -95,11 +76,11 @@ class _ReceiptListCardState extends State<ReceiptListCard> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              loc.itemCount(widget.receipt.items.length), 
+                              loc.itemCount(receipt.items.length), 
                               style: theme.textTheme.subhead
                             ),
                             Text(
-                              loc.datetime(widget.receipt.time), 
+                              loc.datetime(receipt.time), 
                               style: theme.textTheme.subhead
                             )
                           ],
@@ -107,8 +88,8 @@ class _ReceiptListCardState extends State<ReceiptListCard> {
                         Expanded(child: Container(),),
                         Text(
                           pri.price(
-                            widget.receipt.totalPrice, 
-                            widget.receipt.currency
+                            receipt.totalPrice, 
+                            receipt.currency
                           ),
                           style: theme.textTheme.title,
                         )
@@ -128,5 +109,9 @@ class _ReceiptListCardState extends State<ReceiptListCard> {
         ),
       )
     );
+  }
+
+  void _onReceiptSelected() {
+    selectCallback(receipt, !isSelected);
   }
 }
