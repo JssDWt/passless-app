@@ -25,25 +25,23 @@ class _ReceiptMaterialAppState extends State<ReceiptMaterialApp> {
     return AppConfig(
       apiBaseUrl: "http://10.0.2.2:5000/api/",
       child: NfcProvider(
-        child: DataProvider(
-          child: PreferencesProvider(
-            child: MaterialApp(
-              localizationsDelegates: [
-                const PasslessLocalizationsDelegate(),
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate
-              ],
-              supportedLocales: [
-                const Locale('en', 'US'),
-                const Locale('nl', 'NL')
-              ],
-              debugShowCheckedModeBanner: false, 
-              theme: ThemeData.light(), 
-              home: ReceiptApp(),
-            ),
+        child: PreferencesProvider(
+          child: MaterialApp(
+            localizationsDelegates: [
+              const PasslessLocalizationsDelegate(),
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate
+            ],
+            supportedLocales: [
+              const Locale('en', 'US'),
+              const Locale('nl', 'NL')
+            ],
+            debugShowCheckedModeBanner: false, 
+            theme: ThemeData.light(), 
+            home: ReceiptApp(),
           ),
-        )
-      ),
+        ),
+      )
     );
   }
 }

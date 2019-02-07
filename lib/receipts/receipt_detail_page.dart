@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:passless/data/data_provider.dart';
 import 'package:passless/l10n/passless_localizations.dart';
 import 'package:passless/models/receipt.dart';
-import 'package:passless/models/receipt_state.dart';
-import 'package:passless/receipts/delete_dialog.dart';
 import 'package:passless/receipts/delete_receipt_button.dart';
 import 'package:passless/widgets/overflow_text.dart';
 import 'package:passless/settings/price_provider.dart';
@@ -279,13 +277,13 @@ class _NoteContainerState extends State<_NoteContainer> {
   String notes;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
     _initState();
   }
 
   Future _initState() async {
-    _repository = Repository.of(context);
+    _repository = Repository();
     notes = await _repository.getComments(widget._receipt);
     _controller = TextEditingController(text: notes);
     

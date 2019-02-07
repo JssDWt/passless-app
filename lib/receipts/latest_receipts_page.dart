@@ -39,7 +39,7 @@ class LatestReceiptsPage extends StatelessWidget {
       ),
       // Either load or show the list of receipts.
       body: ReceiptListView(
-        dataFunction: Repository.of(context).getReceipts,
+        dataFunction: Repository().getReceipts,
       ),
     );
   }

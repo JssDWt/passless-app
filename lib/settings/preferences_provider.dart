@@ -23,13 +23,13 @@ class _PreferencesProviderState extends State<PreferencesProvider> {
   Preferences get preferences => _preferences;
 
   @override 
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
     _initPreferences();
   }
 
   Future<void> _initPreferences() async {
-    var preferences = await Repository.of(context).getPreferences();
+    var preferences = await Repository().getPreferences();
     if (!mounted) return;
 
     setState(() {
@@ -38,8 +38,7 @@ class _PreferencesProviderState extends State<PreferencesProvider> {
   }
 
   Future<void> updatePreferences(Preferences preferences) async {
-    var repo = Repository.of(context);
-    await repo.updatePreferences(preferences);
+    await Repository().updatePreferences(preferences);
     await _initPreferences();
   }
 

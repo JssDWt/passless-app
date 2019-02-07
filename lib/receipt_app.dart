@@ -41,7 +41,7 @@ class _ReceiptAppState extends State<ReceiptApp> {
     Receipt receipt;
     try
     {
-      receipt = await Repository.of(context).saveReceipt(message);
+      receipt = await Repository().saveReceipt(message);
     }
     on InvalidReceiptException catch (e)
     {

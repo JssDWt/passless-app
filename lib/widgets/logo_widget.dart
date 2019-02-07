@@ -63,7 +63,7 @@ class LogoWidgetState extends State<LogoWidget> {
   }
 
   Future<Logo> _getCachedLogo() async {
-    return await Repository.of(context).getLogo(widget.receipt);
+    return await Repository().getLogo(widget.receipt);
   }
 
   Future<Logo> _getNetworkLogo() async {
@@ -135,7 +135,7 @@ class LogoWidgetState extends State<LogoWidget> {
   }
 
   Future<void> _saveLogo(Logo logo) async {
-    await Repository.of(context).saveLogo(widget.receipt.vendor.identifier, logo);
+    await Repository().saveLogo(widget.receipt.vendor.identifier, logo);
   }
 
   @override

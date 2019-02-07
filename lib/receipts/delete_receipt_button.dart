@@ -18,14 +18,14 @@ class _DeleteReceiptButtonState extends State<DeleteReceiptButton>
   ReceiptState receiptState = ReceiptState.unknown;
 
   @override
-  void didChangeDependencies() {
+  void initState() {
+    super.initState();
     _updateReceiptState();
-    super.didChangeDependencies();
   }
 
   Future<void> _updateReceiptState() async {
     ReceiptState currentState = 
-      await Repository.of(context).getReceiptState(widget.receipt);
+      await Repository().getReceiptState(widget.receipt);
     if (!mounted) return;
     setState(() {
       receiptState = currentState;
@@ -41,7 +41,7 @@ class _DeleteReceiptButtonState extends State<DeleteReceiptButton>
           child: Icon(Icons.delete),
           tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
           onPressed: () async {
-            await Repository.of(context).delete(widget.receipt);
+            await Repository().delete(widget.receipt);
             Navigator.of(context).pop(ReceiptState.deleted);
           },
         );
@@ -53,7 +53,7 @@ class _DeleteReceiptButtonState extends State<DeleteReceiptButton>
           onPressed: () async {
             bool shouldDelete = await DeleteDialog.show(context, 1);
             if (shouldDelete) {
-              await Repository.of(context).deletePermanently(widget.receipt);
+              await Repository().deletePermanently(widget.receipt);
               Navigator.of(context).pop(ReceiptState.deletedPermanently);
             }
           },
@@ -65,6 +65,7 @@ class _DeleteReceiptButtonState extends State<DeleteReceiptButton>
         break;
     }
 
+    // TODO: The button currently flickers, find out why.
     return Container(
       width: 56.0,
       height: 56.0,

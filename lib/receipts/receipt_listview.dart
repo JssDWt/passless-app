@@ -30,11 +30,11 @@ class _ReceiptListViewState extends State<ReceiptListView> {
   Key scrollKey = UniqueKey();
 
   @override 
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
 
     // TODO: Make sure the same amount of receipts is loaded.
-    Repository.of(context).listen(() {
+    Repository().listen(() {
       if (!mounted) return;
       setState(() {
         scrollKey = UniqueKey();
@@ -148,7 +148,7 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
               icon: Icon(Icons.delete),
               tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
               onPressed: () async {
-                await Repository.of(context).deleteBatch(widget.selection);
+                await Repository().deleteBatch(widget.selection);
                 Navigator.of(context).pop(widget.selection.length);
               },
             )

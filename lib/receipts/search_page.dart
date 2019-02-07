@@ -94,7 +94,7 @@ class _SearchPageState extends State<SearchPage> {
       ),
       body: ReceiptListView(
         dataFunction: (offset, length) 
-          => Repository.of(context).search(currentSearch, offset, length),
+          => Repository().search(currentSearch, offset, length),
       )
     );
   }

@@ -18,13 +18,13 @@ class RecycleBinPageState extends State<RecycleBinPage> {
   int binSize = 0;
 
   @override
-  void didChangeDependencies() {
+  void initState() {
+    super.initState();
     _initSize();
-    super.didChangeDependencies();
   }
 
   Future<void> _initSize() async {
-    int size = await Repository.of(context).getRecycleBinSize();
+    int size = await Repository().getRecycleBinSize();
     if (!mounted) return;
     setState(() {
       binSize = size;
@@ -47,7 +47,7 @@ class RecycleBinPageState extends State<RecycleBinPage> {
               binSize);
 
             if (shouldDelete) {
-              await Repository.of(context).emptyRecycleBin();
+              await Repository().emptyRecycleBin();
               Navigator.of(context).pop();
             }
           },
@@ -63,7 +63,7 @@ class RecycleBinPageState extends State<RecycleBinPage> {
         actions: actions,
       ),
       body: ReceiptListView(
-        dataFunction: Repository.of(context).getDeletedReceipts,
+        dataFunction: Repository().getDeletedReceipts,
         selectionActionBuilder: (context, receipts) =>
           <Widget>[
             IconButton(
@@ -75,7 +75,7 @@ class RecycleBinPageState extends State<RecycleBinPage> {
                   receipts.length);
 
                 if (shouldDelete) {
-                  await Repository.of(context).deleteBatchPermanently(receipts);
+                  await Repository().deleteBatchPermanently(receipts);
                   Navigator.of(context).pop();
                 }
               },
@@ -89,7 +89,7 @@ class RecycleBinPageState extends State<RecycleBinPage> {
                   receipts.length);
 
                 if (shouldRestore) {
-                  await Repository.of(context).undeleteBatch(receipts);
+                  await Repository().undeleteBatch(receipts);
                   Navigator.of(context).pop();
                 }
               },

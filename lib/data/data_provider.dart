@@ -15,38 +15,6 @@ import 'package:sqflite/sqflite.dart';
 
 import 'package:passless/models/receipt.dart';
 
-class DataProvider extends StatefulWidget {
-  final Widget child;
-  DataProvider({this.child});
-
-  @override
-  State<StatefulWidget> createState() => _DataProviderState();
-}
-
-class _DataProviderState extends State<DataProvider> {
-  final Repository _repository = Repository();
-
-  @override
-  Widget build(BuildContext context) {
-    return _DataProvider(_repository, child: widget.child);
-  }
-
-  @override
-  void dispose() {
-    _repository.close();
-    super.dispose();
-  }
-}
-
-class _DataProvider extends InheritedWidget {
-  final Repository repository;
-  _DataProvider(this.repository, { Key key, Widget child }) 
-    : super(key: key, child: child );
-
-  @override
-  bool updateShouldNotify(_DataProvider oldWidget) => false;
-}
-
 // TODO: Either use a document database, import json1 extension or normalize the
 // data structure
 
@@ -60,13 +28,14 @@ class Repository {
   static const String LOGO_TABLE = "logos";
   static const String PREFERENCE_TABLE = "preferences";
 
-  static Repository of(BuildContext context) {
-    final _DataProvider provider = 
-      context.inheritFromWidgetOfExactType(_DataProvider);
-    return provider.repository;
-  }
-
+  static final Repository _repo = Repository._internal();
   Database _db;
+
+  factory Repository() {
+    return _repo;
+  }
+  
+  Repository._internal();
 
   /// Returns the initialized singleton database instance.
   Future<Database> get db async {
