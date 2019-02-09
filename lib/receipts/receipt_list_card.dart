@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:passless/data/data_provider.dart';
 import 'package:passless/l10n/passless_localizations.dart';
 import 'package:passless/models/receipt.dart';
 import 'package:passless/models/receipt_state.dart';
@@ -62,12 +61,7 @@ class ReceiptListCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    LogoWidget(
-                      receipt,
-                      area: 2700,
-                      maxHeight: 65,
-                      maxWidth: 150
-                    ),
+                    LogoWidget(receipt),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.end,

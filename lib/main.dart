@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:nfc/nfc_provider.dart';
-import 'package:passless/data/data_provider.dart';
 import 'package:passless/l10n/passless_localizations.dart';
 import 'package:passless/receipt_app.dart';
 import 'package:passless/settings/preferences_provider.dart';

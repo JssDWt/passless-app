@@ -1,11 +1,7 @@
 import 'dart:async';
-import 'dart:math';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:passless/data/data_exception.dart';
 import 'package:passless/data/invalid_receipt_exception.dart';
-import 'package:passless/models/logo.dart';
 import 'package:passless/models/preferences.dart';
 import 'package:passless/models/receipt_state.dart';
 import 'dart:convert';
@@ -25,7 +21,6 @@ class Repository {
   static const String ACTIVE_RECEIPT_TABLE = "active_receipts";
   static const String RECYCLE_BIN_TABLE = "recycle_bin";
   static const String NOTE_TABLE = "notes";
-  static const String LOGO_TABLE = "logos";
   static const String PREFERENCE_TABLE = "preferences";
 
   static final Repository _repo = Repository._internal();
@@ -138,28 +133,12 @@ class Repository {
     await db.execute(
       """CREATE UNIQUE INDEX idx_notes_receipt_date
           ON $NOTE_TABLE (receipt_id DESC, date DESC)""");
-    
-    await db.execute(
-      """CREATE TABLE $LOGO_TABLE(
-          id INTEGER PRIMARY KEY NOT NULL,
-          vendor_identifier TEXT NOT NULL,
-          mime_type TEXT NOT NULL,
-          width INTEGER NOT NULL,
-          height INTEGER NOT NULL,
-          logo BLOB NOT NULL,
-          UNIQUE(vendor_identifier) ON CONFLICT REPLACE
-      )"""
-    );
-
-    await db.execute(
-      """CREATE UNIQUE INDEX idx_logos_vendor
-          ON $LOGO_TABLE (vendor_identifier)""");
 
     // Insert initial data.
     await _updatePreferences(db, Preferences.defaults);
     
-    // TODO: Remove the sample receipts and their image assets.
-    int ahId = await _saveReceipt(db, """{
+    // TODO: Remove the sample receipts.
+    await _saveReceipt(db, """{
       "time": "2018-10-28T10:27:00+01:00",
       "currency": "EUR",
       "subtotal": {
@@ -294,7 +273,7 @@ class Repository {
       }
     }""");
 
-    int jumboId = await _saveReceipt(db, """{
+    await _saveReceipt(db, """{
       "time": "2017-10-28T10:27:00+01:00",
       "currency": "EUR",
       "subtotal": {
@@ -419,7 +398,7 @@ class Repository {
       }
     }""");
 
-    int kruidvatId = await _saveReceipt(db, """{
+    await _saveReceipt(db, """{
       "time": "2019-01-11T11:27:00+01:00",
       "currency": "EUR",
       "subtotal": {
@@ -528,46 +507,6 @@ class Repository {
     var obj = map.first;
     return Preferences()
       ..includeTax = obj['includeTax'] == 1;
-  }
-
-  Future<void> saveLogo(String vendorIdentifier, Logo logo) async {
-    var dbClient = await db;
-
-    // ON CONFLICT(vendor_identifier) DO UPDATE SET
-    //      mime_type=excluded.mime_type,
-    //      width=excluded.width,
-    //      height=excluded.height,
-    //      logo=excluded.logo
-    dbClient.rawInsert(
-      """INSERT INTO $LOGO_TABLE(vendor_identifier, mime_type, width, height, logo)
-         VALUES(?, ?, ?, ?, ?)""",
-         [
-           vendorIdentifier,
-           logo.mimeType,
-           logo.width,
-           logo.height,
-           logo.data
-         ]);
-  }
-
-  Future<Logo> getLogo(Receipt receipt) async {
-    var dbClient = await db;
-    List<Map<String, dynamic>> map = await dbClient.rawQuery(
-      """SELECT mime_type, width, height, logo FROM $LOGO_TABLE WHERE vendor_identifier = ?""",
-      [receipt.vendor.identifier]);
-    
-    Logo result;
-    if (map.isNotEmpty) {
-      var row = map.first;
-      result = Logo(
-        row['width'] as int,
-        row['height'] as int,
-        row['mime_type'],
-        row['logo'] as Uint8List
-      );
-    }
-    
-    return result;
   }
 
   /// Retrieves all receipts.
@@ -833,7 +772,6 @@ class Repository {
   }
 
   Future<int> getRecycleBinSize() async {
-    // TODO: This method does not return the right number. DELETE CASCADE not working?
     var dbClient = await db;
     var map = await dbClient.rawQuery("SELECT COUNT(*) as count FROM $RECYCLE_BIN_TABLE");
     return map[0]["count"] as int;

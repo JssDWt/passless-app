@@ -29,7 +29,7 @@ dependencies:
     sdk: flutter
   intl:
   intl_translation:
-  image: 
+  cached_network_image:
 
 dev_dependencies:
   flutter_test:
