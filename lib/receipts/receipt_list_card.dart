@@ -6,7 +6,7 @@ import 'package:passless/receipts/receipt_detail_page.dart';
 import 'package:passless/settings/price_provider.dart';
 import 'package:passless/widgets/logo_widget.dart';
 
-class ReceiptListCard extends StatelessWidget {
+class ReceiptListCard extends StatefulWidget {
   final Receipt receipt;
   final bool isSelected;
   final void Function(Receipt receipt, bool selected) selectCallback;
@@ -25,29 +25,68 @@ class ReceiptListCard extends StatelessWidget {
     });
 
   @override
+  ReceiptListCardState createState() {
+    return new ReceiptListCardState();
+  }
+}
+
+class ReceiptListCardState extends State<ReceiptListCard> 
+  with SingleTickerProviderStateMixin {
+  AnimationController controller;
+  Animation<double> animation;
+
+  @override 
+  void initState()
+  {
+    super.initState();
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200)
+    );
+
+    animation = Tween<double>(begin: 1.0, end: 8.0).animate(controller)
+      ..addListener(() {
+        setState((){});
+      });
+  }
+
+  @override
+  void dispose()
+  {
+    super.dispose();
+    controller.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     var loc = PasslessLocalizations.of(context);
     var pri = PriceProvider.of(context);
 
     return Hero(
-      tag: "receipt${receipt.id}",
+      tag: "receipt${widget.receipt.id}",
       child: Card(
+        elevation: animation.value,
         clipBehavior: Clip.antiAlias,
-        color: isSelected ? theme.selectedRowColor : theme.cardColor,
+        color: widget.isSelected ? theme.selectedRowColor : theme.cardColor,
         child: InkWell(
           onTap: () async {
-            if (selectOnTap) {
+            if (widget.selectOnTap) {
               _onReceiptSelected();
             }
             else {
-              ReceiptState state = await Navigator.of(context).push(
+              controller.forward().then((f) async {
+                ReceiptState state = await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => 
-                    ReceiptDetailPage(receipt)));
+                    ReceiptDetailPage(widget.receipt)));
+                controller.reverse();
+
               if (state == ReceiptState.deleted) {
-                deleteCallback(receipt);
+                widget.deleteCallback(widget.receipt);
               }
+              });
+              
             }
           },
           onLongPress: () {
@@ -62,7 +101,7 @@ class ReceiptListCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     LogoWidget(
-                      receipt, 
+                      widget.receipt, 
                       alignment: Alignment.centerLeft,
                     ),
                     Row(
@@ -73,11 +112,11 @@ class ReceiptListCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              loc.itemCount(receipt.items.length), 
+                              loc.itemCount(widget.receipt.items.length), 
                               style: theme.textTheme.subhead
                             ),
                             Text(
-                              loc.datetime(receipt.time), 
+                              loc.datetime(widget.receipt.time), 
                               style: theme.textTheme.subhead
                             )
                           ],
@@ -85,8 +124,8 @@ class ReceiptListCard extends StatelessWidget {
                         Expanded(child: Container(),),
                         Text(
                           pri.price(
-                            receipt.totalPrice, 
-                            receipt.currency
+                            widget.receipt.totalPrice, 
+                            widget.receipt.currency
                           ),
                           style: theme.textTheme.title,
                         )
@@ -96,7 +135,7 @@ class ReceiptListCard extends StatelessWidget {
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: 12),
-                  child: isSelected 
+                  child: widget.isSelected 
                     ? Icon(Icons.check_circle, color: theme.primaryColor) 
                     : Container(),
                 ),
@@ -109,6 +148,6 @@ class ReceiptListCard extends StatelessWidget {
   }
 
   void _onReceiptSelected() {
-    selectCallback(receipt, !isSelected);
+    widget.selectCallback(widget.receipt, !widget.isSelected);
   }
 }

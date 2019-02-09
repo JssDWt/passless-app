@@ -26,6 +26,7 @@ class ReceiptDetailPage extends StatelessWidget {
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: constraints.maxHeight),
               child: Card(
+                semanticContainer: false,
                 elevation: 8,
                 child: Column(
                   children: <Widget>[
@@ -63,10 +64,10 @@ class ReceiptDetailPage extends StatelessWidget {
                     ),
                   ],
                 )
-              )
+              ),
             )
-          )
-        ),
+          ),
+        )
       ),
     );
   }
