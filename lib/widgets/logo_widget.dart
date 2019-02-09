@@ -7,7 +7,8 @@ import 'package:passless/utils/app_config.dart';
 
 class LogoWidget extends StatefulWidget {
   final Receipt receipt;
-  LogoWidget(this.receipt);
+  final Alignment alignment;
+  LogoWidget(this.receipt, {@required this.alignment});
 
   @override
   LogoWidgetState createState() => LogoWidgetState();
@@ -43,19 +44,57 @@ class LogoWidgetState extends State<LogoWidget> {
     return "${base}vendors/$identifier/logo?area=$URL_AREA&maxWidth=$URL_WIDTH&maxHeight=$URL_HEIGHT";
   }
 
+  Row _buildRow()
+  {
+    CrossAxisAlignment cross;
+    MainAxisAlignment main;
+    if (widget.alignment.x < 0)
+    {
+      main = MainAxisAlignment.start;
+    }
+    else if (widget.alignment.x == 0)
+    {
+      main = MainAxisAlignment.center;
+    }
+    else
+    {
+      main = MainAxisAlignment.end;
+    }
+
+    if (widget.alignment.y < 0)
+    {
+      cross = CrossAxisAlignment.start;
+    }
+    else if (widget.alignment.y == 0)
+    {
+      cross = CrossAxisAlignment.center;
+    }
+    else
+    {
+      cross = CrossAxisAlignment.end;
+    }
+
+    return Row(
+      crossAxisAlignment: cross,
+      mainAxisAlignment: main,
+      children: <Widget>[
+        Hero(
+          tag: "logo${widget.receipt.id}",
+          child: image
+        )
+      ],
+    );
+  }
   @override
   Widget build(BuildContext context) {
+    
     return AnimatedOpacity(
       opacity: image == null ? 0.0 : 1.0,
       duration: Duration(milliseconds: 400),
       child: Container(
         height: MAX_HEIGHT.toDouble(), 
         width: MAX_WIDTH.toDouble(), 
-        child: image == null ? null : Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[image]
-        )
+        child: image == null ? null : _buildRow()
       ),
     );
   }

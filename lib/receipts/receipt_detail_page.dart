@@ -5,6 +5,7 @@ import 'package:passless/data/data_provider.dart';
 import 'package:passless/l10n/passless_localizations.dart';
 import 'package:passless/models/receipt.dart';
 import 'package:passless/receipts/delete_receipt_button.dart';
+import 'package:passless/widgets/logo_widget.dart';
 import 'package:passless/widgets/overflow_text.dart';
 import 'package:passless/settings/price_provider.dart';
 import 'package:passless/widgets/semi_divider.dart';
@@ -30,21 +31,26 @@ class ReceiptDetailPage extends StatelessWidget {
                   children: <Widget>[
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        BackButton()
+                        BackButton(),
+                        Expanded(
+                          child: LogoWidget(
+                            _receipt, 
+                            alignment: Alignment.center,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: DeleteReceiptButton(_receipt),
+                        )
                       ],
                     ),
                     Padding(
                       padding: EdgeInsets.all(8),
                       child: Column(
                         children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Expanded(child: _VendorContainer(_receipt)),
-                              DeleteReceiptButton(_receipt)
-                            ],
-                          ),
+                          _VendorContainer(_receipt),
                           _DateContainer(_receipt),
                           SemiDivider(),
                           _ItemsContainer(_receipt),
@@ -94,7 +100,6 @@ class _VendorContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        
         Padding(
           padding: EdgeInsets.all(8),
           child: Text(

@@ -61,7 +61,10 @@ class ReceiptListCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    LogoWidget(receipt),
+                    LogoWidget(
+                      receipt, 
+                      alignment: Alignment.centerLeft,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.end,
