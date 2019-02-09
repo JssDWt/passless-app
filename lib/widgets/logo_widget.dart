@@ -44,47 +44,6 @@ class LogoWidgetState extends State<LogoWidget> {
     return "${base}vendors/$identifier/logo?area=$URL_AREA&maxWidth=$URL_WIDTH&maxHeight=$URL_HEIGHT";
   }
 
-  Row _buildRow()
-  {
-    CrossAxisAlignment cross;
-    MainAxisAlignment main;
-    if (widget.alignment.x < 0)
-    {
-      main = MainAxisAlignment.start;
-    }
-    else if (widget.alignment.x == 0)
-    {
-      main = MainAxisAlignment.center;
-    }
-    else
-    {
-      main = MainAxisAlignment.end;
-    }
-
-    if (widget.alignment.y < 0)
-    {
-      cross = CrossAxisAlignment.start;
-    }
-    else if (widget.alignment.y == 0)
-    {
-      cross = CrossAxisAlignment.center;
-    }
-    else
-    {
-      cross = CrossAxisAlignment.end;
-    }
-
-    return Row(
-      crossAxisAlignment: cross,
-      mainAxisAlignment: main,
-      children: <Widget>[
-        Hero(
-          tag: "logo${widget.receipt.id}",
-          child: image
-        )
-      ],
-    );
-  }
   @override
   Widget build(BuildContext context) {
     
@@ -94,7 +53,13 @@ class LogoWidgetState extends State<LogoWidget> {
       child: Container(
         height: MAX_HEIGHT.toDouble(), 
         width: MAX_WIDTH.toDouble(), 
-        child: image == null ? null : _buildRow()
+        child: image == null ? null : Align(
+          alignment: widget.alignment,
+          child: Hero(
+            tag: "logo${widget.receipt.id}",
+            child: image
+          ),
+        )
       ),
     );
   }
