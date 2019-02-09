@@ -31,21 +31,27 @@ class ReceiptDetailPage extends StatelessWidget {
                   elevation: 8,
                   child: Column(
                     children: <Widget>[
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Stack(
+                        alignment: Alignment.topCenter,
                         children: <Widget>[
-                          BackButton(),
-                          Expanded(
-                            child: LogoWidget(
-                              _receipt, 
-                              alignment: Alignment.center,
-                            ),
+                          LogoWidget(
+                            _receipt, 
+                            alignment: Alignment.center,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: DeleteReceiptButton(_receipt),
-                          )
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              BackButton(),
+                              Expanded(
+                                child: Container(),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: DeleteReceiptButton(_receipt),
+                              )
+                            ],
+                          ),
                         ],
                       ),
                       Padding(

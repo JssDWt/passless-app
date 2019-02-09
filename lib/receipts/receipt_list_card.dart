@@ -34,6 +34,8 @@ class ReceiptListCardState extends State<ReceiptListCard>
   with SingleTickerProviderStateMixin {
   AnimationController controller;
   Animation<double> animation;
+  static final elevationTween = Tween<double>(begin: 1.0, end: 8.0);
+  static final alignmentTween = Tween<double>(begin: -1.0, end: 0.0);
 
   @override 
   void initState()
@@ -44,10 +46,8 @@ class ReceiptListCardState extends State<ReceiptListCard>
       duration: const Duration(milliseconds: 200)
     );
 
-    animation = Tween<double>(begin: 1.0, end: 8.0).animate(controller)
-      ..addListener(() {
-        setState((){});
-      });
+    animation = CurvedAnimation(curve: Curves.linear, parent: controller)
+      ..addListener(() => setState((){}));
   }
 
   @override
@@ -66,7 +66,7 @@ class ReceiptListCardState extends State<ReceiptListCard>
     return Hero(
       tag: "receipt${widget.receipt.id}",
       child: Card(
-        elevation: animation.value,
+        elevation: elevationTween.evaluate(animation),
         clipBehavior: Clip.antiAlias,
         color: widget.isSelected ? theme.selectedRowColor : theme.cardColor,
         child: InkWell(
@@ -102,9 +102,16 @@ class ReceiptListCardState extends State<ReceiptListCard>
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    LogoWidget(
-                      widget.receipt, 
-                      alignment: Alignment.centerLeft,
+                    Stack(
+                      children: <Widget>[
+                        Align(
+                          alignment: Alignment(alignmentTween.evaluate(animation), 0),
+                          child: LogoWidget(
+                            widget.receipt, 
+                            alignment: Alignment(alignmentTween.evaluate(animation), 0),
+                          ),
+                        ),
+                      ]
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
