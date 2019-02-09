@@ -77,9 +77,10 @@ class ReceiptListCardState extends State<ReceiptListCard>
             else {
               controller.forward().then((f) async {
                 ReceiptState state = await Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => 
-                    ReceiptDetailPage(widget.receipt)));
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondary) => 
+                    ReceiptDetailPage(widget.receipt)
+                );
                 controller.reverse();
 
               if (state == ReceiptState.deleted) {
