@@ -18,56 +18,58 @@ class ReceiptDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {   
-    return SafeArea(
-      child: Hero(
-        tag: "receipt${_receipt.id}",
-        child: LayoutBuilder(
-          builder: (context, constraints) => SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: Card(
-                semanticContainer: false,
-                elevation: 8,
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        BackButton(),
-                        Expanded(
-                          child: LogoWidget(
-                            _receipt, 
-                            alignment: Alignment.center,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: DeleteReceiptButton(_receipt),
-                        )
-                      ],
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Column(
+    return Scaffold(
+      body: SafeArea(
+        child: Hero(
+          tag: "receipt${_receipt.id}",
+          child: LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Card(
+                  semanticContainer: false,
+                  elevation: 8,
+                  child: Column(
+                    children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          _VendorContainer(_receipt),
-                          _DateContainer(_receipt),
-                          SemiDivider(),
-                          _ItemsContainer(_receipt),
-                          SemiDivider(),
-                          _DiscountContainer(_receipt),
-                          _TotalContainer(_receipt),
-                          _NoteContainer(_receipt)
+                          BackButton(),
+                          Expanded(
+                            child: LogoWidget(
+                              _receipt, 
+                              alignment: Alignment.center,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: DeleteReceiptButton(_receipt),
+                          )
                         ],
-                      )
-                    ),
-                  ],
-                )
-              ),
-            )
-          ),
-        )
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Column(
+                          children: <Widget>[
+                            _VendorContainer(_receipt),
+                            _DateContainer(_receipt),
+                            SemiDivider(),
+                            _ItemsContainer(_receipt),
+                            SemiDivider(),
+                            _DiscountContainer(_receipt),
+                            _TotalContainer(_receipt),
+                            _NoteContainer(_receipt)
+                          ],
+                        )
+                      ),
+                    ],
+                  )
+                ),
+              )
+            ),
+          )
+        ),
       ),
     );
   }
