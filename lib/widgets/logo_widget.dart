@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:passless/models/receipt.dart';
 import 'package:passless/utils/app_config.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class LogoWidget extends StatefulWidget {
   final Receipt receipt;
@@ -22,19 +23,13 @@ class LogoWidgetState extends State<LogoWidget> {
   static const int URL_WIDTH = MAX_WIDTH * QUALITY_FACTOR;
   static const int URL_HEIGHT = MAX_HEIGHT * QUALITY_FACTOR;
   static const int URL_AREA = 2700 * QUALITY_FACTOR * QUALITY_FACTOR;
-  Image image;
+  String url;
 
   @override
   void didChangeDependencies()
   {
     super.didChangeDependencies();
-    String url = _getUrl(context);
-    image = Image(
-      image: CachedNetworkImageProvider(
-        url, 
-        scale: QUALITY_FACTOR.toDouble()
-      )
-    );
+    url = _getUrl(context);
   }
 
   String _getUrl(BuildContext context)
@@ -46,22 +41,23 @@ class LogoWidgetState extends State<LogoWidget> {
 
   @override
   Widget build(BuildContext context) {
-    
-    return AnimatedOpacity(
-      opacity: image == null ? 0.0 : 1.0,
-      duration: Duration(milliseconds: 400),
-      child: Container(
-        height: MAX_HEIGHT.toDouble(), 
-        width: MAX_WIDTH.toDouble(), 
-        child: image == null ? null : Align(
-          alignment: widget.alignment,
-          child: Hero(
-            tag: "logo${widget.receipt.id}",
-            child: image
-          ),
-        )
-      ),
+    return Container(
+      height: MAX_HEIGHT.toDouble(), 
+      width: MAX_WIDTH.toDouble(), 
+      child: Align(
+        alignment: widget.alignment,
+        child: Hero(
+          tag: "logo${widget.receipt.id}",
+          child: FadeInImage(
+            fadeInDuration: const Duration(milliseconds: 350),
+            placeholder: MemoryImage(kTransparentImage),
+            image: CachedNetworkImageProvider(
+              url, 
+              scale: QUALITY_FACTOR.toDouble()
+            )
+          )
+        ),
+      )
     );
   }
-
 }

@@ -30,6 +30,7 @@ dependencies:
   intl:
   intl_translation:
   cached_network_image:
+  transparent_image:
 
 dev_dependencies:
   flutter_test:
