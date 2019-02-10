@@ -3,7 +3,8 @@ import 'package:passless/l10n/passless_localizations.dart';
 
 class IncludeTaxDialog extends StatefulWidget {
   final bool includeTax;
-  IncludeTaxDialog(this.includeTax);
+  IncludeTaxDialog(this.includeTax)
+    : assert(includeTax != null);
 
   @override
   _IncludeTaxDialogState createState() => _IncludeTaxDialogState(includeTax);
@@ -13,7 +14,9 @@ class _IncludeTaxDialogState extends State<IncludeTaxDialog> {
   final bool _initialIncludeTax;
   bool _includeTax;
 
-  _IncludeTaxDialogState(this._initialIncludeTax){
+  _IncludeTaxDialogState(this._initialIncludeTax)
+    : assert (_initialIncludeTax != null) 
+  {
     this._includeTax = this._initialIncludeTax;
   }
 

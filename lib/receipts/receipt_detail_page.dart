@@ -14,7 +14,8 @@ import 'package:rxdart/rxdart.dart';
 /// A page that shows receipt details.
 class ReceiptDetailPage extends StatelessWidget {
   final Receipt _receipt;
-  ReceiptDetailPage(this._receipt);
+  ReceiptDetailPage(this._receipt)
+    : assert(_receipt != null);
 
   @override
   Widget build(BuildContext context) {   
@@ -83,7 +84,8 @@ class ReceiptDetailPage extends StatelessWidget {
 
 class _DateContainer  extends StatelessWidget {
   final Receipt _receipt;
-  _DateContainer(this._receipt);
+  _DateContainer(this._receipt)
+    : assert(_receipt != null);
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +106,9 @@ class _DateContainer  extends StatelessWidget {
 
 class _VendorContainer extends StatelessWidget {
   final Receipt _receipt;
-  _VendorContainer(this._receipt);
+  _VendorContainer(this._receipt)
+    : assert(_receipt != null);
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -129,7 +133,8 @@ class _VendorContainer extends StatelessWidget {
 class _ItemsContainer extends StatelessWidget {
   static const double paddingBetweenItems = 4;
   final Receipt _receipt;
-  _ItemsContainer(this._receipt);
+  _ItemsContainer(this._receipt)
+    : assert(_receipt != null);
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +186,8 @@ class _ItemsContainer extends StatelessWidget {
 
 class _DiscountContainer extends StatelessWidget {
   final Receipt _receipt;
-  _DiscountContainer(this._receipt);
+  _DiscountContainer(this._receipt)
+    : assert(_receipt != null);
 
   @override
   Widget build(BuildContext context) {
@@ -234,7 +240,9 @@ class _DiscountContainer extends StatelessWidget {
 }
 class _TotalContainer extends StatelessWidget {
   final Receipt _receipt;
-  _TotalContainer(this._receipt);
+  _TotalContainer(this._receipt)
+    : assert(_receipt != null);
+
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -277,7 +285,9 @@ class _TotalContainer extends StatelessWidget {
 
 class _NoteContainer extends StatefulWidget {
   final Receipt _receipt;
-  _NoteContainer(this._receipt);
+  _NoteContainer(this._receipt)
+    : assert(_receipt != null);
+    
   @override
   _NoteContainerState createState() => _NoteContainerState();
 }

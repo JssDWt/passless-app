@@ -9,7 +9,11 @@ import 'package:transparent_image/transparent_image.dart';
 class LogoWidget extends StatefulWidget {
   final Receipt receipt;
   final Alignment alignment;
-  LogoWidget(this.receipt, {@required this.alignment});
+  LogoWidget(
+    this.receipt, 
+    {@required this.alignment}
+  ) : assert(receipt != null),
+      assert(alignment != null);
 
   @override
   LogoWidgetState createState() => LogoWidgetState();

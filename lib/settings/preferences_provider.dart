@@ -6,7 +6,8 @@ import 'package:passless/models/receipt.dart';
 
 class PreferencesProvider extends StatefulWidget {
   final Widget child;
-  PreferencesProvider({this.child});
+  PreferencesProvider({@required this.child})
+    : assert(child != null);
 
   @override
   _PreferencesProviderState createState() => _PreferencesProviderState();

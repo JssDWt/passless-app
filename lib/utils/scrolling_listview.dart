@@ -20,7 +20,12 @@ class ScrollingListView<T> extends StatefulWidget {
       this.initialItems,
       Key key
     }
-  ) : super(key: key);
+  ) : assert(dataFunction != null),
+      assert(length != null),
+      assert(itemBuilder != null),
+      assert(noContentBuilder != null),
+      assert(maxExtent != null),
+      super(key: key);
 
   @override
   ScrollingListViewState<T> createState() 

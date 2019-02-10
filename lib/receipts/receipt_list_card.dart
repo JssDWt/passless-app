@@ -19,10 +19,13 @@ class ReceiptListCard extends StatefulWidget {
     {
       @required this.isSelected,
       @required this.selectCallback,
-      @required this.deleteCallback,
+      this.deleteCallback,
       this.selectOnTap = false,
       this.showSelectionMarker = true
-    });
+    }) : assert(isSelected != null),
+         assert(selectCallback != null),
+         assert(selectOnTap != null),
+         assert(showSelectionMarker != null);
 
   @override
   ReceiptListCardState createState() {
@@ -95,7 +98,7 @@ class ReceiptListCardState extends State<ReceiptListCard>
                 );
                 //controller.reverse();
 
-              if (state == ReceiptState.deleted) {
+              if (state == ReceiptState.deleted && widget.deleteCallback != null) {
                 widget.deleteCallback(widget.receipt);
               }
               });

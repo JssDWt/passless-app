@@ -20,7 +20,8 @@ class ReceiptListView extends StatefulWidget {
       List<Receipt> initialData,
       @required this.dataFunction,
       this.selectionActionBuilder
-    }) : this.initialData = initialData ?? List<Receipt>();
+    }) : this.initialData = initialData ?? List<Receipt>(),
+      assert(dataFunction != null);
 
   @override
   _ReceiptListViewState createState() => _ReceiptListViewState();
@@ -62,6 +63,7 @@ class _ReceiptListViewState extends State<ReceiptListView> {
   }
 
   void _onReceiptDeleted(Receipt receipt) {
+    if (!mounted) return;
     setState(() {});
     var loc = PasslessLocalizations.of(context);
 
@@ -74,6 +76,7 @@ class _ReceiptListViewState extends State<ReceiptListView> {
   }
 
   Future<void> _onReceiptSelected(Receipt receipt, bool selected) async {
+    if (!mounted) return;
     var loc = PasslessLocalizations.of(context);
 
     var result = await Navigator.of(context).push(
@@ -95,6 +98,7 @@ class _ReceiptListViewState extends State<ReceiptListView> {
     }
     
     if (deleteCount > 0) {
+      if (!mounted) return;
       Scaffold.of(context).showSnackBar(
         SnackBar(
           content: Text(loc.movedToRecycleBin(deleteCount))
@@ -117,7 +121,8 @@ class _SelectingReceiptListView extends StatefulWidget {
       @required this.dataFunction,
       this.selectionActionBuilder
     } 
-  ) : this.selection = selection ?? List<Receipt>();
+  ) : this.selection = selection ?? List<Receipt>(),
+    assert(dataFunction != null);
 
   @override
   _SelectingReceiptListViewState createState() 
@@ -161,7 +166,6 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
           => ReceiptListCard(
             receipt,
             isSelected: widget.selection.map((r) => r.id).contains(receipt.id),
-            deleteCallback: null,
             selectCallback: _onReceiptSelected,
             selectOnTap: true,
           ),

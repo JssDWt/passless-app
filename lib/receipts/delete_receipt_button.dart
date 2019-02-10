@@ -7,7 +7,8 @@ import 'package:passless/receipts/delete_dialog.dart';
 
 class DeleteReceiptButton extends StatefulWidget {
   final Receipt receipt;
-  DeleteReceiptButton(this.receipt);
+  DeleteReceiptButton(this.receipt)
+    : assert(receipt != null);
 
   @override
   _DeleteReceiptButtonState createState() => _DeleteReceiptButtonState();

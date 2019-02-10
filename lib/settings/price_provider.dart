@@ -7,7 +7,9 @@ import 'package:passless/settings/preferences_provider.dart';
 class PriceProvider{
   final Preferences preferences;
   final BuildContext context;
-  PriceProvider(this.preferences, this.context);
+  PriceProvider(this.preferences, this.context)
+    : assert(preferences != null),
+      assert(context != null);
 
   static PriceProvider of(BuildContext context) {
     var pref = PreferencesProvider.of(context);

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 class SpinningHero extends StatelessWidget {
   final Object tag;
   final Widget child;
-  SpinningHero({this.tag, this.child});
+  SpinningHero({this.tag, this.child})
+    : assert(tag != null),
+      assert(child != null);
 
   @override
   Widget build(BuildContext context) {

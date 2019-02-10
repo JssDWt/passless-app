@@ -112,6 +112,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         var newPreferences = preferencesProvider.preferences;
                         newPreferences.includeTax = shouldInclude;
                         preferencesProvider.updatePreferences(newPreferences);
+                        setState(() {});
                       }
                     },
                   )

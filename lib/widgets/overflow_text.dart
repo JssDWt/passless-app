@@ -5,7 +5,13 @@ class OverflowText extends StatefulWidget {
   final String text;
   final int maxLines;
   final TextStyle style;
-  OverflowText(this.text, {this.maxLines, this.style});
+  OverflowText(
+    this.text, 
+    {
+      @required this.maxLines, 
+      this.style
+    }) : assert(text != null),
+         assert(maxLines > 0);
 
   @override
   _OverflowTextState createState() => _OverflowTextState();
