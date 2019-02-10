@@ -43,10 +43,10 @@ class ReceiptListCardState extends State<ReceiptListCard>
     super.initState();
     controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 200)
+      duration: const Duration(milliseconds: 150)
     );
 
-    animation = CurvedAnimation(curve: Curves.linear, parent: controller)
+    animation = CurvedAnimation(curve: Curves.easeInOut, parent: controller)
       ..addListener(() => setState((){}));
   }
 
@@ -78,11 +78,22 @@ class ReceiptListCardState extends State<ReceiptListCard>
               controller.forward().then((f) async {
                 ReceiptState state = await Navigator.of(context).push(
                   PageRouteBuilder(
-                    pageBuilder: (context, animation, secondary) => 
-                      ReceiptDetailPage(widget.receipt)
+                    pageBuilder: (context, animation, secondary) 
+                    {
+                      animation.addStatusListener((status) {
+                        if (status == AnimationStatus.dismissed)
+                        {
+                          controller.reverse();
+                        }
+                      });
+
+                      return ReceiptDetailPage(widget.receipt);
+                    } 
+                      
+
                   )
                 );
-                controller.reverse();
+                //controller.reverse();
 
               if (state == ReceiptState.deleted) {
                 widget.deleteCallback(widget.receipt);
