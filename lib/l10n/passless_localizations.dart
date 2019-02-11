@@ -422,6 +422,14 @@ class PasslessLocalizations {
       desc: 'Snackbar message indicating that receipt(s) have been moved to the recycle bin.',
     );
   }
+
+  String get undoButtonLabel {
+     return Intl.message(
+      'Undo',
+      name: 'undoButtonLabel',
+      desc: 'Tooltip indicating the button will undo the action.',
+    );
+  }
 }
 
 class PasslessLocalizationsDelegate extends 

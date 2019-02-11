@@ -67,10 +67,16 @@ class _ReceiptListViewState extends State<ReceiptListView> {
     setState(() {});
     var loc = PasslessLocalizations.of(context);
 
-    // TODO: Add UNDO button.
     Scaffold.of(context).showSnackBar(
       SnackBar(
-        content: Text(loc.movedToRecycleBin(1))
+        content: Text(loc.movedToRecycleBin(1)),
+        action: SnackBarAction(
+          label: loc.undoButtonLabel,
+          onPressed: () async {
+            await Repository().undelete(receipt);
+            setState(() {});
+          },
+        )
       )
     );
   }
@@ -92,16 +98,24 @@ class _ReceiptListViewState extends State<ReceiptListView> {
       )
     );
 
-    int deleteCount = 0;
-    if (result is int) {
-      deleteCount = result;
+    List<Receipt> deletedReceipts;
+    if (result is List<Receipt>) {
+      deletedReceipts = result;
     }
     
-    if (deleteCount > 0) {
+    if (deletedReceipts != null && deletedReceipts.length > 0) {
       if (!mounted) return;
       Scaffold.of(context).showSnackBar(
         SnackBar(
-          content: Text(loc.movedToRecycleBin(deleteCount))
+          content: Text(loc.movedToRecycleBin(deletedReceipts.length)),
+          action: SnackBarAction(
+            label: loc.undoButtonLabel.toUpperCase(),
+            onPressed: () async {
+              await Repository().undeleteBatch(deletedReceipts);
+              if (!mounted) return;
+              setState(() {});
+            },
+          )
         )
       );
 
@@ -154,7 +168,7 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
               tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
               onPressed: () async {
                 await Repository().deleteBatch(widget.selection);
-                Navigator.of(context).pop(widget.selection.length);
+                Navigator.of(context).pop(widget.selection);
               },
             )
           ]
