@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:nfc/nfc.dart';
 import 'package:nfc/nfc_provider.dart';
 import 'package:passless/l10n/passless_localizations.dart';
+import 'package:passless/settings/backup_page.dart';
+import 'package:passless/utils/radio_dialog.dart';
 import 'package:passless/widgets/drawer_menu.dart';
-import 'package:passless/settings/include_tax_dialog.dart';
 import 'package:passless/widgets/menu_button.dart';
 import 'package:passless/settings/preferences_provider.dart';
 
@@ -77,11 +78,15 @@ class _SettingsPageState extends State<SettingsPage> {
               child: Column(
                 children: <Widget>[
                   ListTile(
-                    leading: Icon(Icons.sync),
+                    leading: Icon(Icons.cloud_upload),
                     title: Text(loc.cloudBackup),
                     trailing: Icon(Icons.arrow_right),
-                    onTap: () {
-                      // TODO: Go to cloud backup settings.
+                    onTap: () async {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => BackupPage()
+                        )
+                      );
                     },
                   )
                 ],
@@ -105,7 +110,14 @@ class _SettingsPageState extends State<SettingsPage> {
                         preferencesProvider.preferences.includeTax;
                       bool shouldInclude = await showDialog(
                         context: context, 
-                        builder: (context) => IncludeTaxDialog(oldShouldInclude)
+                        builder: (context) => RadioDialog(
+                          initialValue: oldShouldInclude,
+                          title: loc.vatSettings,
+                          options: {
+                            loc.includeTax: true,
+                            loc.excludeTax: false
+                          }
+                        )
                       );
 
                       if (oldShouldInclude != shouldInclude) {

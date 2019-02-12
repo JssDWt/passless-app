@@ -430,6 +430,165 @@ class PasslessLocalizations {
       desc: 'Tooltip indicating the button will undo the action.',
     );
   }
+
+  // "Maak een back-up van uw bonnen naar Google Drive. U kunt deze herstellen wanneer u Passless opnieuw installeert. Er zal ook een back-up van uw bonnen worden opgeslagen op de interne opslag van uw telefoon."
+  String get backupInfo {
+     return Intl.message(
+      "Create a backup of your receipts to Google Drive. These can be recovered when Passless is reinstalled. A local backup of your receipts will be stored on your phone's internal storage as well.",
+      name: 'backupInfo',
+      desc: 'Text providing information about the backup procedure.',
+    );
+  }
+
+  String get lastBackupTitle {
+     return Intl.message(
+      "Last backup",
+      name: 'lastBackup',
+      desc: 'Title of the information about the last backup.',
+    );
+  }
+
+  String get local {
+     return Intl.message(
+      "Local",
+      name: 'local',
+      desc: 'Label indicating the date of the last local backup.',
+    );
+  }
+
+  String get googleDrive {
+     return Intl.message(
+      "Google Drive",
+      name: 'googleDrive',
+      desc: 'Name of the Google Drive application.',
+    );
+  }
+
+  String get size {
+     return Intl.message(
+      "Size",
+      name: 'size',
+      desc: 'Word indicating size of the backup.',
+    );
+  }
+
+  String bytes(int bytesLength) {
+    int mb = (bytesLength / (1024 * 1024)).round();
+    String number = NumberFormat("0", locale.toString()).format(mb);
+     return "$number MB";
+  }
+
+  String get createBackupButtonLabel {
+     return Intl.message(
+      "Create Backup",
+      name: 'createBackupButtonLabel',
+      desc: 'Label on the "create backup" button.',
+    );
+  }
+
+  String get googleDriveSettings {
+     return Intl.message(
+      "Google Drive settings",
+      name: 'googleDriveSettings',
+      desc: 'Title for the Google Drive settings.',
+    );
+  }
+
+  String get backupToGoogleDrive {
+     return Intl.message(
+      "Backup to Google Drive",
+      name: 'backupToGoogleDrive',
+      desc: 'Title for the option to choose how often backups will be made to Google Drive.',
+    );
+  }
+
+  String get never {
+     return Intl.message(
+      "Never",
+      name: 'never',
+      desc: 'Text indicating a backup was never made. In the context "Last backup: Never"',
+    );
+  }
+
+  String get neverOption {
+     return Intl.message(
+      "Never",
+      name: 'neverOption',
+      desc: 'Option to choose never to backup.',
+    );
+  }
+
+  String get onlyOnClickOption {
+     return Intl.message(
+      "Only when I click 'Create Backup'",
+      name: 'onlyOnClickOption',
+      desc: 'Option to choose to backup only when the createBackupButton is clicked.',
+    );
+  }
+
+  String get dailyOption {
+     return Intl.message(
+      "Daily",
+      name: 'dailyOption',
+      desc: 'Option to choose to backup daily.',
+    );
+  }
+
+  String get weeklyOption {
+     return Intl.message(
+      "Weekly",
+      name: 'weeklyOption',
+      desc: 'Option to choose to backup weekly.',
+    );
+  }
+
+  String get monthlyOption {
+     return Intl.message(
+      "Monthly",
+      name: 'monthlyOption',
+      desc: 'Option to choose to backup monthly.',
+    );
+  }
+
+  String get account {
+     return Intl.message(
+      "Account",
+      name: 'account',
+      desc: 'Heading above the Google Drive account chooser.',
+    );
+  }
+
+  String get createBackupVia {
+     return Intl.message(
+      "Create backup via",
+      name: 'createBackupVia',
+      desc: 'Heading above choice to create backup wia wifi or mobile network.',
+    );
+  }
+
+  String get wifiOnly {
+     return Intl.message(
+      "Wi-Fi only",
+      name: 'onlyWifi',
+      desc: 'Option to only backup via wi-fi.',
+    );
+  }
+
+  String get wifiOrMobileNetwork {
+     return Intl.message(
+      "Wi-Fi or mobile network",
+      name: 'wifiOrMobileNetwork',
+      desc: 'Option to backup via wi-fi or mobile network.',
+    );
+  }
+
+  String get selectAccount {
+     return Intl.message(
+      "Select account",
+      name: 'selectAccount',
+      desc: 'Text indicating an account should be selected.',
+    );
+  }
 }
 
 class PasslessLocalizationsDelegate extends 
