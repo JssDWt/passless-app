@@ -308,7 +308,7 @@ class _NoteContainerState extends State<_NoteContainer> {
 
   Future _initState() async {
     _repository = Repository();
-    notes = await _repository.getComments(widget._receipt);
+    notes = await _repository.getNotes(widget._receipt);
     _controller = TextEditingController(text: notes);
     
     _noteSubject = BehaviorSubject<String>();

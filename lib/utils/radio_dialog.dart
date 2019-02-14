@@ -33,7 +33,7 @@ class RadioDialogState<T> extends State<RadioDialog> {
             value: widget.options[key],
             groupValue: value,
             onChanged: (newValue) {
-              Navigator.of(context).pop(newValue);
+              Navigator.of(context, rootNavigator: true).pop(newValue);
             }
           )).toList(),
         )

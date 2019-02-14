@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:passless/data/data_exception.dart';
 import 'package:passless/data/invalid_receipt_exception.dart';
+import 'package:passless/models/backup_data.dart';
 import 'package:passless/models/preferences.dart';
 import 'package:passless/models/receipt_state.dart';
 import 'dart:convert';
@@ -64,7 +67,7 @@ class Repository {
       path, 
       version: 1, 
       onConfigure: _onConfigure, 
-      onCreate: _onCreate
+      onCreate: _onCreate,
     );
     return theDb;
   }
@@ -523,6 +526,36 @@ class Repository {
     return list.map(_fromMap).toList();
   }
 
+  Future<List<BackupData>> getBackupData(int offset, int length) async {
+    var dbClient = await db;
+    var maps = await dbClient.rawQuery(
+      """SELECT r.id
+         ,      r.receipt
+         ,      CASE WHEN a.id IS NULL THEN 0 ELSE 1 END AS active
+         ,      CASE WHEN b.id IS NULL THEN 0 ELSE 1 END AS deleted
+         ,      n.note
+         FROM $RECEIPT_TABLE AS r
+         LEFT JOIN $ACTIVE_RECEIPT_TABLE AS a
+           ON r.id = a.receipt_id
+         LEFT JOIN $RECYCLE_BIN_TABLE AS b
+           ON r.id = b.receipt_id
+         LEFT JOIN (SELECT note,
+                    MAX(date) AS date
+                    FROM $NOTE_TABLE 
+                    GROUP BY receipt_id) as n
+         ORDER BY r.id
+         LIMIT ? OFFSET ?""",
+      [length, offset]
+    );
+
+    if (maps == null) return [];
+
+    return maps.map((m) => BackupData()
+        ..base64Receipt = base64.encode(['receipt'] as Uint8List)
+        ..notes = m['note'] as String
+        ..state = describeEnum(_determineState(m))).toList();
+  }
+
   Future<ReceiptState> getReceiptState(Receipt receipt) async {
     var dbClient = await db;
     var list = await dbClient.rawQuery(
@@ -542,7 +575,7 @@ class Repository {
       result = ReceiptState.unknown;
     }
     else if (list.length == 1) {
-      result = list[0]["active"] == 1 ? ReceiptState.active : ReceiptState.deleted;
+      result = _determineState(list[0]);
     }
     else {
       throw DataException(
@@ -552,6 +585,33 @@ class Repository {
     }
 
     return result;
+  }
+
+  ReceiptState _determineState(Map<String, dynamic> item) {
+    if (item == null) throw DataException("Could not determine state for null item.");
+
+    bool stateSet = false;
+    var state = ReceiptState.unknown;
+    if (item.containsKey("active") && item.containsKey("deleted")) {
+      if (item["active"] == 1) {
+        if (stateSet) throw DataException("Multiple receipt states for a single receipt.");
+        state = ReceiptState.active;
+        stateSet = true;
+      }
+
+      if (item["deleted"] == 1) {
+        if (stateSet) throw DataException("Multiple receipt states for a single receipt.");
+        state = ReceiptState.deleted;
+        stateSet = true;
+      }
+
+      if (!stateSet) throw DataException("Could not determine receipt state.");
+    }
+    else {
+      throw DataException("Invalid data in _determineState. Missing keys.");
+    }
+
+    return state;
   }
 
   /// Retrieves all receipts.
@@ -777,7 +837,7 @@ class Repository {
     return map[0]["count"] as int;
   }
 
-  Future<String> getComments(Receipt receipt) async {
+  Future<String> getNotes(Receipt receipt) async {
     var dbClient = await db;
     var result = await dbClient.rawQuery(
       """SELECT note,
