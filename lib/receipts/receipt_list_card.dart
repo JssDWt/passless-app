@@ -46,7 +46,7 @@ class ReceiptListCardState extends State<ReceiptListCard>
     super.initState();
     controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 150)
+      duration: const Duration(milliseconds: 100)
     );
 
     animation = CurvedAnimation(curve: Curves.easeInOut, parent: controller)
@@ -78,31 +78,28 @@ class ReceiptListCardState extends State<ReceiptListCard>
               _onReceiptSelected();
             }
             else {
-              controller.forward().then((f) async {
-                ReceiptState state = await Navigator.of(context).push(
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondary) 
-                    {
-                      animation.addStatusListener((status) {
-                        if (status == AnimationStatus.dismissed)
-                        {
-                          controller.reverse();
-                        }
-                      });
+              await controller.forward();
+              if (!mounted) return;
+              ReceiptState state = await Navigator.of(context).push(
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondary) 
+                  {
+                    animation.addStatusListener((status) {
+                      if (status == AnimationStatus.dismissed
+                        && mounted)
+                      {
+                        controller.reverse();
+                      }
+                    });
 
-                      return ReceiptDetailPage(widget.receipt);
-                    } 
-                      
-
-                  )
-                );
-                //controller.reverse();
+                    return ReceiptDetailPage(widget.receipt);
+                  }
+                )
+              );
 
               if (state == ReceiptState.deleted && widget.deleteCallback != null) {
                 widget.deleteCallback(widget.receipt);
               }
-              });
-              
             }
           },
           onLongPress: () {
