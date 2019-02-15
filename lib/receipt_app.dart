@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:passless/data/data_provider.dart';
 import 'package:passless/models/receipt.dart';
@@ -35,7 +37,7 @@ class _ReceiptAppState extends State<ReceiptApp> {
   }
 
   /// Handles received ndef messages (receipts)
-  Future<void> _onMessage(String message) async {
+  Future<void> _onMessage(Uint8List message) async {
     Receipt receipt;
     try
     {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:passless/data/data_exception.dart';
@@ -85,7 +86,7 @@ class Repository {
     await db.execute(
       """CREATE TABLE $RECEIPT_TABLE(
         id INTEGER PRIMARY KEY NOT NULL, 
-        receipt TEXT NOT NULL)""");
+        receipt BLOB NOT NULL)""");
 
     await db.execute(
       """CREATE TABLE $ACTIVE_RECEIPT_TABLE(
@@ -140,7 +141,7 @@ class Repository {
     await _updatePreferences(db, Preferences.defaults);
     
     // TODO: Remove the sample receipts.
-    await _saveReceipt(db, """{
+    await _saveReceipt(db, utf8.encode("""{
       "time": "2018-10-28T10:27:00+01:00",
       "currency": "EUR",
       "subtotal": {
@@ -273,9 +274,9 @@ class Repository {
             "operator": "Henny van de Hoek"
           }
       }
-    }""");
+    }"""));
 
-    await _saveReceipt(db, """{
+    await _saveReceipt(db, utf8.encode("""{
       "time": "2017-10-28T10:27:00+01:00",
       "currency": "EUR",
       "subtotal": {
@@ -398,9 +399,9 @@ class Repository {
             "operator": "Pietje Dirk"
           }
       }
-    }""");
+    }"""));
 
-    await _saveReceipt(db, """{
+    await _saveReceipt(db, utf8.encode("""{
       "time": "2019-01-11T11:27:00+01:00",
       "currency": "EUR",
       "subtotal": {
@@ -481,7 +482,7 @@ class Repository {
             "operator": "Suraya Vos"
           }
       }
-    }""");
+    }"""));
 
     print("Created tables");
   }
@@ -628,7 +629,7 @@ class Repository {
   }
 
   /// Stores the specified receipt.
-  Future<Receipt> saveReceipt(String receipt) async {
+  Future<Receipt> saveReceipt(Uint8List receipt) async {
     // TODO: Check for doubles
     var dbClient = await db;
     Receipt result;
@@ -647,7 +648,7 @@ class Repository {
     return result;
   }
 
-  Future<int> _saveReceipt(DatabaseExecutor db, String receipt) async {
+  Future<int> _saveReceipt(DatabaseExecutor db, Uint8List receipt) async {
     return await db.insert(RECEIPT_TABLE, {"receipt": receipt});
   }
 
@@ -880,7 +881,8 @@ class Repository {
 
   Receipt _fromMap(Map map) {
     try {
-      var receiptJson = json.decode(map["receipt"]);
+      var receiptString = utf8.decode(map["receipt"]);
+      var receiptJson = json.decode(receiptString);
       Receipt receipt = Receipt.fromJson(receiptJson);
       receipt.id = map["id"] as int;
       return receipt;
