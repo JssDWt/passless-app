@@ -1,0 +1,4 @@
+enum BackupConnectionPref {
+  wifiOnly,
+  wifiOrMobileNetwork
+}

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:passless/l10n/messages_all.dart';
@@ -473,9 +475,30 @@ class PasslessLocalizations {
   }
 
   String bytes(int bytesLength) {
-    int mb = (bytesLength / (1024 * 1024)).round();
-    String number = NumberFormat("0", locale.toString()).format(mb);
-     return "$number MB";
+    String suffix;
+    double number;
+
+    if (bytesLength < 1000) {
+      number = bytesLength.toDouble();
+      suffix = "B";
+    } else if (bytesLength < 1000 * 1000) {
+      number = bytesLength.toDouble() / 1000;
+      suffix = "kB";
+    } else if (bytesLength < 1000 * 1000 * 1000) {
+      number = bytesLength.toDouble() / (1000 * 1000);
+      suffix = "MB";
+    } else if (bytesLength < 1000 * 1000 * 1000 * 1000) {
+      number = bytesLength.toDouble() / (1000 * 1000 * 1000);
+      suffix = "GB";
+    }
+    
+    String prefix = NumberFormat("#.0", locale.toString()).format(round(number, 1));
+     return "$prefix $suffix";
+  }
+
+  double round(double d, int digits) {
+    int fac = pow(10, digits);
+    return (d * fac).round() / fac;
   }
 
   String get createBackupButtonLabel {
