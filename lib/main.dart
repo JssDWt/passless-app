@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:nfc/nfc_provider.dart';
+import 'package:passless/data/backup_manager.dart';
 import 'package:passless/l10n/passless_localizations.dart';
 import 'package:passless/receipt_app.dart';
 import 'package:passless/settings/preferences_provider.dart';
@@ -9,6 +10,7 @@ import 'package:passless/utils/app_config.dart';
 /// Main entry point for the app.
 void main() {
   runApp(ReceiptMaterialApp());
+  BackupManager.initializeHeadless();
 }
 
 /// Root class for the material app.
@@ -19,6 +21,12 @@ class ReceiptMaterialApp extends StatefulWidget {
 
 /// Defines material app state like the theme.
 class _ReceiptMaterialAppState extends State<ReceiptMaterialApp> {
+  @override
+  void initState() {
+    super.initState();
+    BackupManager.initialize();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return AppConfig(

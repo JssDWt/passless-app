@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:passless/data/backup_manager.dart';
+import 'package:passless/data/backup_connection_pref.dart';
+import 'package:passless/data/backup_interval.dart';
+import 'package:passless/data/preferences.dart';
 import 'package:passless/l10n/passless_localizations.dart';
 import 'package:passless/utils/radio_dialog.dart';
-import 'package:passless/utils/shared_preferences_builder.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class BackupPage extends StatefulWidget {
   @override
@@ -50,29 +50,28 @@ class _BackupPageState extends State<BackupPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(loc.lastBackupTitle, style: theme.textTheme.subhead,),
-                SharedPreferencesBuilder(
-                  pref: BackupManager.LAST_LOCAL_BACKUP,
+                FutureBuilder(
+                  future: Preferences.getLastLocalBackup(),
                   builder: (context, snapshot) {
                     String dateString = "";
                     if (snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasData) {
-                        DateTime date = DateTime.parse(snapshot.data);
-                        dateString = loc.datetime(date);
+                        dateString = loc.datetime(snapshot.data);
                       } else {
                         dateString = loc.never;
                       }
                     }
+
                     return Text("${loc.local}: $dateString", style: subTextStyle);
                   }
                 ),
-                SharedPreferencesBuilder<String>(
-                  pref: BackupManager.LAST_CLOUD_BACKUP,
+                FutureBuilder(
+                  future: Preferences.getLastCloudBackup(),
                   builder: (context, snapshot) {
                     String dateString = "";
                     if (snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasData) {
-                        DateTime date = DateTime.parse(snapshot.data);
-                        dateString = loc.datetime(date);
+                        dateString = loc.datetime(snapshot.data);
                       } else {
                         dateString = loc.never;
                       }
@@ -80,8 +79,8 @@ class _BackupPageState extends State<BackupPage> {
                     return Text("${loc.googleDrive}: $dateString", style: subTextStyle);
                   }
                 ),
-                SharedPreferencesBuilder<int>(
-                  pref: BackupManager.LAST_BACKUP_SIZE,
+                FutureBuilder(
+                  future: Preferences.getLastBackupSize(),
                   builder: (context, snapshot) =>
                     Text("${loc.size}: ${loc.bytes(snapshot.data ?? 0)}", style: subTextStyle)
                 ),
@@ -107,25 +106,25 @@ class _BackupPageState extends State<BackupPage> {
                 Text(loc.googleDriveSettings, style: theme.textTheme.subhead,),
                 ListTile(
                   title: Text(loc.backupToGoogleDrive),
-                  subtitle: SharedPreferencesBuilder<String>(
-                    pref: BackupManager.CLOUD_BACKUP_INTERVAL,
+                  subtitle: FutureBuilder(
+                    future: Preferences.getCloudBackupInterval(),
                     builder: (context, snapshot) {
                       String text;
                       if (snapshot.hasData) {
                         switch (snapshot.data) {
-                          case "never":
+                          case BackupInterval.never:
                             text = loc.neverOption;
                             break;
-                          case "onClick":
+                          case BackupInterval.onClick:
                             text = loc.onlyOnClickOption;
                             break;
-                          case "daily":
+                          case BackupInterval.daily:
                             text = loc.dailyOption;
                             break;
-                          case "weekly":
+                          case BackupInterval.weekly:
                             text = loc.weeklyOption;
                             break;
-                          case "monthly":
+                          case BackupInterval.monthly:
                             text = loc.monthlyOption;
                             break;
                           default:
@@ -138,31 +137,31 @@ class _BackupPageState extends State<BackupPage> {
                   ),
                   contentPadding: EdgeInsets.all(0),
                   onTap: () async {
-                    var prefs = await SharedPreferences.getInstance();
-                    String interval = await showDialog(
+                    var currentInterval = await Preferences.getCloudBackupInterval();
+                    BackupInterval newInterval = await showDialog(
                       context: context,
                       builder: (context) => RadioDialog(
                         options: {
-                          loc.neverOption: "never",
-                          loc.onlyOnClickOption: "onClick",
-                          loc.dailyOption: "daily",
-                          loc.weeklyOption: "weekly",
-                          loc.monthlyOption: "monthly"
+                          loc.neverOption: BackupInterval.never,
+                          loc.onlyOnClickOption: BackupInterval.onClick,
+                          loc.dailyOption: BackupInterval.daily,
+                          loc.weeklyOption: BackupInterval.weekly,
+                          loc.monthlyOption: BackupInterval.monthly
                         },
-                        initialValue: prefs.getString(BackupManager.CLOUD_BACKUP_INTERVAL) ?? "never",
+                        initialValue: currentInterval,
                         title: loc.backupToGoogleDrive,
                       )
                     );
                     
-                    await prefs.setString(BackupManager.CLOUD_BACKUP_INTERVAL, interval);
+                    await Preferences.setCloudBackupInterval(newInterval);
                     if (!mounted) return;
                     setState(() {});
                   },
                 ),
                 ListTile(
                   title: Text(loc.account),
-                  subtitle: SharedPreferencesBuilder<String>(
-                    pref: BackupManager.CLOUD_BACKUP_ACCOUNT,
+                  subtitle: FutureBuilder(
+                    future: Preferences.getCloudBackupAccount(),
                     builder: (context, snapshot) => Text(snapshot.data ?? loc.selectAccount)
                   ),
                   contentPadding: EdgeInsets.all(0),
@@ -170,16 +169,16 @@ class _BackupPageState extends State<BackupPage> {
                 ),
                 ListTile(
                   title: Text(loc.createBackupVia),
-                  subtitle: SharedPreferencesBuilder<String>(
-                    pref: BackupManager.BACKUP_CONNECTION_PREF,
+                  subtitle: FutureBuilder(
+                    future: Preferences.getBackupConnectionPref(),
                     builder: (context, snapshot) {
                       String text = loc.wifiOnly;
                       if (snapshot.hasData) {
                         switch (snapshot.data) {
-                          case "wifi":
+                          case BackupConnectionPref.wifiOnly:
                             text = loc.wifiOnly;
                             break;
-                          case "both":
+                          case BackupConnectionPref.wifiOrMobileNetwork:
                             text = loc.wifiOrMobileNetwork;
                             break;
                           default:
@@ -191,20 +190,20 @@ class _BackupPageState extends State<BackupPage> {
                   ),
                   contentPadding: EdgeInsets.all(0),
                   onTap: () async {
-                    var prefs = await SharedPreferences.getInstance();
-                    String via = await showDialog(
+                    var currentPref = await Preferences.getBackupConnectionPref();
+                    BackupConnectionPref newPref = await showDialog(
                       context: context,
                       builder: (context) => RadioDialog(
                         options: {
-                          loc.wifiOnly: "wifi",
-                          loc.wifiOrMobileNetwork: "both"
+                          loc.wifiOnly: BackupConnectionPref.wifiOnly,
+                          loc.wifiOrMobileNetwork: BackupConnectionPref.wifiOrMobileNetwork
                         },
-                        initialValue: prefs.getString(BackupManager.BACKUP_CONNECTION_PREF) ?? "wifi",
+                        initialValue: currentPref,
                         title: loc.createBackupVia,
                       )
                     );
                     
-                    await prefs.setString(BackupManager.BACKUP_CONNECTION_PREF, via);
+                    await Preferences.setBackupConnectionPref(newPref);
                     if (!mounted) return;
                     setState(() {});
                   },

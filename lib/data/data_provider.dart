@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:passless/data/data_exception.dart';
@@ -551,7 +550,7 @@ class Repository {
     if (maps == null) return [];
 
     return maps.map((m) => BackupData()
-        ..base64Receipt = base64.encode(['receipt'] as Uint8List)
+        ..base64Receipt = base64.encode(utf8.encode(m['receipt'] as String))
         ..notes = m['note'] as String
         ..state = describeEnum(_determineState(m))).toList();
   }
