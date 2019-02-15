@@ -94,11 +94,7 @@ class _DateContainer  extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text(loc.date(_receipt.time)),
-        Padding(
-          padding: EdgeInsets.only(left: 8),
-          child: Text(loc.time(_receipt.time))
-        )
+        Text(loc.datetime(_receipt.time))
       ],
     );
   }

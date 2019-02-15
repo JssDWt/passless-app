@@ -327,18 +327,19 @@ class PasslessLocalizations {
     return result;
   }
 
-  String date(DateTime date) {
-    final f = DateFormat.yMMMMd(locale.toString());
-    return f.format(date);
-  }
-
-  String time(DateTime time) {
-    final f = DateFormat.Hm(locale.toString());
-    return f.format(time);
-  }
-
   String datetime(DateTime datetime) {
-    final f = DateFormat.yMMMMd(locale.toString()).add_Hm();
+    var now = DateTime.now();
+    DateFormat f;
+    if (now.year == datetime.year) {
+      if (now.day == datetime.day && now.month == datetime.month) {
+        f = DateFormat.Hm(locale.toString());
+      } else {
+        f = DateFormat.MMMMd(locale.toString()).add_Hm();
+      }
+    } else {
+      f = DateFormat.yMMMMd(locale.toString()).add_Hm();
+    }
+
     return f.format(datetime);
   }
 
