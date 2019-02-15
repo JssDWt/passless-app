@@ -4,6 +4,7 @@ import 'package:passless/l10n/passless_localizations.dart';
 import 'package:passless/models/receipt.dart';
 import 'package:passless/receipts/receipt_list_card.dart';
 import 'package:passless/utils/scrolling_listview.dart';
+import 'package:passless/widgets/appbar_button.dart';
 import 'package:passless/widgets/spinning_hero.dart';
 
 typedef List<Widget> SelectionActionBuilder(
@@ -13,15 +14,12 @@ typedef List<Widget> SelectionActionBuilder(
 
 class ReceiptListView extends StatefulWidget {
   final DataFunction dataFunction;
-  final List<Receipt> initialData;
   final SelectionActionBuilder selectionActionBuilder;
   ReceiptListView(
     {
-      List<Receipt> initialData,
       @required this.dataFunction,
       this.selectionActionBuilder
-    }) : this.initialData = initialData ?? List<Receipt>(),
-      assert(dataFunction != null);
+    }) : assert(dataFunction != null);
 
   @override
   _ReceiptListViewState createState() => _ReceiptListViewState();
@@ -34,7 +32,6 @@ class _ReceiptListViewState extends State<ReceiptListView> {
   void initState() {
     super.initState();
 
-    // TODO: Make sure the same amount of receipts is loaded.
     Repository().listen(() {
       if (!mounted) return;
       setState(() {
@@ -89,7 +86,6 @@ class _ReceiptListViewState extends State<ReceiptListView> {
       PageRouteBuilder(
         pageBuilder: 
           (context, animation, secondaryAnimation) => 
-            // TODO: Fill initialData here.
             _SelectingReceiptListView(
               selection: [receipt],
               dataFunction: widget.dataFunction,
@@ -151,7 +147,7 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
       appBar: AppBar(
         leading: SpinningHero(
           tag: "appBarLeading",
-          child: IconButton(
+          child: AppBarButton(
             icon: Icon(Icons.clear),
             tooltip: loc.clearTooltip,
             onPressed: () {
@@ -163,7 +159,7 @@ class _SelectingReceiptListViewState extends State<_SelectingReceiptListView> {
         title: Text(loc.receiptsSelectedTitle(widget.selection.length)),
         actions: widget.selectionActionBuilder == null
           ? <Widget>[
-            IconButton(
+            AppBarButton(
               icon: Icon(Icons.delete),
               tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
               onPressed: () async {

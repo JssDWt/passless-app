@@ -19,8 +19,6 @@ class SpinningHero extends StatelessWidget {
         BuildContext fromHeroContext,
         BuildContext toHeroContext,
       ) {
-        // Animation<double> newAnimation = 
-        //   Tween<double>(begin: 0, end: 0.5).animate(animation);
         Animation<double> newAnimation = animation;
         if (flightDirection == HeroFlightDirection.pop) {
           newAnimation = ReverseAnimation(newAnimation);

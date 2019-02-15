@@ -3,6 +3,7 @@ import 'package:passless/data/data_provider.dart';
 import 'package:passless/l10n/passless_localizations.dart';
 import 'package:passless/receipts/delete_dialog.dart';
 import 'package:passless/receipts/restore_dialog.dart';
+import 'package:passless/widgets/appbar_button.dart';
 import 'package:passless/widgets/drawer_menu.dart';
 import 'package:passless/widgets/menu_button.dart';
 import 'package:passless/receipts/receipt_listview.dart';
@@ -38,7 +39,7 @@ class RecycleBinPageState extends State<RecycleBinPage> {
     var actions = List<Widget>();
     if (binSize > 0) {
       actions.add(
-        IconButton(
+        AppBarButton(
           icon: Icon(Icons.delete_forever),
           tooltip: loc.emptyRecycleBin,
           onPressed: () async {
@@ -66,7 +67,7 @@ class RecycleBinPageState extends State<RecycleBinPage> {
         dataFunction: Repository().getDeletedReceipts,
         selectionActionBuilder: (context, receipts) =>
           <Widget>[
-            IconButton(
+            AppBarButton(
               icon: Icon(Icons.delete_forever),
               tooltip: loc.emptyRecycleBin,
               onPressed: () async {
@@ -80,7 +81,7 @@ class RecycleBinPageState extends State<RecycleBinPage> {
                 }
               },
             ),
-            IconButton(
+            AppBarButton(
               icon: Icon(Icons.restore_from_trash),
               tooltip: loc.restoreFromTrash,
               onPressed: () async {

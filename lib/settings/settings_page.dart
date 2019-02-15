@@ -4,6 +4,7 @@ import 'package:nfc/nfc_provider.dart';
 import 'package:passless/l10n/passless_localizations.dart';
 import 'package:passless/settings/backup_page.dart';
 import 'package:passless/utils/radio_dialog.dart';
+import 'package:passless/widgets/appbar_button.dart';
 import 'package:passless/widgets/drawer_menu.dart';
 import 'package:passless/widgets/menu_button.dart';
 import 'package:passless/settings/preferences_provider.dart';
@@ -27,7 +28,7 @@ class _SettingsPageState extends State<SettingsPage> {
         leading: MenuButton(),
         title: Text(loc.settings),
         actions: <Widget>[
-          IconButton(
+          AppBarButton(
             icon: Hero(
               tag: "searchIcon",
               child: Material(

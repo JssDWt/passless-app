@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:passless/data/data_provider.dart';
 import 'package:passless/l10n/passless_localizations.dart';
 import 'package:passless/receipts/receipt_listview.dart';
+import 'package:passless/widgets/appbar_button.dart';
 import 'package:passless/widgets/spinning_hero.dart';
 import 'package:rxdart/subjects.dart';
 
@@ -44,18 +45,12 @@ class _SearchPageState extends State<SearchPage> {
       appBar: AppBar(
         leading: SpinningHero(
           tag: "appBarLeading",
-          child: Material(
-            color: Colors.transparent,
-            child: IconTheme(
-              data: Theme.of(context).primaryIconTheme,
-              child: IconButton(
-                icon: Icon(Icons.arrow_back),
-                tooltip: matLoc.backButtonTooltip,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            )
+          child: AppBarButton(
+            icon: Icon(Icons.arrow_back),
+            tooltip: matLoc.backButtonTooltip,
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
           ),
         ),
         title: TextField(
