@@ -13,8 +13,8 @@ pool:
   vmImage: 'macOS-10.13'
 
 steps:
-- script: |
-  git clone https://github.com/JssDWt/flutter-nfc.git
+- script: git clone https://github.com/JssDWt/flutter-nfc.git
+  displayName: clone flutter-nfc
 - task: FlutterInstall@0
 - task: FlutterBuild@0
   inputs:
