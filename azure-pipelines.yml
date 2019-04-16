@@ -1,0 +1,39 @@
+# Android
+# Build your Android project with Gradle.
+# Add steps that test, sign, and distribute the APK, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/android
+
+variables:
+  projectDirectory: .
+
+trigger:
+- master
+
+pool:
+  vmImage: 'macOS-10.13'
+
+steps:
+- script: |
+    cd ..
+    git clone https://github.com/JssDWt/flutter-nfc.git
+  displayName: clone flutter-nfc
+- task: FlutterInstall@0
+  channel: stable
+  version: latest
+- task: FlutterBuild@0
+  inputs:
+    target: all
+    buildFlavour: release
+    projectDirectory: $(projectDirectory)
+- task: FlutterTest@0
+  inputs:
+    projectDirectory: $(projectDirectory)
+- task: CopyFiles@2
+  inputs:
+    contents: '**/*.apk'
+    targetFolder: '$(build.artifactStagingDirectory)'
+- task: CopyFiles@2
+  inputs:
+    contents: '**/*.app'
+    targetFolder: '$(build.artifactStagingDirectory)'
+- task: PublishBuildArtifacts@1
