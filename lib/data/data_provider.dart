@@ -7,9 +7,11 @@ import 'package:passless/data/invalid_receipt_exception.dart';
 import 'package:passless/models/backup_data.dart';
 import 'package:passless/models/preferences.dart';
 import 'package:passless/models/receipt_state.dart';
+import 'package:passless/models/wrapper.dart';
 import 'dart:convert';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:jose/jose.dart';
 
 
 import 'package:passless/models/receipt.dart';
@@ -86,7 +88,9 @@ class Repository {
     await db.execute(
       """CREATE TABLE $RECEIPT_TABLE(
         id INTEGER PRIMARY KEY NOT NULL, 
-        receipt BLOB NOT NULL)""");
+        version TEXT NULL,
+        receipt TEXT NULL,
+        raw BLOB NOT NULL)""");
 
     await db.execute(
       """CREATE TABLE $ACTIVE_RECEIPT_TABLE(
@@ -104,6 +108,7 @@ class Repository {
     await db.execute(
       """CREATE TRIGGER make_active_receipt AFTER INSERT
           ON $RECEIPT_TABLE
+          WHEN new.receipt IS NOT NULL
           BEGIN
           INSERT INTO $ACTIVE_RECEIPT_TABLE(receipt_id) VALUES (new.id);
           END"""
@@ -141,7 +146,7 @@ class Repository {
     await _updatePreferences(db, Preferences.defaults);
     
     // TODO: Remove the sample receipts.
-    await _saveReceipt(db, utf8.encode("""{
+    await _saveDemoReceipt(db, """{
       "time": "2018-10-28T10:27:00+01:00",
       "currency": "EUR",
       "subtotal": {
@@ -274,9 +279,9 @@ class Repository {
             "operator": "Henny van de Hoek"
           }
       }
-    }"""));
+    }""");
 
-    await _saveReceipt(db, utf8.encode("""{
+    await _saveDemoReceipt(db, """{
       "time": "2017-10-28T10:27:00+01:00",
       "currency": "EUR",
       "subtotal": {
@@ -399,9 +404,9 @@ class Repository {
             "operator": "Pietje Dirk"
           }
       }
-    }"""));
+    }""");
 
-    await _saveReceipt(db, utf8.encode("""{
+    await _saveDemoReceipt(db, """{
       "time": "2019-01-11T11:27:00+01:00",
       "currency": "EUR",
       "subtotal": {
@@ -482,9 +487,33 @@ class Repository {
             "operator": "Suraya Vos"
           }
       }
-    }"""));
+    }""");
 
     print("Created tables");
+  }
+
+  Future<void> _saveDemoReceipt(DatabaseExecutor db, String receipt) async {
+    var builder = new JsonWebSignatureBuilder();
+
+    receipt = """{ "version": "0.1.0", "receipt":""" + receipt + "}";
+
+    // set the content
+    builder.stringContent = receipt;
+
+    // add a key to sign, you can add multiple keys for different recipients
+    builder.addRecipient(
+      new JsonWebKey.fromJson({
+        "kty": "oct",
+        "k": "AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow"
+      }),
+      algorithm: "HS256");
+
+    // build the jws
+    var jws = builder.build();
+    var json = jws.toJson();
+    var asString = jsonEncode(json);
+    var asBytes = utf8.encode(asString);
+    await _saveReceipt(db, asBytes);
   }
 
   Future<void> updatePreferences(Preferences preferences) async {
@@ -629,27 +658,50 @@ class Repository {
   }
 
   /// Stores the specified receipt.
-  Future<Receipt> saveReceipt(Uint8List receipt) async {
+  Future<Receipt> saveReceipt(Uint8List wrapper) async {
     // TODO: Check for doubles
     var dbClient = await db;
-    Receipt result;
-
-    await dbClient.transaction((txn) async {
-      int id = await _saveReceipt(txn, receipt);
-
-      var inserted = await txn.query(
-        RECEIPT_TABLE, 
-        where: "id = ?", 
-        whereArgs: [id]);
-      result = _fromMap(inserted.first);
-    });
-
+    
+    int id = await _saveReceipt(dbClient, wrapper);
+    var inserted = await dbClient.query(
+      RECEIPT_TABLE, 
+      where: "id = ?", 
+      whereArgs: [id]);
+    
+    var result = _fromMap(inserted.first);
     if (result != null) notifyDataChanged();
     return result;
   }
 
-  Future<int> _saveReceipt(DatabaseExecutor db, Uint8List receipt) async {
-    return await db.insert(RECEIPT_TABLE, {"receipt": receipt});
+  Future<int> _saveReceipt(DatabaseExecutor db, Uint8List bytes) async {
+    String version;
+    String receipt;
+
+    try {
+      var asString = utf8.decode(bytes);
+      var asJson = json.decode(asString);
+      var jws = JsonWebSignature.fromJson(asJson);
+      var payload = jws.unverifiedPayload;
+      
+      // TODO: Remove this line
+      print(payload.stringContent);
+      var wrapper = Wrapper.fromJson(payload.jsonContent);
+      version = wrapper.version;
+      receipt = jsonEncode(wrapper.receipt);
+    }
+    catch (e)
+    {
+      // TODO: Do more useful error handling
+      print(e);
+    }
+
+    int id = await db.insert(RECEIPT_TABLE, {
+      "raw": bytes,
+      "version": version,
+      "receipt": receipt
+    });
+
+    return id;
   }
 
   Future<List<Receipt>> search(String search, int offset, int length) async {
@@ -881,8 +933,9 @@ class Repository {
 
   Receipt _fromMap(Map map) {
     try {
-      var receiptString = utf8.decode(map["receipt"]);
-      var receiptJson = json.decode(receiptString);
+      // var version = map["version"];
+      // NOTE: Support multiple receipt versions here
+      var receiptJson = json.decode(map["receipt"]);
       Receipt receipt = Receipt.fromJson(receiptJson);
       receipt.id = map["id"] as int;
       return receipt;

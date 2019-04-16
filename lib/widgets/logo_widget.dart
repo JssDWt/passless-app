@@ -50,16 +50,13 @@ class LogoWidgetState extends State<LogoWidget> {
       width: MAX_WIDTH.toDouble(), 
       child: Align(
         alignment: widget.alignment,
-        child: Hero(
-          tag: "logo${widget.receipt.id}",
-          child: FadeInImage(
+        child: FadeInImage(
             fadeInDuration: const Duration(milliseconds: 350),
             placeholder: MemoryImage(kTransparentImage),
             image: CachedNetworkImageProvider(
               url, 
               scale: QUALITY_FACTOR.toDouble()
             )
-          )
         ),
       )
     );

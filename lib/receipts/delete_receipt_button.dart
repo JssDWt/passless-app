@@ -39,6 +39,7 @@ class _DeleteReceiptButtonState extends State<DeleteReceiptButton>
     switch (receiptState) {
       case ReceiptState.active:
         deleteButton = FloatingActionButton(
+          heroTag: null,
           child: Icon(Icons.delete),
           tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
           onPressed: () async {
